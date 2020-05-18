@@ -1,0 +1,13 @@
+⏰ error boundary redirection to login
+⏰ edit picture
+⏰ Formato fecha
+⏰ cancel / accept ficha
+
+
+👍 Loader implementation
+👍 pacientes list
+👍 calculate edad
+👍 binding ficha
+
+
+https://firebasestorage.googleapis.com/v0/b/pp-integralmente.appspot.com/o/undefined%2F20200211_111614.jpg?alt=media&token=26cffd09-88f8-4dab-a038-411d0bffb9bb

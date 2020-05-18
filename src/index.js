@@ -1,17 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import GlobalStyles from "./global-styles"
+
 import App from './App';
+import {ToastProvider} from 'react-toast-notifications'
+
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+import {Provider} from 'react-redux'
+import store from "./redux/store"
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
+
+const nodes = (
+    // <React.StrictMode>
+    <Provider store={store}>
+        <GlobalStyles/>
+        <ToastProvider>
+            <App />
+        </ToastProvider>
+    </Provider>
+    // </React.StrictMode>
+)
+ReactDOM.render(nodes, document.getElementById('root'))
 serviceWorker.unregister();
