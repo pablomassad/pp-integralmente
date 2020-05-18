@@ -85,7 +85,6 @@ const Tool = styled.div`
     justify-items: center;
     grid-template-rows: 1fr 20px;
     background:${props=>{
-        console.log('props', props)
         return (props.active)?'#ccc':'transparent'}
     };
     box-shadow:${props=>(props.active)? 'inset 2px 2px 3px #444':'none'};

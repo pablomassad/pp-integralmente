@@ -12,14 +12,14 @@ import store from "./redux/store"
 
 
 const nodes = (
-    // <React.StrictMode>
-    <Provider store={store}>
-        <GlobalStyles/>
-        <ToastProvider>
-            <App />
-        </ToastProvider>
-    </Provider>
-    // </React.StrictMode>
+   // <React.StrictMode>
+   <Provider store={store}>
+      <GlobalStyles />
+      <ToastProvider>
+         <App />
+      </ToastProvider>
+   </Provider>
+   // </React.StrictMode>
 )
 ReactDOM.render(nodes, document.getElementById('root'))
 serviceWorker.unregister();

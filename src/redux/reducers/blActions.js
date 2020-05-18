@@ -45,6 +45,15 @@ const getFacturas = (payload) =>
         dispatch(ui.showLoader(false))
     }
 }
+const updatePatient = (payload )=>{
+    return async (dispatch, getState)=>{
+        dispatch(ui.showLoader(true))
+        const pat = getState().fb.selPatient
+        await firebase.db.collection('pacientes').doc(pat.id).set(payload, {merge:true})
+        dispatch(fb.setPatient({payload}))
+        dispatch(ui.showLoader(false))
+    }
+}
 const removePatient = (payload)=>{
     return async (dispatch)=>{
         //await firebase.db.collection('pacientes').doc(payload.id).delete()
@@ -55,7 +64,6 @@ const updateFactura = (payload)=>{
     return async (dispatch)=>{
         const id = payload.id
         delete payload.id
-
         await firebase.db.doc(`facturas/${id}`).set(payload, {merge: true})
         getFacturas()
     }
@@ -88,11 +96,12 @@ const updateUserInfo = async (usr) =>
 
 export const bl = {
     login,
-    getFacturas,
-    getPatients,
     getUserInfo,
     updateUserInfo,
+    getPatients,
+    updatePatient,
     removePatient,
+    getFacturas,
     updateFactura,
     removeFactura
 }

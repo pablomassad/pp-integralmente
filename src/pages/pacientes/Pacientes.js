@@ -19,101 +19,101 @@ import SwipeableList from "../../common/SwipeableList/SwipeableList";
 
 export default function Pacientes()
 {
-    console.log('....[Pacientes]')
+   console.log('....[Pacientes]')
 
-    const history = useHistory()
-    const dispatch = useDispatch()
-    const [criteria, setCriteria] = useState('')
-    const userInfo = useSelector(st => st.fb.userInfo)
-    const patients = useSelector(st => st.fb.patients)
+   const history = useHistory()
+   const dispatch = useDispatch()
+   const [criteria, setCriteria] = useState('')
+   const userInfo = useSelector(st => st.fb.userInfo)
+   const patients = useSelector(st => st.fb.patients)
 
-    const evalEdad = (p) =>
-    {
-        const today = moment()
-        if (!p) return '0 años'
-        const cumple = moment(p.nacimiento)
-        const edad = today.diff(cumple, 'y')
-        return edad + " años"
-    }
-    const changeCriteriaHandle = (e) =>
-    {
-        setCriteria(e.target.value)
-    }
-    const removePatient = (e, p) =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
+   const evalEdad = (p) =>
+   {
+      const today = moment()
+      if (!p) return '0 años'
+      const cumple = moment(p.nacimiento)
+      const edad = today.diff(cumple, 'y')
+      return edad + " años"
+   }
+   const changeCriteriaHandle = (e) =>
+   {
+      setCriteria(e.target.value)
+   }
+   const removePatient = (e, p) =>
+   {
+      e.stopPropagation()
+      e.preventDefault()
 
-        confirmAlert({
-            title: 'Borrar paciente',
-            message: 'Esta seguro?',
-            buttons: [
-                {
-                    label: 'Si',
-                    onClick: () => dispatch(bl.removePatient({id: p.id}))
-                },
-                {
-                    label: 'No',
-                    onClick: () => console.log('cancel')
-                }
-            ]
-        })
-    }
-    const gotoPatient = (p) =>
-    {
-        dispatch(fb.setPatient({selPatient: p}))
-        history.replace('/patient')
-    }
+      confirmAlert({
+         title: 'Borrar paciente',
+         message: 'Esta seguro?',
+         buttons: [
+            {
+               label: 'Si',
+               onClick: () => dispatch(bl.removePatient({id: p.id}))
+            },
+            {
+               label: 'No',
+               onClick: () => console.log('cancel')
+            }
+         ]
+      })
+   }
+   const gotoPatient = (p) =>
+   {
+      dispatch(fb.setPatient(p))
+      history.replace('/patient')
+   }
 
-    useEffect(() =>
-    {
-        if (userInfo) 
-            dispatch(bl.getPatients())
-        else
-            history.replace('/')
-    }, [])
+   useEffect(() =>
+   {
+      if (userInfo)
+         dispatch(bl.getPatients())
+      else
+         history.replace('/')
+   }, [])
 
 
-    // const background = <span>Archive</span>;
-    // const fakeContent = (
-    //     <div className="FakeContent">
-    //         <span>Swipe to delete</span>
-    //     </div>
-    // );
-    // < SwipeableList background = {background} >
-    //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
-    //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
-    //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
-    //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
-    //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
-    // </SwipeableList >
+   // const background = <span>Archive</span>;
+   // const fakeContent = (
+   //     <div className="FakeContent">
+   //         <span>Swipe to delete</span>
+   //     </div>
+   // );
+   // < SwipeableList background = {background} >
+   //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
+   //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
+   //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
+   //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
+   //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
+   // </SwipeableList >
 
-    return (
-        <PatientsFrame>
-            <PatientFilter>
-                <IconPerson />
-                <Criteria type="text"
-                    placeholder="Ingrese datos del paciente"
-                    value={criteria}
-                    onChange={(e) => changeCriteriaHandle(e)} />
-            </PatientFilter>
-            <PatientList>
-                {patients.map((p, i) => (
-                    <PatientCard key={i} onClick={() => gotoPatient(p)}>
-                        <PatientData>
-                            <PatientPic src={(p.foto === 'assets/images/anonymous.png') ? anonymous : p.foto} />
-                            <PatientInfo>
-                                <h2>{p.apellido}, {p.nombres}</h2>
-                                <h3>{evalEdad(p.nacimiento)}, {p.obrasocial}</h3>
-                                <p>{p.atencion}</p>
-                            </PatientInfo>
-                        </PatientData>
-                        <IconRemove onClick={(e) => removePatient(e, p)} />
-                    </PatientCard>
-                ))}
-            </PatientList>
-        </PatientsFrame>
-    )
+   return (
+      <PatientsFrame>
+         <PatientFilter>
+            <IconPerson />
+            <Criteria type="text"
+               placeholder="Ingrese datos del paciente"
+               value={criteria}
+               onChange={(e) => changeCriteriaHandle(e)} />
+         </PatientFilter>
+         <PatientList>
+            {patients.map((p, i) => (
+               <PatientCard key={i} onClick={() => gotoPatient(p)}>
+                  <PatientData>
+                     <PatientPic src={(p.foto === 'assets/images/anonymous.png') ? anonymous : p.foto} />
+                     <PatientInfo>
+                        <Title>{p.apellido}, {p.nombres}</Title>
+                        <Description>{evalEdad(p.nacimiento)}, {p.obrasocial}</Description>
+                        <p>{p.atencion}</p>
+                     </PatientInfo>
+                  </PatientData>
+                  <IconRemove onClick={(e) => removePatient(e, p)} />
+               </PatientCard>
+            ))}
+         </PatientList>
+      </PatientsFrame>
+   )
 }
 
 const PatientsFrame = styled.div`
@@ -195,4 +195,10 @@ const PatientList = styled.div`
     display: grid;
     grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));
     align-items:center;
+`
+const Title = styled.div`
+    font-size:20px;
+`
+const Description = styled.div`
+    font-size:15px;
 `
