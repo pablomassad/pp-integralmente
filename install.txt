@@ -1,1 +1,0 @@
-react-redux moment react-router-dom react-toast-notifications redux redux-actions redux-devtools-extension redux-logger redux-thunk styled-components styled-icons 

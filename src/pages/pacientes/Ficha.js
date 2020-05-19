@@ -16,124 +16,124 @@ import GlassButton from '../../common/GlassButton'
 
 export default function Ficha()
 {
-   console.log('....[Ficha]')
-   const dispatch = useDispatch()
-   const history = useHistory()
-   const inputFile = useRef(null)
-   const {register, handleSubmit, errors} = useForm()
-   const selPatient = useSelector(st => st.fb.selPatient)
+    console.log('....[Ficha]')
+    const dispatch = useDispatch()
+    const history = useHistory()
+    const inputFile = useRef(null)
+    const {register, handleSubmit, errors} = useForm()
+    const selPatient = useSelector(st => st.fb.selPatient)
 
-   const onSubmit = (data) =>
-   {
-      console.log(data)
-      dispatch(bl.updatePatient(data))
-   }
-   const evalEdad = () =>
-   {
-      const today = moment()
-      if (!selPatient) selPatient.edad = "0 años"
-      const cumple = moment(selPatient.nacimiento)
-      const edad = today.diff(cumple, 'y')
-      selPatient.edad = edad + " años"
-   }
-   const onCumpleHandle = (date) =>
-   {
-      selPatient.nacimiento = date
-      evalEdad()
-   }
-   const onChangeFile = (e) =>
-   {
-      e.stopPropagation()
-      e.preventDefault()
-      const fn = e.target.files[0].name
-      // dispatch(db.updateWidgetInfo({url: fn}))
-      // setFileData(e.target.files[0])
-   }
-   const choosePicture = (e) =>
-   {
-      // Mobile
-      // this.fileInfo = await this.chooser.getFile('*/*') //this.fbsSrv.convertToFile(await this.chooser.getFile('*/*'))
-      // this.foto = this.fbsSrv.onFileSelected(this.fileInfo)
-
-
-      // Browser
-      inputFile.current.click()
-      // const fileInfo = e.target.files[0]
-      // selPatient.foto = this.fbsSrv.onFileSelected(this.fileInfo)
-   }
-   const cancelInfo = () =>
-   {
-      history.replace('/patients')
-   }
+    const onSubmit = (data) =>
+    {
+        console.log(data)
+        dispatch(bl.updatePatient(data))
+    }
+    const evalEdad = () =>
+    {
+        const today = moment()
+        if (!selPatient) selPatient.edad = "0 años"
+        const cumple = moment(selPatient.nacimiento)
+        const edad = today.diff(cumple, 'y')
+        selPatient.edad = edad + " años"
+    }
+    const onCumpleHandle = (date) =>
+    {
+        selPatient.nacimiento = date
+        evalEdad()
+    }
+    const onChangeFile = (e) =>
+    {
+        e.stopPropagation()
+        e.preventDefault()
+        const fn = e.target.files[0].name
+        // dispatch(db.updateWidgetInfo({url: fn}))
+        // setFileData(e.target.files[0])
+    }
+    const choosePicture = (e) =>
+    {
+        // Mobile
+        // this.fileInfo = await this.chooser.getFile('*/*') //this.fbsSrv.convertToFile(await this.chooser.getFile('*/*'))
+        // this.foto = this.fbsSrv.onFileSelected(this.fileInfo)
 
 
-   useEffect(() =>
-   {
-      if (!selPatient) return
-      evalEdad()
-   }, [selPatient])
+        // Browser
+        inputFile.current.click()
+        // const fileInfo = e.target.files[0]
+        // selPatient.foto = this.fbsSrv.onFileSelected(this.fileInfo)
+    }
+    const cancelInfo = () =>
+    {
+        history.replace('/patients')
+    }
 
-   if (!selPatient) return null
 
-   return (
-      <Form onSubmit={handleSubmit(onSubmit)}>
-         <input type='file' ref={inputFile} style={{display: 'none'}} onChange={onChangeFile} />
-         <Main>
-            <Avatar src={selPatient.foto} onClick={choosePicture}>
-            </Avatar>
-            <FullName>
-               <UserInput type="text" placeholder="Ingrese nombres" defaultValue={selPatient.nombres} name="nombres"
-                  ref={register({required: "*"})} />
-               <UserInput type="text" placeholder="Ingrese apellido" defaultValue={selPatient.apellido} name="apellido"
-                  ref={register({required: "*", minlength: {value: 6, message: "Cantidad minima de 3 letras"}})} />
-            </FullName>
-         </Main>
-         <Row>
-            <DatePicker
-               placeholderText="Nacimiento"
-               dateFormat="dd/MMM/yyyy"
-               maxDate={new Date()}
-               // locale="es"
-               selected={selPatient.nacimiento}
-               onChange={onCumpleHandle}
-               className="customDatePicker"
-               showYearDropdown
-               dateFormatCalendar="MMMM"
-               yearDropdownItemNumber={15}
-               scrollableYearDropdown
-               // dateFormat="MM/yyyy"
-               // showMonthYearPicker
-               // showFullMonthYearPicker
-               ref={register}
-            />
-            <Edad><strong>Edad:</strong>{selPatient.edad}</Edad>
-            <UserInput type="text" placeholder="Colegio" defaultValue={selPatient.colegio} name="colegio" ref={register} />
-            <UserInput type="text" placeholder="Curso" defaultValue={selPatient.curso} name="curso" ref={register} />
-            <UserInput type="number" placeholder="DNI" defaultValue={selPatient.dni} name="dni" ref={register} />
-            <UserInput type="text" placeholder="Obra social" defaultValue={selPatient.obrasocial} name="obrasocial" ref={register} />
-            <UserInput type="number" placeholder="Nro" defaultValue={selPatient.afiliado} name="nro" ref={register} />
-            <UserInput type="text" placeholder="Diagnóstico" defaultValue={selPatient.diagnostico} name="diagnostico" ref={register} />
-            <UserInput type="text" placeholder="Días de atención" defaultValue={selPatient.atencion} name="atencion" ref={register} />
+    useEffect(() =>
+    {
+        if (!selPatient) return
+        evalEdad()
+    }, [selPatient])
 
-         </Row>
-         <Contacto>
-            <UserInput type="text" placeholder="Nombre madre" defaultValue={selPatient.madre} name="madre" ref={register} />
-            <UserInput type="text" placeholder="Nombre padre" defaultValue={selPatient.padre} name="padre" ref={register} />
-            <UserInput type="text" placeholder="Tel. madre" defaultValue={selPatient.telmadre} name="telmadre" ref={register} />
-            <UserInput type="number" placeholder="Tel. padre" defaultValue={selPatient.telpadre} name="telpadre" ref={register} />
-            <UserInput type="text" placeholder="Correo electrónico" defaultValue={selPatient.email} name="email" ref={register} />
-            <UserInput type="text" placeholder="Domicilio" defaultValue={selPatient.domicilio} name="domicilio" ref={register} />
-            <UserInput type="text" placeholder="Ciudad" defaultValue={selPatient.ciudad} name="ciudad" ref={register} />
-         </Contacto>
-         <Actions>
-            <GlassButton onClick={cancelInfo}>Cancelar</GlassButton>
-            <div></div>
-            <GlassButton>Aceptar</GlassButton>
-         </Actions>
-         {errors.Names && <p>{errors.Names.message}</p>}
-         {errors.LastName && <p>{errors.LastName.message}</p>}
-      </Form>
-   )
+    if (!selPatient) return null
+
+    return (
+        <Form onSubmit={handleSubmit(onSubmit)}>
+            <input type='file' ref={inputFile} style={{display: 'none'}} onChange={onChangeFile} />
+            <Main>
+                <Avatar src={selPatient.foto} onClick={choosePicture}>
+                </Avatar>
+                <FullName>
+                    <UserInput type="text" placeholder="Ingrese nombres" defaultValue={selPatient.nombres} name="nombres"
+                        ref={register({required: "*"})} />
+                    <UserInput type="text" placeholder="Ingrese apellido" defaultValue={selPatient.apellido} name="apellido"
+                        ref={register({required: "*", minlength: {value: 6, message: "Cantidad minima de 3 letras"}})} />
+                </FullName>
+            </Main>
+            <Row>
+                <DatePicker
+                    placeholderText="Nacimiento"
+                    dateFormat="dd/MMM/yyyy"
+                    maxDate={new Date()}
+                    // locale="es"
+                    selected={selPatient.nacimiento}
+                    onChange={onCumpleHandle}
+                    className="customDatePicker"
+                    showYearDropdown
+                    dateFormatCalendar="MMMM"
+                    yearDropdownItemNumber={15}
+                    scrollableYearDropdown
+                    // dateFormat="MM/yyyy"
+                    // showMonthYearPicker
+                    // showFullMonthYearPicker
+                    ref={register}
+                />
+                <Edad><strong>Edad:</strong>{selPatient.edad}</Edad>
+                <UserInput type="text" placeholder="Colegio" defaultValue={selPatient.colegio} name="colegio" ref={register} />
+                <UserInput type="text" placeholder="Curso" defaultValue={selPatient.curso} name="curso" ref={register} />
+                <UserInput type="number" placeholder="DNI" defaultValue={selPatient.dni} name="dni" ref={register} />
+                <UserInput type="text" placeholder="Obra social" defaultValue={selPatient.obrasocial} name="obrasocial" ref={register} />
+                <UserInput type="number" placeholder="Nro" defaultValue={selPatient.afiliado} name="nro" ref={register} />
+                <UserInput type="text" placeholder="Diagnóstico" defaultValue={selPatient.diagnostico} name="diagnostico" ref={register} />
+                <UserInput type="text" placeholder="Días de atención" defaultValue={selPatient.atencion} name="atencion" ref={register} />
+
+            </Row>
+            <Contacto>
+                <UserInput type="text" placeholder="Nombre madre" defaultValue={selPatient.madre} name="madre" ref={register} />
+                <UserInput type="text" placeholder="Nombre padre" defaultValue={selPatient.padre} name="padre" ref={register} />
+                <UserInput type="text" placeholder="Tel. madre" defaultValue={selPatient.telmadre} name="telmadre" ref={register} />
+                <UserInput type="number" placeholder="Tel. padre" defaultValue={selPatient.telpadre} name="telpadre" ref={register} />
+                <UserInput type="text" placeholder="Correo electrónico" defaultValue={selPatient.email} name="email" ref={register} />
+                <UserInput type="text" placeholder="Domicilio" defaultValue={selPatient.domicilio} name="domicilio" ref={register} />
+                <UserInput type="text" placeholder="Ciudad" defaultValue={selPatient.ciudad} name="ciudad" ref={register} />
+            </Contacto>
+            <Actions>
+                <GlassButton onClick={cancelInfo}>Cancelar</GlassButton>
+                <div></div>
+                <GlassButton>Aceptar</GlassButton>
+            </Actions>
+            {errors.Names && <p>{errors.Names.message}</p>}
+            {errors.LastName && <p>{errors.LastName.message}</p>}
+        </Form>
+    )
 
 }
 

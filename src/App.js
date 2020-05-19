@@ -15,55 +15,61 @@ import Paciente from './pages/pacientes/Paciente'
 import Pacientes from './pages/pacientes/Pacientes'
 import Facturas from './pages/Facturas'
 import Opciones from './pages/Opciones'
+import Agenda from './pages/Agenda'
+import Comunicacion from './pages/Comunicacion'
+import Ocupacion from './pages/ocupacion/Ocupacion'
 
 import firebase from './firebase'
 
 export default function App()
 {
-   const {addToast} = useToasts()
-   const msgInfo = useSelector(st => st.ui.msgInfo)
-   const userInfo = useSelector(st => st.fb.userInfo)
+    const {addToast} = useToasts()
+    const msgInfo = useSelector(st => st.ui.msgInfo)
+    const userInfo = useSelector(st => st.fb.userInfo)
 
-   const [fbInitialized, setFbInitialized] = useState(false)
+    const [fbInitialized, setFbInitialized] = useState(false)
 
-   useEffect(() =>
-   {
-      firebase.isInitialized().then(val =>
-      {
-         setFbInitialized(val)
-      })
-   }, [])
+    useEffect(() =>
+    {
+        firebase.isInitialized().then(val =>
+        {
+            setFbInitialized(val)
+        })
+    }, [])
 
-   useEffect(() =>
-   {
-      if (msgInfo)
-         addToast(msgInfo.msg, {appearance: msgInfo.type, autoDismiss: true})
-   }, [msgInfo])
+    useEffect(() =>
+    {
+        if (msgInfo)
+            addToast(msgInfo.msg, {appearance: msgInfo.type, autoDismiss: true})
+    }, [msgInfo])
 
 
-   return (fbInitialized) ? (
-      <Router>
-         {userInfo ? (
-            <Navbar>
-               <Menu />
-               <Logo src={logo} />
-               <div></div>
-               <Avatar src={userInfo.photoURL} />
-            </Navbar>
-         ) : null
-         }
-         <Switch>
-            <Route exact path="/" exact component={Login} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/signup" component={SignUp} />
-            <Route exact path="/patients" component={Pacientes} />
-            <Route exact path="/patient" component={Paciente} />
-            <Route exact path="/bills" component={Facturas} />
-            <Route exact path="/options" component={Opciones} />
-         </Switch>
-         <Loader />
-      </Router>
-   ) : <Loader />
+    return (fbInitialized) ? (
+        <Router>
+            {userInfo ? (
+                <Navbar>
+                    <Menu />
+                    <Logo src={logo} />
+                    <div></div>
+                    <Avatar src={userInfo.photoURL} />
+                </Navbar>
+            ) : null
+            }
+            <Switch>
+                <Route exact path="/" exact component={Login} />
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/signup" component={SignUp} />
+                <Route exact path="/patients" component={Pacientes} />
+                <Route exact path="/patient" component={Paciente} />
+                <Route exact path="/bills" component={Facturas} />
+                <Route exact path="/agenda" component={Agenda} />
+                <Route exact path="/comunication" component={Comunicacion} />
+                <Route exact path="/ocupation" component={Ocupacion} />
+                <Route exact path="/options" component={Opciones} />
+            </Switch>
+            <Loader />
+        </Router>
+    ) : <Loader />
 }
 
 const Navbar = styled.div`

@@ -3,6 +3,10 @@ import styled from 'styled-components'
 import {PersonPin} from '@styled-icons/material-rounded/PersonPin'
 import {AttachMoney} from '@styled-icons/material-rounded/AttachMoney'
 import {Gear} from '@styled-icons/octicons/Gear'
+import {PersonAdd} from '@styled-icons/material/PersonAdd'
+import {Chat} from '@styled-icons/material/Chat'
+import {Calendar} from '@styled-icons/evil/Calendar'
+import {Exit} from '@styled-icons/icomoon/Exit'
 
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
@@ -33,15 +37,32 @@ export default function Menu()
                 <MenuItem onClick={() => goto('/patients')}>
                     <IconPatients />
                         Pacientes
-                    </MenuItem>
+                </MenuItem>
                 <MenuItem onClick={() => goto('/bills')} >
                     <IconBills />
                         Facturación
-                    </MenuItem>
+                </MenuItem>
+                <MenuItem onClick={() => goto('/agenda')} >
+                    <IconAgenda />
+                        Agenda
+                </MenuItem>
+                <MenuItem onClick={() => goto('/comunication')} >
+                    <IconChat />
+                        Comunicados
+                </MenuItem>
+                <MenuItem onClick={() => goto('/ocupation')} >
+                    <IconOcupation />
+                        Ocupación
+                </MenuItem>
                 <MenuItem onClick={() => goto('/options')} >
                     <IconOptions />
                         Configuración
-                    </MenuItem>
+                </MenuItem>
+                <hr/>
+                <MenuItem onClick={() => goto('/login')} >
+                    <IconExit />
+                        Salir
+                </MenuItem>
             </MenuItems>
         </MenuFrame>
     )
@@ -64,14 +85,37 @@ const MenuItems = styled.div`
 const IconPatients = styled(PersonPin)`
     width:30px;
     color:gray;
+    justify-self:center;
 `
 const IconBills = styled(AttachMoney)`
     width:35px;
     color:gray;
+    justify-self:center;
 `
 const IconOptions = styled(Gear)`
     width:25px;
     color:gray;
+    justify-self:center;
+`
+const IconAgenda = styled(PersonAdd)`
+    width:25px;
+    color:gray;
+    justify-self:center;
+`
+const IconChat = styled(Chat)`
+    width:25px;
+    color:gray;
+    justify-self:center;
+`
+const IconOcupation = styled(Calendar)`
+    width:35px;
+    color:gray;
+    justify-self:center;
+`
+const IconExit = styled(Exit)`
+    width:35px;
+    color:gray;
+    justify-self:center;
 `
 
 const MenuItem = styled.div`
