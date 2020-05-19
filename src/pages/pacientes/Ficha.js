@@ -90,11 +90,10 @@ export default function Ficha()
          </Main>
          <Row>
             <DatePicker
-               locale="es"
                placeholderText="Nacimiento"
                dateFormat="dd/MMM/yyyy"
                maxDate={new Date()}
-               locale="es-es"
+               // locale="es"
                selected={selPatient.nacimiento}
                onChange={onCumpleHandle}
                className="customDatePicker"

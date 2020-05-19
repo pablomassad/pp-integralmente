@@ -50,7 +50,7 @@ export default function Pacientes()
          buttons: [
             {
                label: 'Si',
-               onClick: () => dispatch(bl.removePatient({id: p.id}))
+               onClick: dispatch(bl.removePatient({id: p.id}))
             },
             {
                label: 'No',
@@ -108,7 +108,7 @@ export default function Pacientes()
                         <p>{p.atencion}</p>
                      </PatientInfo>
                   </PatientData>
-                  <IconRemove onClick={(e) => removePatient(e, p)} />
+                  <IconRemove onClick={(e)=>removePatient(e, p)} />
                </PatientCard>
             ))}
          </PatientList>

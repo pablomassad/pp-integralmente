@@ -1,0 +1,13 @@
+npx create-react-app appName
+npm i @capacitor/core @capacitor/cli
+yarn build
+
+npx cap init
+
+=> Cambiar archivo capacitor.config.json =>  "webDir": "www" => "webDir": "build"
+
+npx cap add android
+
+npx cap open android
+
+npx cap sync 
