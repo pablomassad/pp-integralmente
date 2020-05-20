@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
-import {IconRemove} from '../global-styles'
+import {IconRemove} from '../../global-styles'
 import {AttachMoney} from '@styled-icons/material-sharp/AttachMoney'
 
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
-import {bl, fb} from '../redux'
+import {bl, fb, ui} from '../../redux'
 import moment from 'moment'
 
 import {confirmAlert} from 'react-confirm-alert'; // Import
@@ -25,7 +25,7 @@ export default function Facturas()
     const [cobradas, setCobradas] = useState([])
     const [TotalPendientes, setTotalPendientes] = useState(0)
     const [TotalCobradas, setTotalCobradas] = useState(0)
-
+    
     const filterFacturas = () =>
     {
         const pend = []
@@ -54,20 +54,13 @@ export default function Facturas()
     const changeCriteriaHandle = (e) =>
     {
         setCriteria(e.target.value)
-    }
-
-    const showFactura = (e,f) =>
+    } 
+    const editFactura = (e,f) =>
     {
         e.stopPropagation()
         e.preventDefault()
-        //abrir PDF
-    }   
-    const changeState = (e,f) =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-        let newEstado = (f.estado === 'Pendiente')?'Cobrada':'Pendiente'
-        dispatch(bl.updateFactura({id:f.id, estado:newEstado}))
+        dispatch(fb.setFactura(f))
+        history.replace('/billdetail')
     }
     const removeFactura = (e,f) =>
     {
@@ -98,7 +91,10 @@ export default function Facturas()
     useEffect(() =>
     {
         if (userInfo)
-            dispatch(bl.getFacturas())
+            dispatch(bl.getFacturas()).then(x=> {
+                if (x == true)
+                    dispatch(ui.showMessage({msg: 'Facturas OK', type: 'info'}))
+            })
         else
             history.replace('/')
     }, [])
@@ -120,7 +116,7 @@ export default function Facturas()
                     </Title>
                     <FacturasList>
                         {pendientes.map((f, i) => (
-                            <FactItem key={i}>
+                            <FactItem key={i} onClick={(e)=>editFactura(e,f)}>
                                 <Fecha>{moment(f.fecha).format('DD/MM/YY')}</Fecha>
                                 <div>{f.obrasocial}</div>
                                 <Monto>${f.monto}</Monto>
@@ -136,7 +132,7 @@ export default function Facturas()
                     </Title>
                     <FacturasList>
                         {cobradas.map((f, i) => (
-                            <FactItem key={i} onClick={(e) => showFactura(e, f)}>
+                            <FactItem key={i} onClick={(e) => editFactura(e, f)}>
                                 <Fecha>{moment(f.fecha).format('DD/MM/YY')}</Fecha>
                                 <div>{f.obrasocial}</div>
                                 <Monto>${f.monto}</Monto>

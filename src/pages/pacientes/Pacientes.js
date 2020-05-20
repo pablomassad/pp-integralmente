@@ -108,7 +108,7 @@ export default function Pacientes()
                                 <p>{p.atencion}</p>
                             </PatientInfo>
                         </PatientData>
-                        <IconRemove onClick={(e) => removePatient(e, p)} />
+                        <IconRemove onClick={(e)=>removePatient(e,p)} />
                     </PatientCard>
                 ))}
             </PatientList>

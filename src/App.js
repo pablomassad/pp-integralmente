@@ -13,7 +13,8 @@ import Loader from './common/Loader'
 
 import Paciente from './pages/pacientes/Paciente'
 import Pacientes from './pages/pacientes/Pacientes'
-import Facturas from './pages/Facturas'
+import Facturas from './pages/facturas/Facturas'
+import DetalleFactura from './pages/facturas/DetalleFactura'
 import Opciones from './pages/Opciones'
 import Agenda from './pages/Agenda'
 import Comunicacion from './pages/Comunicacion'
@@ -62,6 +63,7 @@ export default function App()
                 <Route exact path="/patients" component={Pacientes} />
                 <Route exact path="/patient" component={Paciente} />
                 <Route exact path="/bills" component={Facturas} />
+                <Route exact path="/billdetail" component={DetalleFactura} />
                 <Route exact path="/agenda" component={Agenda} />
                 <Route exact path="/comunication" component={Comunicacion} />
                 <Route exact path="/ocupation" component={Ocupacion} />

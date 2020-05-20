@@ -20,60 +20,73 @@ const login = (payload) =>
         }
     }
 }
-const getPatients = (payload) =>
+const getPatients = () =>
 {
     return async (dispatch, getState) =>
     {
         dispatch(ui.showLoader(true))
         const userInfo = getState().fb.userInfo
         const dsn = await firebase.db.collection('pacientes').where('uid', '==', userInfo.id).get()
-        const patients = dsn.docs.map(x=>x.data())
+        const patients = dsn.docs.map(x => x.data())
         dispatch(fb.setPatients({patients}))
         dispatch(ui.showLoader(false))
     }
 }
 
-const getFacturas = (payload) =>
+const getFacturas = () => async (dispatch, getState) =>
 {
-    return async (dispatch, getState) =>
+    dispatch(ui.showLoader(true))
+    const userInfo = getState().fb.userInfo
+    const dsn = await firebase.db.collection('facturas').where('uid', '==', userInfo.id).get()
+    const facturas = dsn.docs.map(x =>
     {
-        dispatch(ui.showLoader(true))
-        const userInfo = getState().fb.userInfo
-        const dsn = await firebase.db.collection('facturas').where('uid', '==', userInfo.id).get()
-        const facturas = dsn.docs.map(x=>x.data())
-        dispatch(fb.setFacturas({facturas}))
-        dispatch(ui.showLoader(false))
-    }
+        return {...x.data(), ...{id: x.id}}
+    })
+    dispatch(fb.setFacturas({facturas}))
+    dispatch(ui.showLoader(false))
+    return true
 }
-const updatePatient = (payload )=>{
-    return async (dispatch, getState)=>{
-        dispatch(ui.showLoader(true))
-        const pat = getState().fb.selPatient
-        await firebase.db.collection('pacientes').doc(pat.id).set(payload, {merge:true})
-        dispatch(fb.setPatient({payload}))
-        dispatch(ui.showLoader(false))
-    }
+const updatePatient = (id, patient) => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    await firebase.db.collection('pacientes').doc(id).set(patient, {merge: true})
+    dispatch(fb.setPatient({patient}))
+    dispatch(ui.showLoader(false))
 }
-const removePatient = (payload)=>{
-    return async (dispatch)=>{
-        //await firebase.db.collection('pacientes').doc(payload.id).delete()
-        getPatients()
-    }
+
+const removePatient = (payload) => async (dispatch) =>
+{
+    //await firebase.db.collection('pacientes').doc(payload.id).delete()
+    getPatients()
 }
-const updateFactura = (payload)=>{
-    return async (dispatch)=>{
-        const id = payload.id
-        delete payload.id
-        await firebase.db.doc(`facturas/${id}`).set(payload, {merge: true})
-        getFacturas()
-    }
+
+const updateFactura = (id, factura) => async (dispatch) =>
+{
+    debugger
+    await firebase.db.doc(`facturas/${id}`).set(factura, {merge: true})
+    getFacturas()
 }
-const removeFactura = (payload)=>{
-    return async (dispatch)=>{
+
+const removeFactura = (payload) =>
+{
+    return async (dispatch) =>
+    {
         //await firebase.db.collection('facturas').doc(payload.id).delete()
         getFacturas()
     }
 }
+const deleteFileStorage = (payload) => async (dispatch) =>
+{
+    //await firebase.db.collection('facturas').doc(payload.id).delete()
+    getFacturas()
+}
+const uploadFile = (payload) => async (dispatch) =>
+{
+    //await firebase.db.collection('facturas').doc(payload.id).delete()
+    getFacturas()
+}
+
+
 
 
 ///////////////////////////////////////
