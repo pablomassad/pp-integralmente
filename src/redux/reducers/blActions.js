@@ -13,11 +13,24 @@ const login = (payload) =>
             const userInfo = await getUserInfo(user.uid)
             await updateUserInfo(userInfo)
             dispatch(fb.setUser({userInfo}))
-            dispatch(ui.showLoader(false))
         }
         catch (error) {
             dispatch(ui.showMessage({msg: error.message, type: 'error'}))
         }
+        finally{
+            dispatch(ui.showLoader(false))
+        }
+    }
+}
+const getAllPatients = () =>
+{
+    return async (dispatch, getState) =>
+    {
+        dispatch(ui.showLoader(true))
+        const dsn = await firebase.db.collection('pacientes').get()
+        const patients = dsn.docs.map(x => x.data())
+        dispatch(fb.setPatients({patients}))
+        dispatch(ui.showLoader(false))
     }
 }
 const getPatients = () =>
@@ -111,6 +124,7 @@ export const bl = {
     login,
     getUserInfo,
     updateUserInfo,
+    getAllPatients,
     getPatients,
     updatePatient,
     removePatient,

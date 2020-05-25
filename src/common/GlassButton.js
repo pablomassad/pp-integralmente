@@ -11,7 +11,8 @@ export default (function GlassButton({children, onClick, size, height, width, fo
                 size={size}
                 height={height}
                 width={width}
-                color={foreground}>
+                color={foreground}
+                background={background}>
                 <FabChildren>
                     {children}
                 </FabChildren>
@@ -30,8 +31,8 @@ const Container = styled.div`
 const FabBtn = styled.button`
     position: relative;
     border-radius: 10px;
-    background-image: linear-gradient(#006280, #00c0ed);
-    /* background:${props => (props.block) ? 'grey' : ((props.background) ? props.background : '#08817b')}; */
+    /* background-image: linear-gradient(#006280, #00c0ed); */
+    background:${props => (props.block) ? 'grey' : ((props.background) ? props.background : '#1ba0e0')};
     opacity: ${props => (props.block) ? .7 : 1};
     color:${props => (props.color) ? props.color : '#fff'};
     width:${props => (props.width) ? props.width + 'px' : '88%'};

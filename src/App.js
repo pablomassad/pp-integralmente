@@ -13,8 +13,7 @@ import Loader from './common/Loader'
 
 import Paciente from './pages/pacientes/Paciente'
 import Pacientes from './pages/pacientes/Pacientes'
-import Facturas from './pages/facturas/Facturas'
-import DetalleFactura from './pages/facturas/DetalleFactura'
+import Facturas from './pages/Facturas'
 import Opciones from './pages/Opciones'
 import Agenda from './pages/Agenda'
 import Comunicacion from './pages/Comunicacion'
@@ -24,19 +23,20 @@ import firebase from './firebase'
 
 export default function App()
 {
+    console.log('APP render.............')
+
     const {addToast} = useToasts()
     const msgInfo = useSelector(st => st.ui.msgInfo)
     const userInfo = useSelector(st => st.fb.userInfo)
 
-    const [fbInitialized, setFbInitialized] = useState(false)
-
-    useEffect(() =>
-    {
-        firebase.isInitialized().then(val =>
-        {
-            setFbInitialized(val)
-        })
-    }, [])
+    //const [fbInitialized, setFbInitialized] = useState(false)
+    // useEffect(() =>
+    // {
+    //     firebase.isInitialized().then(val =>
+    //     {
+    //         setFbInitialized(val)
+    //     })
+    // }, [])
 
     useEffect(() =>
     {
@@ -45,7 +45,7 @@ export default function App()
     }, [msgInfo])
 
 
-    return (fbInitialized) ? (
+    return (
         <Router>
             {userInfo ? (
                 <Navbar>
@@ -63,15 +63,17 @@ export default function App()
                 <Route exact path="/patients" component={Pacientes} />
                 <Route exact path="/patient" component={Paciente} />
                 <Route exact path="/bills" component={Facturas} />
-                <Route exact path="/billdetail" component={DetalleFactura} />
                 <Route exact path="/agenda" component={Agenda} />
                 <Route exact path="/comunication" component={Comunicacion} />
                 <Route exact path="/ocupation" component={Ocupacion} />
                 <Route exact path="/options" component={Opciones} />
+                <Route>
+                    <h1>404</h1>
+                </Route>
             </Switch>
             <Loader />
         </Router>
-    ) : <Loader />
+    )
 }
 
 const Navbar = styled.div`

@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+
 import {PersonPin} from '@styled-icons/material-rounded/PersonPin'
 import {AttachMoney} from '@styled-icons/material-rounded/AttachMoney'
 import {Gear} from '@styled-icons/octicons/Gear'

@@ -1,6 +1,6 @@
 import {createGlobalStyle} from "styled-components"
-import styled from 'styled-components'
-import {Cancel} from '@styled-icons/material-outlined/Cancel'
+import styled from "styled-components"
+import {Cancel} from "@styled-icons/material-outlined/Cancel"
 
 export default createGlobalStyle`
 
@@ -16,7 +16,13 @@ export default createGlobalStyle`
     }
 
     html,body {
-        font-family: 'Titillium Web', sans-serif;
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        /* font-family: 'Titillium Web', sans-serif; */
         justify-content: center;
         width: 100%;
         height: 100vh;
