@@ -9,6 +9,8 @@ import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {bl, fb, ui} from '../redux'
 
+import Switch from "react-switch";
+
 import moment from 'moment'
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
@@ -26,44 +28,41 @@ export default function Facturas()
 
     const {register, handleSubmit, errors} = useForm()
 
-    const [criteria, setCriteria] = useState('')
     const facturas = useSelector(st => st.fb.facturas)
     const userInfo = useSelector(st => st.fb.userInfo)
 
     const [fileInfo, setFileInfo] = useState()
     const inputFile = useRef()
 
+    const [criteria, setCriteria] = useState('')
     const [selFacturaId, setSelFacturaId] = useState('')
-    
-    const [pendientes, setPendientes] = useState([])
-    const [cobradas, setCobradas] = useState([])
-    const [TotalPendientes, setTotalPendientes] = useState(0)
-    const [TotalCobradas, setTotalCobradas] = useState(0)
+    const [selEstado, setEstado] = useState('Pendiente')
 
-    const filterFacturas = () =>
+    const [data, setData] = useState([])
+    const [total, setTotal] = useState(0)
+
+    const filterFacturas = (estado) =>
     {
-        const pend = []
-        let totPend = 0
-
-        facturas.map(f =>
+        let tot = 0
+        const filtered = facturas.filter(f =>
         {
-            if (f.estado === 'Pendiente') {
-                totPend += parseFloat(f.monto)
-                pend.push(f)
-            }
-            return f
+            const flag = (f.estado === estado)
+            if (flag)
+                tot += parseFloat(f.monto)
+            return flag
         })
-        setPendientes(pend)
-        setTotalPendientes(totPend)
+        setData(filtered)
+        setTotal(tot)
+    }
+    const onChangeState = (e) =>
+    {
+        const newState = (e) ? 'Cobrada' : 'Pendiente'
+        setEstado(newState)
+        filterFacturas(newState)
     }
     const changeCriteriaHandle = (e) =>
     {
         setCriteria(e.target.value)
-    }
-    const uploadFactura = (e, f) =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
     }
     const removeFactura = (e, f) =>
     {
@@ -125,10 +124,26 @@ export default function Facturas()
     {
         console.log('acceptChanges', selFacturaId)
     }
-    const onChangeFile = (e) =>
+    const choosePDF = (e)=>{
+        e.stopPropagation()
+        e.preventDefault()
+        
+        // Mobile
+        // this.fileInfo = await this.chooser.getFile('*/*') //this.fbsSrv.convertToFile(await this.chooser.getFile('*/*'))
+        // this.foto = this.fbsSrv.onFileSelected(this.fileInfo)
+
+
+        // Browser
+        inputFile.current.click()
+        // const fileInfo = e.target.files[0]
+        // selPatient.foto = this.fbsSrv.onFileSelected(this.fileInfo)
+    }
+    const onChangePDF = (e) =>
     {
         e.stopPropagation()
         e.preventDefault()
+
+        console.log('file: ', e.target.files[0])
 
         const fn = e.target.files[0].name
         setFileInfo(e.target.files[0])
@@ -138,7 +153,7 @@ export default function Facturas()
 
     useEffect(() =>
     {
-        filterFacturas()
+        filterFacturas(selEstado)
     }, [facturas])
 
     useEffect(() =>
@@ -155,20 +170,65 @@ export default function Facturas()
 
     return (
         <FacturasFrame>
+            <input type='file' ref={inputFile} style={{display: 'none'}} onChange={onChangePDF} />
             <FacturasFilter>
                 <IconFacturas />
                 <Criteria type="text"
                     placeholder="Ingrese filtro"
                     value={criteria}
                     onChange={(e) => changeCriteriaHandle(e)} />
+                <Switch onChange={onChangeState}
+                    className="react-switch"
+                    id="icon-switch2"
+                    checked={(selEstado === 'Cobrada')}
+                    handleDiameter={25}
+                    offColor="#d00"
+                    onColor="#3a3"
+                    offHandleColor="#fff"
+                    onHandleColor="#fff"
+                    height={30}
+                    width={60}
+                    uncheckedIcon={
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                height: "100%",
+                                fontSize: 15,
+                                color: "white",
+                                paddingRight: 2,
+                                textShadow: '1px 1px 1px black'
+                            }}
+                        >
+                            P
+                    </div>
+                    }
+                    checkedIcon={
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                height: "100%",
+                                fontSize: 15,
+                                color: "white",
+                                textShadow: '1px 1px 1px black'
+                            }}
+                        >
+                            C
+                    </div>
+                    }
+                    className="react-switch"
+                    id="icon-switch" />
             </FacturasFilter>
             <FacturasLayout>
                 <Title>
-                    Pendientes:
-                        <Total estado="Pendientes">{TotalPendientes}</Total>
+                    Total filtro: $
+                        <Total>{total}</Total>
                 </Title>
                 <FacturasList>
-                    {pendientes.map((f, i) => (
+                    {data.map((f, i) => (
                         <FactItem key={i} onClick={(e) => onSelFactura(e, f)}>
                             {(f.id !== selFacturaId) ? (
                                 <FacturaCard>
@@ -178,8 +238,8 @@ export default function Facturas()
                                     <Cell><Label>Monto</Label>${f.monto}</Cell>
                                     <Cell><Label>Nr:</Label>{f.nro}</Cell>
                                     <Cell>
-                                        <Alert alarm={!f.fechaPago}>$</Alert>
-                                        <Alert alarm={!f.file}>PDF</Alert>
+                                        <Alert alarm={f.estado === 'Pendiente'}>$</Alert>
+                                        {(!f.nombre)?(<Alert alarm={!f.nombre}>PDF</Alert>):null}
                                     </Cell>
                                 </FacturaCard>
                             ) : (
@@ -205,10 +265,10 @@ export default function Facturas()
 
                                         <UserInput type="number" placeholder="Nr.Factura" defaultValue={f.numero} name="monto" ref={register({required: true})} />
                                         <FacturaPDF>
-                                            <GlassButton onClick={(e) => uploadFactura(e, f)}>
+                                            <GlassButton onClick={choosePDF}>
                                                 <IconUpload />
                                             </GlassButton>
-                                            <GlassButton background={(f.file) ? "green" : "gray"} onClick={(e) => viewFactura(e, f)}>
+                                            <GlassButton background={(f.nombre) ? "green" : "gray"} onClick={(e) => viewFactura(e, f)}>
                                                 <IconView />
                                             </GlassButton>
                                             <GlassButton onClick={(e) => viewFactura(e, f)}>
@@ -236,13 +296,12 @@ const FacturasFilter = styled.div`
     --id:PatientFilter;
     background:#ccc;
     display:grid;
-    grid-template-columns:50px 1fr;
+    grid-template-columns:50px 1fr 80px;
     align-items:center;
     box-shadow: 0 1px 3px black;
 `
 const Criteria = styled.input`
     --name: 'Criteria';
-    padding: 5px 10px;
     font-size: 15px;
     color: #444;
     background: white;
@@ -251,7 +310,7 @@ const Criteria = styled.input`
     height: 35px;
     border: none;
     display: block;
-    margin: 20px auto;
+    margin: 10px 0;
     text-align: center;
     box-shadow: inset 2px 2px 5px grey;
 
@@ -277,25 +336,25 @@ const Status = styled.div`
 `
 const Title = styled.div`
     --id:Title;
-    margin: 8px;
+    margin: 5px;
     font-size: 19px;
-    color: #444;
-    display: grid;
-    grid-template-columns: 1fr 2fr;
+    color: black;
+    display: flex;
+    justify-content: center;
 `
 const Total = styled.div`
+    float:right;
     margin-left:10px;
     font-size:19px;
     font-weight:bold;
-    color:${props => (props.estado === 'Pendientes') ? 'red' : 'green'};
+    color:black;
 `
 const FacturasLayout = styled.div`
     --id:FacturasLayout;
-    margin-top: 3px;
 `
 const FacturasList = styled.div`
     overflow:auto;
-    height: calc(100vh - 150px);
+    height: calc(100vh - 142px);
 `
 const FactItem = styled.div`
     --id:FactItem;
@@ -361,7 +420,7 @@ const UserInput = styled.input`
 const Alert = styled.div`
     margin-left: 10px;
     border-radius: 5px;
-    box-shadow: 1px 1px 2px grey;
+    box-shadow: ${props => (props.alarm) ? '1px 1px 2px gray':'none'};
     color: white;
     float: right;
     width: 30px;
