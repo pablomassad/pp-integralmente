@@ -32,6 +32,7 @@ export default function Facturas() {
 
 	const [fileInfo, setFileInfo] = useState()
 	const inputFile = useRef()
+    const factList = useRef()
 
 	const [criteria, setCriteria] = useState('')
 	const fields = [
@@ -124,21 +125,29 @@ export default function Facturas() {
 		// 		//window.location.href = response.url;
 		// });
 	}
-	const onSelFactura = (e, f) => {
-		// e.stopPropagation()
-		// e.preventDefault()
+	const onSelFactura = (f) => {
+        if (selFactura.dirty) return  // Factura en edicion
 
 		const newBill = {...f}
 		console.log('onSelFactura', newBill)
 		setSelFactura(newBill)
 	}
 	const updateSelFactura = (field, value) => {
-		const newBill = {...selFactura, [field]: value}
+		const newBill = {...selFactura, [field]: value, dirty:true}
 		setSelFactura(newBill)
 	}
+    const addFacturaHandle = ()=>{
+        const newFactura = {id:0, dirty:true}
+        setSelFactura(newFactura)
+        setData([newFactura,...data])
+        factList.current.scrollTo(0,0) //factList.current.scrollHeight+1000)
+    }
 	const cancelChanges = e => {
 		e.stopPropagation()
 		e.preventDefault()
+        if (selFactura.id === 0){
+            setData(data.filter(x=> (x.id !== selFactura.id)))
+        }
 		setSelFactura({})
 	}
 	const acceptChanges = async () => {
@@ -255,7 +264,7 @@ export default function Facturas() {
 			</FacturasFilter>
 			<FacturasLayout>
 				<FactHeader>
-					<div>Total: $</div>
+					<div>Total:({data.length}) $</div>
 					<Total>
 						{total}
 					</Total>
@@ -272,11 +281,11 @@ export default function Facturas() {
 						{selDirection === 'asc' ? <div>🔼</div> : <div>🔽</div>}
 					</div>
 				</FactHeader>
-				<FacturasList>
+				<FacturasList ref={factList}>
 					{data.map((f, i) =>
 						<FactItem key={i}>
-							{f.id !== selFactura.id
-								? <FacturaCard onClick={e => onSelFactura(e, f)}>
+							{(f.id !== selFactura.id)
+								? <FacturaCard onClick={e => onSelFactura(f)}>
 										<Cell>
 											<Label>Emitida:</Label>
 											{moment(f.fecha).format('DD/MM/YY')}
@@ -337,7 +346,7 @@ export default function Facturas() {
 										<UserInput
 											type="number"
 											placeholder="Nr.Factura"
-											value={selFactura.nro}
+											value={selFactura.nro || ''}
 											name="numFactura"
 											onChange={e => updateSelFactura('nro', e.target.value)}
 										/>
@@ -361,6 +370,7 @@ export default function Facturas() {
 					)}
 				</FacturasList>
 			</FacturasLayout>
+            {selFactura.dirty ? null : <GlassButton absolute right={5} bottom={5} width={50} height={50} radius={50} onClick={addFacturaHandle}><IconAdd>+</IconAdd></GlassButton>}
 		</FacturasFrame>
 	)
 }
@@ -415,12 +425,11 @@ const FactHeader = styled.div`
 	font-size: 19px;
 	color: black;
 	display: grid;
-	grid-template-columns: 60px 1fr 160px 30px;
+	grid-template-columns: 100px 1fr 160px 30px;
 	align-items: center;
 	/* justify-content: center; */
 `
 const Total = styled.div`
-	margin-left: 10px;
 	font-weight: bold;
 	color: black;
 `
@@ -428,7 +437,7 @@ const OrderFields = styled.div``
 const FacturasLayout = styled.div`--id: FacturasLayout;`
 const FacturasList = styled.div`
 	overflow: auto;
-	height: calc(100vh - 142px);
+	height: calc(100vh - 155px);
 `
 const FactItem = styled.div`
 	--id: FactItem;
@@ -502,6 +511,10 @@ const Alert = styled.div`
 	text-align: center;
 	font-size: 11px;
 	text-shadow: 1px 1px 1px gray;
+`
+const IconAdd = styled.div`
+    font-size:24px;
+    font-weight:bold;
 `
 const IconFacturas = styled(AttachMoney)`
     color: ${props => (props.active ? '#1c88e6' : 'gray')};

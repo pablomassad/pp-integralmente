@@ -40,7 +40,7 @@ const Login = () => {
 
 	useEffect(
 		() => {
-			if (userInfo) history.replace('/patients')
+			if (userInfo) history.replace('/bills')
 		},
 		[userInfo]
 	)
