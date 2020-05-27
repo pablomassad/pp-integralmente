@@ -34,6 +34,7 @@ export default handleActions(
 			}
 		},
 		[fb.setFacturas]: (state, action) => {
+            console.log(action.payload.facturas)
 			return {
 				...state,
 				facturas: action.payload.facturas

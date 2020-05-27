@@ -32,7 +32,7 @@ export default function Facturas() {
 
 	const [fileInfo, setFileInfo] = useState()
 	const inputFile = useRef()
-    const factList = useRef()
+	const factList = useRef()
 
 	const [criteria, setCriteria] = useState('')
 	const fields = [
@@ -44,46 +44,63 @@ export default function Facturas() {
 	]
 	const [selField, setSelField] = useState(fields[0])
 	const [selDirection, setSelDirection] = useState('asc')
-	const [selFactura, setSelFactura] = useState({})
+	const [selFactura, setSelFactura] = useState(null)
 	const [selEstado, setSelEstado] = useState('Pendiente')
 
-	const [data, setData] = useState([])
-	const [total, setTotal] = useState(0)
+	const data = facturas
+		.filter((f) => criteria.length <= 3 || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase()) ))
+		.filter((f) => f.estado === selEstado)
+		.map((f) => selFactura?.id === f.id ? selFactura : f )
+		.sort((f1,f2) => {
+			const d1 = f1[selField.value]
+			const d2 = f2[selField.value]
+			if (typeof d1 === 'number'){
+				return selDirection === 'asc' ? d1 - d2 : d2 - d1;
+			}
+			const s1 = `${d1}`;
+			const s2 = `${d2}`;
+			return selDirection === 'asc' ? s1.localeCompare(s2) : s2.localeCompare(s1);
+		});
+
+
+	const dataAndNew = (selFactura?.id === 0 ? [selFactura] : [])
+		.concat(data)
+		
+
+	const total = data.reduce((acc,f) => acc + Number.parseInt(f.monto),0);
 
 	const onSelectFieldHandle = e => {
 		setSelField(e)
-        orderFacturas(e.value,selDirection)
+		//orderFacturas(e.value, selDirection)
 	}
 	const onSelDirectionHandle = e => {
 		const newDir = selDirection === 'asc' ? 'desc' : 'asc'
 		setSelDirection(newDir)
-        orderFacturas(selField.value, newDir)
-	}  
-    const orderFacturas=(field, dir)=>{
-        const num = (dir === 'asc')?1:-1
-        const newData = data.sort((a, b) => {
-            if (field === 'monto')
-                return (Number(a[field]) > Number(b[field])) ? num : -num
-            else
-                return (a[field] > b[field]) ? num : -num
-        })
-        setData(newData)
-    }  
-	const filterFacturas = estado => {
-		let tot = 0
-		const filtered = facturas.filter(f => {
-			//const flag = (estado === 'Pendiente') ? (f.fechaPago === undefined) : (f.fechaPago !== undefined)
-			const flag = f.estado === estado
-			if (flag) tot += parseFloat(f.monto)
-			return flag
-		})
-		setData(filtered)
-		setTotal(tot)
+		// orderFacturas(selField.value, newDir)
 	}
+	// const orderFacturas = (field, dir) => {
+	// 	const num = dir === 'asc' ? 1 : -1
+	// 	const newData = data.sort((a, b) => {
+	// 		if (field === 'monto') return Number(a[field]) > Number(b[field]) ? num : -num
+	// 		else return a[field] > b[field] ? num : -num
+	// 	})
+	// 	setData(newData)
+	// }
+	// const filterFacturas = estado => {
+	// 	let tot = 0
+	// 	const filtered = facturas.filter(f => {
+	// 		//const flag = (estado === 'Pendiente') ? (f.fechaPago === undefined) : (f.fechaPago !== undefined)
+	// 		const flag = f.estado === estado
+	// 		if (flag) tot += parseFloat(f.monto)
+	// 		return flag
+	// 	})
+	// 	setData(filtered)
+	// 	setTotal(tot)
+	// }
 	const onChangeState = e => {
 		const newState = e ? 'Cobrada' : 'Pendiente'
 		setSelEstado(newState)
-		filterFacturas(newState)
+		// filterFacturas(newState)
 	}
 	const changeCriteriaHandle = e => {
 		setCriteria(e.target.value)
@@ -110,7 +127,22 @@ export default function Facturas() {
 	const viewFactura = e => {
 		e.stopPropagation()
 		e.preventDefault()
-		window.open(selFactura.url, '_system', 'location=yes')
+
+		if (selFactura.url) {
+			window.open(selFactura.url, '_system', 'location=yes')
+		}
+		if (fileInfo) {
+			// console.log('view PDF')
+			// fetch(f.url)
+			// 	.then(response => {
+			// 		response.blob().then(blob => {
+			let url = window.URL.createObjectURL(fileInfo)
+			let a = document.createElement('a')
+			a.href = url
+			a.download = fileInfo.name
+			a.click()
+			//window.location.href = response.url;
+		}
 
 		// console.log('view PDF')
 		// fetch(f.url)
@@ -125,30 +157,30 @@ export default function Facturas() {
 		// 		//window.location.href = response.url;
 		// });
 	}
-	const onSelFactura = (f) => {
-        if (selFactura.dirty) return  // Factura en edicion
+	const onSelFactura = f => {
+		if (selFactura?.dirty) return // Factura en edicion
 
 		const newBill = {...f}
 		console.log('onSelFactura', newBill)
 		setSelFactura(newBill)
 	}
 	const updateSelFactura = (field, value) => {
-		const newBill = {...selFactura, [field]: value, dirty:true}
+		const newBill = {...selFactura, [field]: value, dirty: true}
 		setSelFactura(newBill)
 	}
-    const addFacturaHandle = ()=>{
-        const newFactura = {id:0, dirty:true}
-        setSelFactura(newFactura)
-        setData([newFactura,...data])
-        factList.current.scrollTo(0,0) //factList.current.scrollHeight+1000)
-    }
+	const addFacturaHandle = () => {
+		const newFactura = {id: 0, dirty: true}
+		setSelFactura(newFactura)
+		//setData([newFactura, ...data])
+		factList.current.scrollTo(0, 0) //factList.current.scrollHeight+1000)
+	}
 	const cancelChanges = e => {
 		e.stopPropagation()
 		e.preventDefault()
-        if (selFactura.id === 0){
-            setData(data.filter(x=> (x.id !== selFactura.id)))
-        }
-		setSelFactura({})
+		//if (selFactura.id === 0) {
+		//	setData(data.filter(x => x.id !== selFactura.id))
+		//}
+		setSelFactura(null)
 	}
 	const acceptChanges = async () => {
 		if (fileInfo) {
@@ -156,16 +188,16 @@ export default function Facturas() {
 			//    await dispatch(bl.deleteFileStorage('facturas', selFactura.nombre))
 			console.log('nombre existente: ', selFactura.nombre)
 
-			const obj = await dispatch(bl.uploadFileStorage('facturas', fileInfo))
-			selFactura.url = obj.url
-			selFactura.nombre = obj.nombre
+			const url = await dispatch(bl.uploadFileStorage('facturas', fileInfo))
+			selFactura.url = url
+			selFactura.nombre = fileInfo.name
 		}
 		console.log('updated Factura: ', selFactura)
 		const res = await dispatch(bl.updateFactura(selFactura))
 		if (res) {
 			dispatch(ui.showMessage({msg: 'Factura guardada', type: 'success'}))
 			setFileInfo(undefined)
-			setSelFactura({})
+			setSelFactura(null)
 		} else {
 			dispatch(ui.showMessage({msg: 'No se ha podido guardar la factura', type: 'error'}))
 		}
@@ -173,15 +205,7 @@ export default function Facturas() {
 	const choosePDF = e => {
 		e.stopPropagation()
 		e.preventDefault()
-
-		// Mobile
-		// this.fileInfo = await this.chooser.getFile('*/*') //this.fbsSrv.convertToFile(await this.chooser.getFile('*/*'))
-		// this.foto = this.fbsSrv.onFileSelected(this.fileInfo)
-
-		// Browser
 		inputFile.current.click()
-		// const fileInfo = e.target.files[0]
-		// selPatient.foto = this.fbsSrv.onFileSelected(this.fileInfo)
 	}
 	const onChangePDF = e => {
 		e.stopPropagation()
@@ -191,12 +215,13 @@ export default function Facturas() {
 		setFileInfo(e.target.files[0])
 	}
 
-	useEffect(
-		() => {
-			filterFacturas(selEstado)
-		},
-		[facturas]
-	)
+	// useEffect(
+	// 	() => {
+  //           debugger
+	// 		filterFacturas(selEstado)
+	// 	},
+	// 	[facturas]
+	// )
 
 	useEffect(() => {
 		if (userInfo)
@@ -264,14 +289,16 @@ export default function Facturas() {
 			</FacturasFilter>
 			<FacturasLayout>
 				<FactHeader>
-					<div>Total:({data.length}) $</div>
+					<div>
+						Total:({data.length}) $
+					</div>
 					<Total>
 						{total}
 					</Total>
 					<Dropdown
 						controlClassName="comboFieldsControl"
-						arrowClosed={<></>}
-						arrowOpen={<></>}
+						arrowClosed={<span />}
+						arrowOpen={<span />}
 						options={fields}
 						onChange={onSelectFieldHandle}
 						value={selField}
@@ -282,9 +309,9 @@ export default function Facturas() {
 					</div>
 				</FactHeader>
 				<FacturasList ref={factList}>
-					{data.map((f, i) =>
+					{dataAndNew.map((f, i) =>
 						<FactItem key={i}>
-							{(f.id !== selFactura.id)
+							{f.id !== selFactura?.id
 								? <FacturaCard onClick={e => onSelFactura(f)}>
 										<Cell>
 											<Label>Emitida:</Label>
@@ -330,14 +357,14 @@ export default function Facturas() {
 										<UserInput
 											type="text"
 											placeholder="Obra Social"
-											value={selFactura.obrasocial}
+											value={selFactura.obrasocial || ''}
 											name="obrasocial"
 											onChange={e => updateSelFactura('obrasocial', e.target.value)}
 										/>
 										<UserInput
 											type="number"
 											placeholder="Monto"
-											value={selFactura.monto}
+											value={selFactura.monto || 0}
 											name="monto"
 											onChange={e => updateSelFactura('monto', e.target.value)}
 											style={{textAlign: 'right'}}
@@ -355,7 +382,7 @@ export default function Facturas() {
 												<IconUpload />
 											</GlassButton>
 											<GlassButton
-												background={selFactura.url ? 'green' : 'gray'}
+												background={(selFactura.url || fileInfo) ? 'green' : 'gray'}
 												onClick={e => viewFactura(e)}>
 												<IconView />
 											</GlassButton>
@@ -370,7 +397,18 @@ export default function Facturas() {
 					)}
 				</FacturasList>
 			</FacturasLayout>
-            {selFactura.dirty ? null : <GlassButton absolute right={5} bottom={5} width={50} height={50} radius={50} onClick={addFacturaHandle}><IconAdd>+</IconAdd></GlassButton>}
+			{selFactura?.dirty
+				? null
+				: <GlassButton
+						absolute
+						right={5}
+						bottom={5}
+						width={50}
+						height={50}
+						radius={50}
+						onClick={addFacturaHandle}>
+						<IconAdd>+</IconAdd>
+					</GlassButton>}
 		</FacturasFrame>
 	)
 }
@@ -425,7 +463,7 @@ const FactHeader = styled.div`
 	font-size: 19px;
 	color: black;
 	display: grid;
-	grid-template-columns: 100px 1fr 160px 30px;
+	grid-template-columns: 100px 1fr 150px 30px;
 	align-items: center;
 	/* justify-content: center; */
 `
@@ -475,6 +513,7 @@ const FacturaPDF = styled.div`
 const Cell = styled.div`
 	--id: Cell;
 	text-align: right;
+    border-bottom: 1px solid lightgray;
 `
 const UserInput = styled.input`
 	--name: 'UserInput';
@@ -513,8 +552,8 @@ const Alert = styled.div`
 	text-shadow: 1px 1px 1px gray;
 `
 const IconAdd = styled.div`
-    font-size:24px;
-    font-weight:bold;
+	font-size: 24px;
+	font-weight: bold;
 `
 const IconFacturas = styled(AttachMoney)`
     color: ${props => (props.active ? '#1c88e6' : 'gray')};

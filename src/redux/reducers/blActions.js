@@ -92,18 +92,29 @@ const removePatient = payload => async dispatch => {
 	getPatients()
 }
 const updateFactura = factura => async (dispatch, getState) => {
-    try {
-        await firebase.db.doc(`facturas/${factura.id}`).set(factura, {merge: true})
-        const oldBills = getState().fb.facturas
-        console.log(oldBills.length)
-        const facturas = oldBills.map(f => f.id == factura.id ? {...f, ...factura} : f);
-        console.log(facturas.length)
-        console.log(facturas)
-        dispatch(fb.setFacturas({facturas}))
-        return true
-    } catch (error) {
-        return false
-    }
+	try {
+        if (factura.id === 0)
+            delete factura.id
+
+        delete factura.dirty
+        factura.estado = (factura.fechaPago) ? 'Cobrada':'Pendiente'
+        factura.uid = getState().fb.userInfo.id
+
+        if (!factura.id){
+    		const bill = await firebase.db.collection('facturas').add(factura)
+            factura.id = bill.id
+        }
+        await firebase.db.collection('facturas').doc(factura.id).set(factura, {merge: true})
+        
+        // debugger
+		// const oldBills = getState().fb.facturas
+		// const facturas = oldBills.map(f => (f.id == factura.id ? {...f, ...factura} : f))
+		// dispatch(fb.setFacturas({facturas}))
+        await dispatch(getFacturas())
+		return true
+	} catch (error) {
+		return false
+	}
 }
 const removeFactura = payload => {
 	return async dispatch => {
@@ -113,18 +124,27 @@ const removeFactura = payload => {
 }
 const deleteFileStorage = (path, filename) => async dispatch => {}
 const uploadFileStorage = (path, file) => async dispatch => {
-	const uploadTask = firebase.sto.ref(path + '/' + file.name).put(file)
-	uploadTask.on(
-		'state_changed',
-		snapshot => {},
-		error => {
-			console.log(error)
-		},
-		async () => {
-			const url = await firebase.sto.ref(path).child(file.name).getDownloadURL()
-			console.log('url file: ', url)
-		}
-	)
+    dispatch(ui.showLoader(true))
+	return new Promise((resolve, reject) => {
+		const uploadTask = firebase.sto.ref(path + '/' + file.name).put(file)
+		uploadTask.on(
+			'state_changed',
+			snapshot => {
+				console.log('progress', snapshot)
+			},
+			error => {
+				console.log(error)
+                dispatch(ui.showLoader(false))
+                reject()
+			},
+			async () => {
+				const url = await firebase.sto.ref(path).child(file.name).getDownloadURL()
+				console.log('url file: ', url)
+                dispatch(ui.showLoader(false))
+				resolve(url)
+			}
+		)
+	})
 }
 
 ///////////////////////////////////////
