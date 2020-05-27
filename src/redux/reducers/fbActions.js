@@ -9,29 +9,26 @@ const setFactura = createAction('fb.setFactura')
 const fetchUserRequest = createAction('fetchUserRequest')
 const fetchUserSuccess = createAction('fetchUserSuccess')
 const fetchUserFailure = createAction('fetchUserFailure')
-const fetchUsers = () =>
-{
-   return (dispatch) =>
-   {
-      dispatch(fetchUserRequest())
-      // axios.get('https://jsonplaceholder.typicode.com/users')
-      //     .then(res =>
-      //     {
-      //         const users = res.data.map(usr=>usr.id)
-      //         dispatch(fetchUserSuccess(users)) 
-      //     })
-      //     .catch(err =>
-      //     {
-      //         dispatch(fetchUserFailure(err.message))
-      //     }) 
-   }
+const fetchUsers = () => {
+	return dispatch => {
+		dispatch(fetchUserRequest())
+		// axios.get('https://jsonplaceholder.typicode.com/users')
+		//     .then(res =>
+		//     {
+		//         const users = res.data.map(usr=>usr.id)
+		//         dispatch(fetchUserSuccess(users))
+		//     })
+		//     .catch(err =>
+		//     {
+		//         dispatch(fetchUserFailure(err.message))
+		//     })
+	}
 }
 
 export const fb = {
-   setUser,
-   setPatients,
-   setPatient,
-   setFacturas,
-   setFactura
+	setUser,
+	setPatients,
+	setPatient,
+	setFacturas,
+	setFactura
 }
-

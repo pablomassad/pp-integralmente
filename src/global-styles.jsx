@@ -1,6 +1,6 @@
-import {createGlobalStyle} from "styled-components"
-import styled from "styled-components"
-import {Cancel} from "@styled-icons/material-outlined/Cancel"
+import {createGlobalStyle} from 'styled-components'
+import styled from 'styled-components'
+import {Cancel} from '@styled-icons/material-outlined/Cancel'
 
 export default createGlobalStyle`
 
@@ -79,6 +79,7 @@ export default createGlobalStyle`
 	position: fixed;
     box-shadow: 5px 8px 12px black;
     padding-top: 20px;
+    top:50px;
 }
 
 .sbOpen{

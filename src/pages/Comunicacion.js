@@ -1,10 +1,5 @@
 import React from 'react'
 
-export default function Comunicacion()
-{
-   return (
-      <div>
-         Comunicacion
-      </div>
-   )
+export default function Comunicacion() {
+	return <div>Comunicacion</div>
 }

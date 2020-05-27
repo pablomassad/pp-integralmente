@@ -9,310 +9,351 @@ import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {bl, fb, ui} from '../redux'
 
-import Switch from "react-switch";
+import Switch from 'react-switch'
 
 import moment from 'moment'
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
-import {registerLocale, setDefaultLocale} from "react-datepicker"
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import {registerLocale, setDefaultLocale} from 'react-datepicker'
 import es from 'date-fns/locale/es'
 
-import {useForm} from 'react-hook-form'
-import {confirmAlert} from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import {confirmAlert} from 'react-confirm-alert' // Import
+import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
 
-export default function Facturas()
-{
-    const history = useHistory()
-    const dispatch = useDispatch()
+export default function Facturas() {
+	const history = useHistory()
+	const dispatch = useDispatch()
 
-    const {register, handleSubmit, errors} = useForm()
+	const facturas = useSelector(st => st.fb.facturas)
+	const userInfo = useSelector(st => st.fb.userInfo)
 
-    const facturas = useSelector(st => st.fb.facturas)
-    const userInfo = useSelector(st => st.fb.userInfo)
+	const [fileInfo, setFileInfo] = useState()
+	const inputFile = useRef()
 
-    const [fileInfo, setFileInfo] = useState()
-    const inputFile = useRef()
+	const [criteria, setCriteria] = useState('')
+	const [selFactura, setSelFactura] = useState({})
+	const [selEstado, setSelEstado] = useState('Pendiente')
+	const [dummy, setDummy] = useState({})
 
-    const [criteria, setCriteria] = useState('')
-    const [selFacturaId, setSelFacturaId] = useState('')
-    const [selEstado, setEstado] = useState('Pendiente')
+	const [data, setData] = useState([])
+	const [total, setTotal] = useState(0)
 
-    const [data, setData] = useState([])
-    const [total, setTotal] = useState(0)
-
-    const filterFacturas = (estado) =>
-    {
-        let tot = 0
-        const filtered = facturas.filter(f =>
-        {
+	const filterFacturas = estado => {
+		let tot = 0
+		const filtered = facturas.filter(f => {
+			//const flag = (estado === 'Pendiente') ? (f.fechaPago === undefined) : (f.fechaPago !== undefined)
             const flag = (f.estado === estado)
-            if (flag)
-                tot += parseFloat(f.monto)
-            return flag
-        })
-        setData(filtered)
-        setTotal(tot)
-    }
-    const onChangeState = (e) =>
-    {
-        const newState = (e) ? 'Cobrada' : 'Pendiente'
-        setEstado(newState)
-        filterFacturas(newState)
-    }
-    const changeCriteriaHandle = (e) =>
-    {
-        setCriteria(e.target.value)
-    }
-    const removeFactura = (e, f) =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
+			if (flag) tot += parseFloat(f.monto)
+			return flag
+		})
+		setData(filtered)
+		setTotal(tot)
+	}
+	const onChangeState = e => {
+		const newState = e ? 'Cobrada' : 'Pendiente'
+		setSelEstado(newState)
+		filterFacturas(newState)
+	}
+	const changeCriteriaHandle = e => {
+		setCriteria(e.target.value)
+	}
+	const removeFactura = e => {
+		e.stopPropagation()
+		e.preventDefault()
 
-        confirmAlert({
-            title: 'Borrar factura',
-            message: 'Esta seguro?',
-            buttons: [
-                {
-                    label: 'Si',
-                    onClick: () => dispatch(bl.removeFactura({id: f.id}))
-                },
-                {
-                    label: 'No',
-                    onClick: () => console.log('cancel')
-                }
-            ]
-        })
-    }
-    const viewFactura = (e, f) =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-    }
-    const onSelFactura = (e, f) =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-        setSelFacturaId(f.id)
-    }
-    const onChangeFecha = (d) =>
-    {
-        // setFactura({...factura, fecha: d.getTime()})
-    }
-    const onSubmit = async (data) =>
-    {
-        console.log('data: ', data)
-        // if (fileInfo) {
-        //     if (factura.nombre)
-        //         await dispatch(bl.deleteFileStorage('facturas', factura.nombre))
+		confirmAlert({
+			title: 'Borrar factura',
+			message: 'Esta seguro?',
+			buttons: [
+				{
+					label: 'Si',
+					onClick: () => dispatch(bl.removeFactura({id: selFactura.id}))
+				},
+				{
+					label: 'No',
+					onClick: () => console.log('cancel')
+				}
+			]
+		})
+	}
+	const viewFactura = e => {
+		e.stopPropagation()
+		e.preventDefault()
+		window.open(selFactura.url, '_system', 'location=yes')
 
-        //     const obj = await dispatch(bl.uploadFile(fileInfo, 'facturas'))
-        //     factura.url = obj.url
-        //     factura.nombre = obj.nombre
-        // }
-        // const pl = {...factura, ...data}
-        // await dispatch(bl.updateFactura(selFactura.id, pl))
-        // dispatch(ui.showMessage({msg: 'Factura guardada', type: 'success'}))
-    }
-    const cancelChanges = (e) =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-        setSelFacturaId('')
-    }
-    const acceptChanges = () =>
-    {
-        console.log('acceptChanges', selFacturaId)
-    }
-    const choosePDF = (e)=>{
-        e.stopPropagation()
-        e.preventDefault()
-        
-        // Mobile
-        // this.fileInfo = await this.chooser.getFile('*/*') //this.fbsSrv.convertToFile(await this.chooser.getFile('*/*'))
-        // this.foto = this.fbsSrv.onFileSelected(this.fileInfo)
+		// console.log('view PDF')
+		// fetch(f.url)
+		// 	.then(response => {
+		// 		response.blob().then(blob => {
+		// 			let url = window.URL.createObjectURL(blob);
+		// 			let a = document.createElement('a');
+		// 			a.href = url;
+		// 			a.download = f.nombre;
+		// 			a.click();
+		// 		});
+		// 		//window.location.href = response.url;
+		// });
+	}
+	const onSelFactura = (e, f) => {
+		// e.stopPropagation()
+		// e.preventDefault()
 
+        const newBill = {...f}
+		console.log('onSelFactura', newBill)
+		setSelFactura(newBill)
+	}
+	const updateSelFactura = (field, value) => {
+		const newBill = {...selFactura, [field]: value}
+		setSelFactura(newBill)
+	}
+	const cancelChanges = e => {
+		e.stopPropagation()
+		e.preventDefault()
+		setSelFactura({})
+	}
+	const acceptChanges = async () => {
+		if (fileInfo) {
+			//if (selFactura.nombre)
+			//    await dispatch(bl.deleteFileStorage('facturas', selFactura.nombre))
+			console.log('nombre existente: ', selFactura.nombre)
 
-        // Browser
-        inputFile.current.click()
-        // const fileInfo = e.target.files[0]
-        // selPatient.foto = this.fbsSrv.onFileSelected(this.fileInfo)
-    }
-    const onChangePDF = (e) =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
+			const obj = await dispatch(bl.uploadFileStorage('facturas', fileInfo))
+			selFactura.url = obj.url
+			selFactura.nombre = obj.nombre
+		}
+		const pl = {...selFactura}
+		console.log('updated Factura: ', pl)
+		// await dispatch(bl.updateFactura(selFactura.id, pl))
+		dispatch(ui.showMessage({msg: 'Factura guardada', type: 'success'}))
+	}
+	const choosePDF = e => {
+		e.stopPropagation()
+		e.preventDefault()
 
-        console.log('file: ', e.target.files[0])
+		// Mobile
+		// this.fileInfo = await this.chooser.getFile('*/*') //this.fbsSrv.convertToFile(await this.chooser.getFile('*/*'))
+		// this.foto = this.fbsSrv.onFileSelected(this.fileInfo)
 
-        const fn = e.target.files[0].name
-        setFileInfo(e.target.files[0])
-        // dispatch(db.updateWidgetInfo({url: fn}))
-        // setFileData(e.target.files[0])
-    }
+		// Browser
+		inputFile.current.click()
+		// const fileInfo = e.target.files[0]
+		// selPatient.foto = this.fbsSrv.onFileSelected(this.fileInfo)
+	}
+	const onChangePDF = e => {
+		e.stopPropagation()
+		e.preventDefault()
 
-    useEffect(() =>
-    {
-        filterFacturas(selEstado)
-    }, [facturas])
+		console.log('file: ', e.target.files[0])
+		setFileInfo(e.target.files[0])
+	}
 
-    useEffect(() =>
-    {
-        if (userInfo)
-            dispatch(bl.getFacturas()).then(x =>
-            {
-                if (x == true)
-                    dispatch(ui.showMessage({msg: 'Facturas OK', type: 'info'}))
-            })
-        else
-            history.replace('/')
-    }, [])
+	const onChangeFecha = (field, value) => {
+		const newBill = {...dummy, [field]: value}
+		console.log('updated Dummy', newBill)
+		setDummy(newBill)
+	}
 
-    return (
-        <FacturasFrame>
-            <input type='file' ref={inputFile} style={{display: 'none'}} onChange={onChangePDF} />
-            <FacturasFilter>
-                <IconFacturas />
-                <Criteria type="text"
-                    placeholder="Ingrese filtro"
-                    value={criteria}
-                    onChange={(e) => changeCriteriaHandle(e)} />
-                <Switch onChange={onChangeState}
-                    className="react-switch"
-                    id="icon-switch2"
-                    checked={(selEstado === 'Cobrada')}
-                    handleDiameter={25}
-                    offColor="#d00"
-                    onColor="#3a3"
-                    offHandleColor="#fff"
-                    onHandleColor="#fff"
-                    height={30}
-                    width={60}
-                    uncheckedIcon={
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "100%",
-                                fontSize: 15,
-                                color: "white",
-                                paddingRight: 2,
-                                textShadow: '1px 1px 1px black'
-                            }}
-                        >
-                            P
-                    </div>
-                    }
-                    checkedIcon={
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "100%",
-                                fontSize: 15,
-                                color: "white",
-                                textShadow: '1px 1px 1px black'
-                            }}
-                        >
-                            C
-                    </div>
-                    }
-                    className="react-switch"
-                    id="icon-switch" />
-            </FacturasFilter>
-            <FacturasLayout>
-                <Title>
-                    Total filtro: $
-                        <Total>{total}</Total>
-                </Title>
-                <FacturasList>
-                    {data.map((f, i) => (
-                        <FactItem key={i} onClick={(e) => onSelFactura(e, f)}>
-                            {(f.id !== selFacturaId) ? (
-                                <FacturaCard>
-                                    <Cell><Label>Emitida:</Label>{moment(f.fecha).format('DD/MM/YY')}</Cell>
-                                    <Cell><Label>Pago:</Label>{(f.fechaPago) ? moment(f.fechaPago).format('DD/MM/YY') : ''}</Cell>
-                                    <Cell><Label>O.Social:</Label>{f.obrasocial}</Cell>
-                                    <Cell><Label>Monto</Label>${f.monto}</Cell>
-                                    <Cell><Label>Nr:</Label>{f.nro}</Cell>
-                                    <Cell>
-                                        <Alert alarm={f.estado === 'Pendiente'}>$</Alert>
-                                        {(!f.nombre)?(<Alert alarm={!f.nombre}>PDF</Alert>):null}
-                                    </Cell>
-                                </FacturaCard>
-                            ) : (
-                                    <FacturaForm onSubmit={handleSubmit(onSubmit)}>
-                                        <DatePicker
-                                            placeholderText="Fecha de Emisión"
-                                            dateFormat="dd-MM-yyyy"
-                                            maxDate={new Date()}
-                                            selected={f.fecha}
-                                            onChange={onChangeFecha}
-                                            className="customDatePicker"
-                                        />
-                                        <DatePicker
-                                            placeholderText="Fecha de Pago"
-                                            dateFormat="dd-MM-yyyy"
-                                            maxDate={new Date()}
-                                            selected={f.fechaPago}
-                                            onChange={onChangeFecha}
-                                            className="customDatePicker"
-                                        />
-                                        <UserInput type="text" placeholder="Obra Social" defaultValue={f.obrasocial} name="obrasocial" ref={register({required: true})} />
-                                        <UserInput type="number" placeholder="Monto" defaultValue={f.monto} name="monto" ref={register({required: true})} style={{textAlign: 'right'}} />
+	useEffect(
+		() => {
+			filterFacturas(selEstado)
+		},
+		[facturas]
+	)
 
-                                        <UserInput type="number" placeholder="Nr.Factura" defaultValue={f.numero} name="monto" ref={register({required: true})} />
-                                        <FacturaPDF>
-                                            <GlassButton onClick={choosePDF}>
-                                                <IconUpload />
-                                            </GlassButton>
-                                            <GlassButton background={(f.nombre) ? "green" : "gray"} onClick={(e) => viewFactura(e, f)}>
-                                                <IconView />
-                                            </GlassButton>
-                                            <GlassButton onClick={(e) => viewFactura(e, f)}>
-                                                <IconDelete onClick={(e) => removeFactura(e, f)} style={{width: '20px'}} />
-                                            </GlassButton>
-                                        </FacturaPDF>
-                                        <GlassButton onClick={cancelChanges}>Cancelar</GlassButton>
-                                        <GlassButton onClick={acceptChanges}>Aceptar</GlassButton>
-                                    </FacturaForm>
-                                )}
-                        </FactItem>
-                    ))}
-                </FacturasList>
-            </FacturasLayout>
-        </FacturasFrame>
-    )
+	useEffect(() => {
+		if (userInfo)
+			dispatch(bl.getFacturas()).then(x => {
+				if (x == true) dispatch(ui.showMessage({msg: 'Facturas OK', type: 'info'}))
+			})
+		else history.replace('/')
+	}, [])
+
+	useEffect(
+		() => {
+			console.log('use effect selFactura', selFactura)
+		},
+		[selFactura]
+	)
+
+	return (
+		<FacturasFrame>
+			<input type="file" ref={inputFile} style={{display: 'none'}} onChange={onChangePDF} />
+			<FacturasFilter>
+				<IconFacturas />
+				<Criteria
+					type="text"
+					placeholder="Ingrese filtro"
+					value={criteria}
+					onChange={e => changeCriteriaHandle(e)}
+				/>
+				<Switch
+					onChange={onChangeState}
+					className="react-switch"
+					id="icon-switch2"
+					checked={selEstado === 'Cobrada'}
+					handleDiameter={25}
+					offColor="#d00"
+					onColor="#3a3"
+					offHandleColor="#fff"
+					onHandleColor="#fff"
+					height={30}
+					width={60}
+					uncheckedIcon={
+						<div
+							style={{
+								display: 'flex',
+								justifyContent: 'center',
+								alignItems: 'center',
+								height: '100%',
+								fontSize: 15,
+								color: 'white',
+								paddingRight: 2,
+								textShadow: '1px 1px 1px black'
+							}}>
+							P
+						</div>
+					}
+					checkedIcon={
+						<div
+							style={{
+								display: 'flex',
+								justifyContent: 'center',
+								alignItems: 'center',
+								height: '100%',
+								fontSize: 15,
+								color: 'white',
+								textShadow: '1px 1px 1px black'
+							}}>
+							C
+						</div>
+					}
+					className="react-switch"
+					id="icon-switch"
+				/>
+			</FacturasFilter>
+			<FacturasLayout>
+				<Title>
+					Total filtro: $
+					<Total>{total}</Total>
+				</Title>
+				<FacturasList>
+					{data.map((f, i) =>
+						<FactItem key={i} >
+							{f.id !== selFactura.id
+								? <FacturaCard onClick={e => onSelFactura(e, f)}>
+										<Cell>
+											<Label>Emitida:</Label>
+											{moment(f.fecha).format('DD/MM/YY')}
+										</Cell>
+										<Cell>
+											<Label>Pago:</Label>
+											{f.fechaPago ? moment(f.fechaPago).format('DD/MM/YY') : ''}
+										</Cell>
+										<Cell>
+											<Label>O.Social:</Label>
+											{f.obrasocial}
+										</Cell>
+										<Cell>
+											<Label>Monto</Label>${f.monto}
+										</Cell>
+										<Cell>
+											<Label>Nr:</Label>
+											{f.nro}
+										</Cell>
+										<Cell>
+											<Alert alarm={f.fechaPago === undefined}>$</Alert>
+											{!f.nombre ? <Alert alarm={!f.nombre}>PDF</Alert> : null}
+										</Cell>
+									</FacturaCard>
+								: <FacturaForm>
+										<DatePicker
+											placeholderText="Fecha de Emisión"
+											dateFormat="dd-MM-yyyy"
+											maxDate={new Date()}
+											selected={selFactura.fecha}
+											onChange={e => updateSelFactura('fecha', (e!=null)?e.getTime():null)}
+											className="customDatePicker"
+										/>
+										<DatePicker
+											placeholderText="Fecha de Pago"
+											dateFormat="dd-MM-yyyy"
+											maxDate={new Date()}
+											selected={selFactura.fechaPago}
+											onChange={e => updateSelFactura('fechaPago', (e!=null)?e.getTime():null)}
+											className="customDatePicker"
+										/>
+										<UserInput
+											type="text"
+											placeholder="Obra Social"
+											value={selFactura.obrasocial}
+											name="obrasocial"
+											onChange={e => updateSelFactura('obrasocial', e.target.value)}
+										/>
+										<UserInput
+											type="number"
+											placeholder="Monto"
+											value={selFactura.monto}
+											name="monto"
+											onChange={e => updateSelFactura('monto', e.target.value)}
+											style={{textAlign: 'right'}}
+										/>
+
+										<UserInput
+											type="number"
+											placeholder="Nr.Factura"
+											value={selFactura.nro}
+											name="numFactura"
+											onChange={e => updateSelFactura('nro', e.target.value)}
+										/>
+										<FacturaPDF>
+											<GlassButton onClick={choosePDF}>
+												<IconUpload />
+											</GlassButton>
+											<GlassButton
+												background={selFactura.url ? 'green' : 'gray'}
+												onClick={e => viewFactura(e)}>
+												<IconView />
+											</GlassButton>
+											<GlassButton onClick={e => removeFactura(e, f)}>
+												<IconDelete />
+											</GlassButton>
+										</FacturaPDF>
+										<GlassButton onClick={cancelChanges}>Cancelar</GlassButton>
+										<GlassButton onClick={acceptChanges}>Aceptar</GlassButton>
+									</FacturaForm>}
+						</FactItem>
+					)}
+				</FacturasList>
+			</FacturasLayout>
+		</FacturasFrame>
+	)
 }
 
-
 const FacturasFrame = styled.div`
-    background:#ddd;
-    height:100%;
+	background: #ddd;
+	height: 100%;
 `
 const FacturasFilter = styled.div`
-    --id:PatientFilter;
-    background:#ccc;
-    display:grid;
-    grid-template-columns:50px 1fr 80px;
-    align-items:center;
-    box-shadow: 0 1px 3px black;
+	--id: PatientFilter;
+	background: #ccc;
+	display: grid;
+	grid-template-columns: 50px 1fr 80px;
+	align-items: center;
+	box-shadow: 0 1px 3px black;
 `
 const Criteria = styled.input`
-    --name: 'Criteria';
-    font-size: 15px;
-    color: #444;
-    background: white;
-    border-radius: 5px;
-    width: 80%;
-    height: 35px;
-    border: none;
-    display: block;
-    margin: 10px 0;
-    text-align: center;
-    box-shadow: inset 2px 2px 5px grey;
+	--name: 'Criteria';
+	font-size: 15px;
+	color: #444;
+	background: white;
+	border-radius: 5px;
+	width: 80%;
+	height: 35px;
+	border: none;
+	display: block;
+	margin: 10px 0;
+	text-align: center;
+	box-shadow: inset 2px 2px 5px grey;
 
 	&:hover {
 		background-color: rgb(220, 230, 240);
@@ -323,90 +364,86 @@ const Criteria = styled.input`
 		/* box-shadow: 0px 0px 3px 0px rgb(111, 168, 201); */
 	}
 
-    /* @media screen and (min-width: 500px) {
+	/* @media screen and (min-width: 500px) {
         width:400px;
     }  */
 `
 const Label = styled.div`
-    font-weight:bold;
-    float:left;
+	font-weight: bold;
+	float: left;
 `
-const Status = styled.div`
-    text-align:right;
-`
+const Status = styled.div`text-align: right;`
 const Title = styled.div`
-    --id:Title;
-    margin: 5px;
-    font-size: 19px;
-    color: black;
-    display: flex;
-    justify-content: center;
+	--id: Title;
+	margin: 5px;
+	font-size: 19px;
+	color: black;
+	display: flex;
+	justify-content: center;
 `
 const Total = styled.div`
-    float:right;
-    margin-left:10px;
-    font-size:19px;
-    font-weight:bold;
-    color:black;
+	float: right;
+	margin-left: 10px;
+	font-size: 19px;
+	font-weight: bold;
+	color: black;
 `
-const FacturasLayout = styled.div`
-    --id:FacturasLayout;
-`
+const FacturasLayout = styled.div`--id: FacturasLayout;`
 const FacturasList = styled.div`
-    overflow:auto;
-    height: calc(100vh - 142px);
+	overflow: auto;
+	height: calc(100vh - 142px);
 `
 const FactItem = styled.div`
-    --id:FactItem;
-    background: white;
-    padding: 0 3px;
-    border-radius: 3px;
-    margin: 4px;
-    box-shadow: 1px 1px 2px black;
-    font-size: 12px;
-    position: relative;
+	--id: FactItem;
+	background: white;
+	padding: 0 3px;
+	border-radius: 3px;
+	margin: 4px;
+	box-shadow: 1px 1px 2px black;
+	font-size: 12px;
+	position: relative;
 `
 const FacturaCard = styled.div`
-    --id:FacturaCard;
-    display: grid;
-    grid-template-columns:1fr 1fr;
-    align-items:center;
-    padding:10px;
-    grid-gap: 5px;
-    grid-column-gap: 15px;
+	--id: FacturaCard;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	align-items: center;
+	padding: 10px;
+	grid-gap: 5px;
+	grid-column-gap: 15px;
 `
 const FacturaForm = styled.div`
-    --id:FacturaForm;
-    display: grid;
-    grid-template-columns:1fr 1fr;
-    align-items:center;
-    padding:10px;
+	--id: FacturaForm;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	align-items: center;
+	padding: 10px;
 `
 const FacturaPDF = styled.div`
-    --id:FacturaPDF;
-    display:grid;
-    grid-template-columns:1fr 1fr 40px;
-    grid-column-gap:10px;
-    align-items:center;
+	--id: FacturaPDF;
+	display: grid;
+	grid-template-columns: 1fr 1fr 40px;
+	grid-column-gap: 10px;
+	align-items: center;
 `
 const Cell = styled.div`
-    --id:Cell;
-    text-align:right;
+	--id: Cell;
+	text-align: right;
 `
 const UserInput = styled.input`
-    --name: 'UserInput';
-    padding: 5px 10px;
-    font-size: 15px;
-    color: #444;
-    background: white;
-    border-radius: 5px;
-    width: 80%;
-    height: 35px;
-    border: none;
-    display: block;
-    margin: 10px auto;
-    text-align: center;
-    box-shadow: inset 2px 2px 5px grey;
+	--name: 'UserInput';
+	padding: 5px 10px;
+	font-size: 15px;
+	color: #444;
+	background: white;
+	border-radius: 5px;
+	width: 80%;
+	height: 35px;
+	border: none;
+	display: block;
+	margin: 10px auto;
+	text-align: center;
+	box-shadow: inset 2px 2px 5px grey;
 
 	&:hover {
 		background-color: rgb(220, 230, 240);
@@ -418,20 +455,20 @@ const UserInput = styled.input`
 	}
 `
 const Alert = styled.div`
-    margin-left: 10px;
-    border-radius: 5px;
-    box-shadow: ${props => (props.alarm) ? '1px 1px 2px gray':'none'};
-    color: white;
-    float: right;
-    width: 30px;
-    text-align: center;
-    font-size:11px;
-    text-shadow:1px 1px 1px gray;
-    background: ${props => (props.alarm) ? 'red' : 'gray'};
+	background: ${props => (props.alarm ? 'red' : 'gray')};
+	box-shadow: ${props => (props.alarm ? '1px 1px 2px gray' : 'none')};
+	margin-left: 10px;
+	border-radius: 5px;
+	color: white;
+	float: right;
+	width: 30px;
+	text-align: center;
+	font-size: 11px;
+	text-shadow: 1px 1px 1px gray;
 `
 const IconFacturas = styled(AttachMoney)`
-    color: ${props => (props.active) ? '#1c88e6' : 'gray'};
-    width: ${props => (props.active) ? '38px' : '40px'};
+    color: ${props => (props.active ? '#1c88e6' : 'gray')};
+    width: ${props => (props.active ? '38px' : '40px')};
     margin: 10px;
 `
 const IconView = styled(File)`
