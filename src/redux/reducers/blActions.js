@@ -116,13 +116,28 @@ const updateFactura = factura => async (dispatch, getState) => {
 		return false
 	}
 }
-const removeFactura = payload => {
+const removeFactura = (factura) => {
 	return async dispatch => {
-		//await firebase.db.collection('facturas').doc(payload.id).delete()
-		getFacturas()
+        // if (factura.nombre)
+        //     await dispatch(deleteFileStorage('facturas', factura))
+		await firebase.db.collection('facturas').doc(factura.id).delete()
+		await dispatch(getFacturas())
 	}
 }
-const deleteFileStorage = (path, filename) => async dispatch => {}
+const deleteFileStorage = (path, factura) => async dispatch => {
+    const photoRef = firebase.storage.getReferenceFromUrl(factura.url)
+    // @Override
+    // public void onSuccess(Void aVoid) {
+    //     // File deleted successfully
+    //     Log.d(TAG, "onSuccess: deleted file");
+    // }
+    // }).addOnFailureListener(new OnFailureListener() {
+    // @Override
+    // public void onFailure(@NonNull Exception exception) {
+    //     // Uh-oh, an error occurred!
+    //     Log.d(TAG, "onFailure: did not delete file");
+    // }
+}
 const uploadFileStorage = (path, file) => async dispatch => {
     dispatch(ui.showLoader(true))
 	return new Promise((resolve, reject) => {

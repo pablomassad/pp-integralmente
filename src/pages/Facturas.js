@@ -7,7 +7,7 @@ import {Trash} from '@styled-icons/heroicons-outline/Trash'
 import GlassButton from '../common/GlassButton'
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector, shallowEqual} from 'react-redux'
-import {bl, fb, ui} from '../redux'
+import {bl, ui} from '../redux'
 
 import Switch from 'react-switch'
 
@@ -22,6 +22,7 @@ import 'react-dropdown/style.css'
 
 import {confirmAlert} from 'react-confirm-alert' // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
+
 
 export default function Facturas() {
 	const history = useHistory()
@@ -62,45 +63,20 @@ export default function Facturas() {
 			return selDirection === 'asc' ? s1.localeCompare(s2) : s2.localeCompare(s1);
 		});
 
-
-	const dataAndNew = (selFactura?.id === 0 ? [selFactura] : [])
-		.concat(data)
+	const dataAndNew = (selFactura?.id === 0 ? [selFactura] : []).concat(data)
 		
-
 	const total = data.reduce((acc,f) => acc + Number.parseInt(f.monto),0);
 
 	const onSelectFieldHandle = e => {
 		setSelField(e)
-		//orderFacturas(e.value, selDirection)
 	}
 	const onSelDirectionHandle = e => {
 		const newDir = selDirection === 'asc' ? 'desc' : 'asc'
 		setSelDirection(newDir)
-		// orderFacturas(selField.value, newDir)
 	}
-	// const orderFacturas = (field, dir) => {
-	// 	const num = dir === 'asc' ? 1 : -1
-	// 	const newData = data.sort((a, b) => {
-	// 		if (field === 'monto') return Number(a[field]) > Number(b[field]) ? num : -num
-	// 		else return a[field] > b[field] ? num : -num
-	// 	})
-	// 	setData(newData)
-	// }
-	// const filterFacturas = estado => {
-	// 	let tot = 0
-	// 	const filtered = facturas.filter(f => {
-	// 		//const flag = (estado === 'Pendiente') ? (f.fechaPago === undefined) : (f.fechaPago !== undefined)
-	// 		const flag = f.estado === estado
-	// 		if (flag) tot += parseFloat(f.monto)
-	// 		return flag
-	// 	})
-	// 	setData(filtered)
-	// 	setTotal(tot)
-	// }
 	const onChangeState = e => {
 		const newState = e ? 'Cobrada' : 'Pendiente'
 		setSelEstado(newState)
-		// filterFacturas(newState)
 	}
 	const changeCriteriaHandle = e => {
 		setCriteria(e.target.value)
@@ -143,19 +119,6 @@ export default function Facturas() {
 			a.click()
 			//window.location.href = response.url;
 		}
-
-		// console.log('view PDF')
-		// fetch(f.url)
-		// 	.then(response => {
-		// 		response.blob().then(blob => {
-		// 			let url = window.URL.createObjectURL(blob);
-		// 			let a = document.createElement('a');
-		// 			a.href = url;
-		// 			a.download = f.nombre;
-		// 			a.click();
-		// 		});
-		// 		//window.location.href = response.url;
-		// });
 	}
 	const onSelFactura = f => {
 		if (selFactura?.dirty) return // Factura en edicion
@@ -171,15 +134,11 @@ export default function Facturas() {
 	const addFacturaHandle = () => {
 		const newFactura = {id: 0, dirty: true}
 		setSelFactura(newFactura)
-		//setData([newFactura, ...data])
 		factList.current.scrollTo(0, 0) //factList.current.scrollHeight+1000)
 	}
 	const cancelChanges = e => {
 		e.stopPropagation()
 		e.preventDefault()
-		//if (selFactura.id === 0) {
-		//	setData(data.filter(x => x.id !== selFactura.id))
-		//}
 		setSelFactura(null)
 	}
 	const acceptChanges = async () => {
@@ -214,14 +173,6 @@ export default function Facturas() {
 		console.log('file: ', e.target.files[0])
 		setFileInfo(e.target.files[0])
 	}
-
-	// useEffect(
-	// 	() => {
-  //           debugger
-	// 		filterFacturas(selEstado)
-	// 	},
-	// 	[facturas]
-	// )
 
 	useEffect(() => {
 		if (userInfo)
@@ -364,7 +315,7 @@ export default function Facturas() {
 										<UserInput
 											type="number"
 											placeholder="Monto"
-											value={selFactura.monto || 0}
+											value={selFactura?.monto || '' }
 											name="monto"
 											onChange={e => updateSelFactura('monto', e.target.value)}
 											style={{textAlign: 'right'}}
@@ -386,9 +337,11 @@ export default function Facturas() {
 												onClick={e => viewFactura(e)}>
 												<IconView />
 											</GlassButton>
-											<GlassButton onClick={e => removeFactura(e, f)}>
+                                            {selFactura.id !== 0 ? 	(
+                                            <GlassButton onClick={e => removeFactura(e, f)}>
 												<IconDelete />
-											</GlassButton>
+											</GlassButton> )
+                                            : <div></div>}
 										</FacturaPDF>
 										<GlassButton onClick={cancelChanges}>Cancelar</GlassButton>
 										<GlassButton onClick={acceptChanges}>Aceptar</GlassButton>
