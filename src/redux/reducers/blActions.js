@@ -1,5 +1,5 @@
-import {fb, ui} from "../"
-import firebase from "../../firebase"
+import {fb, ui} from '../'
+import firebase from '../../firebase'
 
 const login = payload => {
 	return async dispatch => {
@@ -8,8 +8,8 @@ const login = payload => {
 			await firebase.login(payload.email, payload.password)
 			dispatch(
 				ui.showMessage({
-					msg: "Bienvenido a Integralmente!",
-					type: "success",
+					msg: 'Bienvenido a Integralmente!',
+					type: 'success'
 				})
 			)
 			const user = await firebase.getCurrentUser()
@@ -17,14 +17,14 @@ const login = payload => {
 			await updateUserInfo(userInfo)
 			dispatch(
 				fb.setUser({
-					userInfo,
+					userInfo
 				})
 			)
 		} catch (error) {
 			dispatch(
 				ui.showMessage({
 					msg: error.message,
-					type: "error",
+					type: 'error'
 				})
 			)
 		} finally {
@@ -35,11 +35,11 @@ const login = payload => {
 const getAllPatients = () => {
 	return async (dispatch, getState) => {
 		dispatch(ui.showLoader(true))
-		const dsn = await firebase.db.collection("pacientes").get()
+		const dsn = await firebase.db.collection('pacientes').get()
 		const patients = dsn.docs.map(x => x.data())
 		dispatch(
 			fb.setPatients({
-				patients,
+				patients
 			})
 		)
 		dispatch(ui.showLoader(false))
@@ -49,14 +49,11 @@ const getPatients = () => {
 	return async (dispatch, getState) => {
 		dispatch(ui.showLoader(true))
 		const userInfo = getState().fb.userInfo
-		const dsn = await firebase.db
-			.collection("pacientes")
-			.where("uid", "==", userInfo.id)
-			.get()
+		const dsn = await firebase.db.collection('pacientes').where('uid', '==', userInfo.id).get()
 		const patients = dsn.docs.map(x => x.data())
 		dispatch(
 			fb.setPatients({
-				patients,
+				patients
 			})
 		)
 		dispatch(ui.showLoader(false))
@@ -65,34 +62,27 @@ const getPatients = () => {
 const getFacturas = () => async (dispatch, getState) => {
 	dispatch(ui.showLoader(true))
 	const userInfo = getState().fb.userInfo
-	const dsn = await firebase.db
-		.collection("facturas")
-		.where("uid", "==", userInfo.id)
-		.get()
+	const dsn = await firebase.db.collection('facturas').where('uid', '==', userInfo.id).get()
 	const facturas = dsn.docs.map(x => {
 		return {
 			...x.data(),
 			...{
-				id: x.id,
-			},
+				id: x.id
+			}
 		}
 	})
-	dispatch(
-		fb.setFacturas({
-			facturas,
-		})
-	)
+	dispatch(fb.setFacturas({facturas}))
 	dispatch(ui.showLoader(false))
 	return true
 }
 const updatePatient = (id, patient) => async dispatch => {
 	dispatch(ui.showLoader(true))
-	await firebase.db.collection("pacientes").doc(id).set(patient, {
-		merge: true,
+	await firebase.db.collection('pacientes').doc(id).set(patient, {
+		merge: true
 	})
 	dispatch(
 		fb.setPatient({
-			patient,
+			patient
 		})
 	)
 	dispatch(ui.showLoader(false))
@@ -101,12 +91,19 @@ const removePatient = payload => async dispatch => {
 	//await firebase.db.collection('pacientes').doc(payload.id).delete()
 	getPatients()
 }
-const updateFactura = (id, factura) => async dispatch => {
-	debugger
-	await firebase.db.doc(`facturas/${id}`).set(factura, {
-		merge: true,
-	})
-	getFacturas()
+const updateFactura = factura => async (dispatch, getState) => {
+    try {
+        await firebase.db.doc(`facturas/${factura.id}`).set(factura, {merge: true})
+        const oldBills = getState().fb.facturas
+        console.log(oldBills.length)
+        const facturas = oldBills.map(f => f.id == factura.id ? {...f, ...factura} : f);
+        console.log(facturas.length)
+        console.log(facturas)
+        dispatch(fb.setFacturas({facturas}))
+        return true
+    } catch (error) {
+        return false
+    }
 }
 const removeFactura = payload => {
 	return async dispatch => {
@@ -114,20 +111,18 @@ const removeFactura = payload => {
 		getFacturas()
 	}
 }
-const deleteFileStorage = (path, filename) => async dispatch => {
-	
-}
+const deleteFileStorage = (path, filename) => async dispatch => {}
 const uploadFileStorage = (path, file) => async dispatch => {
-	const uploadTask = firebase.sto.ref(path + "/" + file.name).put(file)
+	const uploadTask = firebase.sto.ref(path + '/' + file.name).put(file)
 	uploadTask.on(
-		"state_changed",
+		'state_changed',
 		snapshot => {},
 		error => {
 			console.log(error)
 		},
 		async () => {
 			const url = await firebase.sto.ref(path).child(file.name).getDownloadURL()
-            console.log('url file: ', url)
+			console.log('url file: ', url)
 		}
 	)
 }
@@ -138,7 +133,7 @@ const uploadFileStorage = (path, file) => async dispatch => {
 const getUserInfo = async id => {
 	const dsn = await firebase.db.doc(`users/${id}`).get()
 	const user = dsn.data()
-	user["id"] = id
+	user['id'] = id
 	return user
 }
 const updateUserInfo = async usr => {
@@ -146,7 +141,7 @@ const updateUserInfo = async usr => {
 	usr.lastLoginStr = usr.lastLogin
 	//   const obj = JSON.parse(JSON.stringify(usr))
 	await firebase.db.doc(`users/${usr.id}`).set(usr, {
-		merge: true,
+		merge: true
 	})
 }
 
@@ -161,6 +156,6 @@ export const bl = {
 	getFacturas,
 	updateFactura,
 	removeFactura,
-    deleteFileStorage,
-    uploadFileStorage
+	deleteFileStorage,
+	uploadFileStorage
 }

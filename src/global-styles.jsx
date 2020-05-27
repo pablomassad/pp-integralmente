@@ -16,22 +16,28 @@ export default createGlobalStyle`
     }
 
     html,body {
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-        sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        /* font-family: 'Titillium Web', sans-serif; */
+        font-family: 'Titillium Web', sans-serif;
+        margin: 0 !important;
+        padding:0;
+        min-height: 100vh;
+        min-width: 100vw;
         justify-content: center;
         width: 100%;
         height: 100vh;
-        /* //background-image: url('../../assets/images/splash.png'); */
-        /* //background: radial-gradient(circle, #9feefe 0%, #6db3cc 64%, #059098 100%); */
         background: linear-gradient(#1ba5c5, #61d5ec);
         background-size: cover;
         background-position: center;
     }
+
+
+.comboFieldsControl{
+    font-size:14px;
+    background:white;
+    border-radius:5px;
+    box-shadow:inset 1px 1px 3px black;
+}
+
+
 
 .FakeContent {
   height: 64px;

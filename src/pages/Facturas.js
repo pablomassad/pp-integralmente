@@ -6,7 +6,7 @@ import {File} from '@styled-icons/boxicons-regular/File'
 import {Trash} from '@styled-icons/heroicons-outline/Trash'
 import GlassButton from '../common/GlassButton'
 import {useHistory} from 'react-router-dom'
-import {useDispatch, useSelector} from 'react-redux'
+import {useDispatch, useSelector, shallowEqual} from 'react-redux'
 import {bl, fb, ui} from '../redux'
 
 import Switch from 'react-switch'
@@ -17,6 +17,9 @@ import 'react-datepicker/dist/react-datepicker.css'
 import {registerLocale, setDefaultLocale} from 'react-datepicker'
 import es from 'date-fns/locale/es'
 
+import Dropdown from 'react-dropdown'
+import 'react-dropdown/style.css'
+
 import {confirmAlert} from 'react-confirm-alert' // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
 
@@ -24,25 +27,52 @@ export default function Facturas() {
 	const history = useHistory()
 	const dispatch = useDispatch()
 
-	const facturas = useSelector(st => st.fb.facturas)
+	const facturas = useSelector(st => st.fb.facturas, shallowEqual)
 	const userInfo = useSelector(st => st.fb.userInfo)
 
 	const [fileInfo, setFileInfo] = useState()
 	const inputFile = useRef()
 
 	const [criteria, setCriteria] = useState('')
+	const fields = [
+		{value: 'fecha', label: 'Fecha'},
+		{value: 'fechaPago', label: 'Fecha Pago'},
+		{value: 'obrasocial', label: 'Obra Social'},
+		{value: 'monto', label: 'Monto'},
+		{value: 'nro', label: 'Num.Factura'}
+	]
+	const [selField, setSelField] = useState(fields[0])
+	const [selDirection, setSelDirection] = useState('asc')
 	const [selFactura, setSelFactura] = useState({})
 	const [selEstado, setSelEstado] = useState('Pendiente')
-	const [dummy, setDummy] = useState({})
 
 	const [data, setData] = useState([])
 	const [total, setTotal] = useState(0)
 
+	const onSelectFieldHandle = e => {
+		setSelField(e)
+        orderFacturas(e.value,selDirection)
+	}
+	const onSelDirectionHandle = e => {
+		const newDir = selDirection === 'asc' ? 'desc' : 'asc'
+		setSelDirection(newDir)
+        orderFacturas(selField.value, newDir)
+	}  
+    const orderFacturas=(field, dir)=>{
+        const num = (dir === 'asc')?1:-1
+        const newData = data.sort((a, b) => {
+            if (field === 'monto')
+                return (Number(a[field]) > Number(b[field])) ? num : -num
+            else
+                return (a[field] > b[field]) ? num : -num
+        })
+        setData(newData)
+    }  
 	const filterFacturas = estado => {
 		let tot = 0
 		const filtered = facturas.filter(f => {
 			//const flag = (estado === 'Pendiente') ? (f.fechaPago === undefined) : (f.fechaPago !== undefined)
-            const flag = (f.estado === estado)
+			const flag = f.estado === estado
 			if (flag) tot += parseFloat(f.monto)
 			return flag
 		})
@@ -98,7 +128,7 @@ export default function Facturas() {
 		// e.stopPropagation()
 		// e.preventDefault()
 
-        const newBill = {...f}
+		const newBill = {...f}
 		console.log('onSelFactura', newBill)
 		setSelFactura(newBill)
 	}
@@ -121,10 +151,15 @@ export default function Facturas() {
 			selFactura.url = obj.url
 			selFactura.nombre = obj.nombre
 		}
-		const pl = {...selFactura}
-		console.log('updated Factura: ', pl)
-		// await dispatch(bl.updateFactura(selFactura.id, pl))
-		dispatch(ui.showMessage({msg: 'Factura guardada', type: 'success'}))
+		console.log('updated Factura: ', selFactura)
+		const res = await dispatch(bl.updateFactura(selFactura))
+		if (res) {
+			dispatch(ui.showMessage({msg: 'Factura guardada', type: 'success'}))
+			setFileInfo(undefined)
+			setSelFactura({})
+		} else {
+			dispatch(ui.showMessage({msg: 'No se ha podido guardar la factura', type: 'error'}))
+		}
 	}
 	const choosePDF = e => {
 		e.stopPropagation()
@@ -147,12 +182,6 @@ export default function Facturas() {
 		setFileInfo(e.target.files[0])
 	}
 
-	const onChangeFecha = (field, value) => {
-		const newBill = {...dummy, [field]: value}
-		console.log('updated Dummy', newBill)
-		setDummy(newBill)
-	}
-
 	useEffect(
 		() => {
 			filterFacturas(selEstado)
@@ -167,13 +196,6 @@ export default function Facturas() {
 			})
 		else history.replace('/')
 	}, [])
-
-	useEffect(
-		() => {
-			console.log('use effect selFactura', selFactura)
-		},
-		[selFactura]
-	)
 
 	return (
 		<FacturasFrame>
@@ -232,13 +254,27 @@ export default function Facturas() {
 				/>
 			</FacturasFilter>
 			<FacturasLayout>
-				<Title>
-					Total filtro: $
-					<Total>{total}</Total>
-				</Title>
+				<FactHeader>
+					<div>Total: $</div>
+					<Total>
+						{total}
+					</Total>
+					<Dropdown
+						controlClassName="comboFieldsControl"
+						arrowClosed={<></>}
+						arrowOpen={<></>}
+						options={fields}
+						onChange={onSelectFieldHandle}
+						value={selField}
+						placeholder="Orden por"
+					/>
+					<div onClick={onSelDirectionHandle} style={{textAlign: 'right'}}>
+						{selDirection === 'asc' ? <div>🔼</div> : <div>🔽</div>}
+					</div>
+				</FactHeader>
 				<FacturasList>
 					{data.map((f, i) =>
-						<FactItem key={i} >
+						<FactItem key={i}>
 							{f.id !== selFactura.id
 								? <FacturaCard onClick={e => onSelFactura(e, f)}>
 										<Cell>
@@ -261,7 +297,7 @@ export default function Facturas() {
 											{f.nro}
 										</Cell>
 										<Cell>
-											<Alert alarm={f.fechaPago === undefined}>$</Alert>
+											<Alert alarm={f.fechaPago === undefined || f.fechaPago === null}>$</Alert>
 											{!f.nombre ? <Alert alarm={!f.nombre}>PDF</Alert> : null}
 										</Cell>
 									</FacturaCard>
@@ -271,7 +307,7 @@ export default function Facturas() {
 											dateFormat="dd-MM-yyyy"
 											maxDate={new Date()}
 											selected={selFactura.fecha}
-											onChange={e => updateSelFactura('fecha', (e!=null)?e.getTime():null)}
+											onChange={e => updateSelFactura('fecha', e != null ? e.getTime() : null)}
 											className="customDatePicker"
 										/>
 										<DatePicker
@@ -279,7 +315,7 @@ export default function Facturas() {
 											dateFormat="dd-MM-yyyy"
 											maxDate={new Date()}
 											selected={selFactura.fechaPago}
-											onChange={e => updateSelFactura('fechaPago', (e!=null)?e.getTime():null)}
+											onChange={e => updateSelFactura('fechaPago', e != null ? e.getTime() : null)}
 											className="customDatePicker"
 										/>
 										<UserInput
@@ -373,21 +409,22 @@ const Label = styled.div`
 	float: left;
 `
 const Status = styled.div`text-align: right;`
-const Title = styled.div`
-	--id: Title;
+const FactHeader = styled.div`
+	--id: FactHeader;
 	margin: 5px;
 	font-size: 19px;
 	color: black;
-	display: flex;
-	justify-content: center;
+	display: grid;
+	grid-template-columns: 60px 1fr 160px 30px;
+	align-items: center;
+	/* justify-content: center; */
 `
 const Total = styled.div`
-	float: right;
 	margin-left: 10px;
-	font-size: 19px;
 	font-weight: bold;
 	color: black;
 `
+const OrderFields = styled.div``
 const FacturasLayout = styled.div`--id: FacturasLayout;`
 const FacturasList = styled.div`
 	overflow: auto;
