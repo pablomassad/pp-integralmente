@@ -1,5 +1,8 @@
 import {createAction} from 'redux-actions'
 
+const addNotification = createAction('fb.addNotification')
+const setToken = createAction('fb.setToken')
+const setWebToken = createAction('fb.setWebToken')
 const setUser = createAction('fb.setUser')
 const setPatients = createAction('fb.setPatients')
 const setPatient = createAction('fb.setPatient')
@@ -26,6 +29,9 @@ const fetchUsers = () => {
 }
 
 export const fb = {
+    addNotification,
+    setToken,
+    setWebToken,
 	setUser,
 	setPatients,
 	setPatient,

@@ -4,10 +4,8 @@ import * as moment from 'moment'
 
 admin.initializeApp(functions.config().firebase)
 const afs = admin.firestore()
+
 // const sto = admin.storage()
-
-
-
 // export const deletePDFs = functions.firestore.document("facturas/{id}").onDelete((snap, context) => {
 //     // const {id} = context.params;
 //     const nombre = context.params['nombre']
@@ -30,21 +28,27 @@ export const happyBirthday = functions.https.onRequest((request, response) => {
     response.send("Happy Birtday!");
 });
 
-export const evalBirthdays = functions.https.onRequest(async (req, res) => {
-    const qsInfo = await afs.collection('pacientes').get()
-    const docs = qsInfo.docs.map(x => x.data())
+export const evalCumples = functions.https.onRequest(async (request, response) => {
+    const qsn = await afs.collection('pacientes').get()
+    const docs = qsn.docs.map(x => x.data())
 
     const today = moment().format('YYMMDD')
-    const birthdaysToday = 0
+    let birthdaysErrors = 0
+    let birthdaysToday = 0
     docs.forEach(pac => {
-        if (pac.nacimiento !== undefined) {
+        try {
             if (today === moment(pac.nacimiento).format('YYMMDD')) {
                 fcmPush(pac.uid, pac.apellido + ', ' + pac.nombres)
+                birthdaysToday++
             }
+        } catch (error) {
+            birthdaysErrors++
         }
     })
-    console.log('response: ', birthdaysToday)
-    res.send(birthdaysToday)
+
+    const rta = 'response: patients total: ' + docs.length
+    console.log(rta)
+    response.send('total pacientes: ' + rta + ' fecha:' + today + ' cumples hoy: ' + birthdaysToday + ' errors: ' + birthdaysErrors)
 })
 
 function fcmPush(target: string, kid: string) {
@@ -56,29 +60,12 @@ function fcmPush(target: string, kid: string) {
         data: {
         }
     };
-    admin.messaging().sendToDevice('cLedIiDzTKe_GUvCbn0_qN:APA91bGkEmS0zYUqUrTCN_1ZSkb2L5AIkhIFgKnuxCcSz54fy8KbLfSa57Cjfhw5kiEGbOR97GTA2QtOBCbW4jlV6ZAZ', payload)
-    // admin.messaging().sendToTopic(target, payload)
-    //     .then(x => {
-    //         console.log('Msg sent ok to ' + target)
-    //     })
-    //     .catch(err => {
-    //         console.log('Error sending msg')
-    //     })
-
-
-
-
-
-    // if (rec.uuid === '65791d28a26e25b3') {
-    //    const payload = {
-    //       notification: {
-    //          title: 'Estado conexion: ' + rec.online,
-    //          body: rec.manufacturer + '/' + rec.model + '/' + rec.uuid
-    //       },
-    //       data: {
-    //       }
-    //    };
-    //    logger('Push connection: ', rec)
-    //    return admin.messaging().sendToTopic('dbm', payload);
-    // }      
+    //admin.messaging().sendToDevice('cLedIiDzTKe_GUvCbn0_qN:APA91bGkEmS0zYUqUrTCN_1ZSkb2L5AIkhIFgKnuxCcSz54fy8KbLfSa57Cjfhw5kiEGbOR97GTA2QtOBCbW4jlV6ZAZ', payload)
+    admin.messaging().sendToTopic(target, payload)
+        .then(x => {
+            console.log('Msg sent ok to ' + target)
+        })
+        .catch(err => {
+            console.log('Error sending msg')
+        })
 }

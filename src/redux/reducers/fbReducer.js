@@ -2,53 +2,52 @@ import {handleActions} from 'redux-actions'
 import {fb} from './fbActions'
 
 const initialState = {
-	userInfo: null,
-	facturas: [],
-	selFactura: undefined,
-	patients: [],
-	selPatient: undefined
+    userInfo: null,
+    facturas: [],
+    selFactura: undefined,
+    patients: [],
+    selPatient: undefined,
+    notifications: [],
+    token: undefined,
+    webToken:undefined
 }
 
 export default handleActions(
-	{
-		[fb.setUser]: (state, action) => {
-			return {
-				...state,
-				userInfo: action.payload.userInfo
-			}
-		},
-		[fb.setPatients]: (state, action) => {
-			return {
-				...state,
-				patients: action.payload.patients
-			}
-		},
-		[fb.setPatient]: (state, action) => {
-			const mergePatient = {
-				...state.selPatient,
-				...action.payload
-			}
-			return {
-				...state,
-				selPatient: mergePatient
-			}
-		},
-		[fb.setFacturas]: (state, action) => {
+    {
+        [fb.addNotification]: (state, action) =>
+        {
+            return {...state, notifications: [...state.notifications, action.payload.notification]}
+        },
+        [fb.setToken]: (state, action) =>
+        {
+            return {...state, token: action.payload.token}
+        }, 
+        [fb.setWebToken]: (state, action) =>
+        {
+            return {...state, webToken: action.payload.webToken}
+        },
+        [fb.setUser]: (state, action) =>
+        {
+            return {...state, userInfo: action.payload.userInfo}
+        },
+        [fb.setPatients]: (state, action) =>
+        {
+            return {...state, patients: action.payload.patients}
+        },
+        [fb.setPatient]: (state, action) =>
+        {
+            const mergePatient = {...state.selPatient, ...action.payload}
+            return {...state, selPatient: mergePatient}
+        },
+        [fb.setFacturas]: (state, action) =>
+        {
             console.log(action.payload.facturas)
-			return {
-				...state,
-				facturas: action.payload.facturas
-			}
-		},
-		[fb.setFactura]: (state, action) => {
-			return {
-				...state,
-				selFactura: {
-					...state.selFactura,
-					...action.payload
-				}
-			}
-		}
-	},
-	initialState
+            return {...state, facturas: action.payload.facturas}
+        },
+        [fb.setFactura]: (state, action) =>
+        {
+            return {...state, selFactura: {...state.selFactura, ...action.payload}}
+        }
+    },
+    initialState
 )

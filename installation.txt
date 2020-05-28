@@ -9,5 +9,6 @@ npx cap init
 npx cap add android
 
 npx cap open android
+ionic cap run android --livereload
 
 npx cap sync 

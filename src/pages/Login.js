@@ -4,15 +4,15 @@ import logo from '../assets/images/integralmenteET.png'
 
 import {useHistory} from 'react-router-dom'
 
-import {useDispatch, useSelector} from 'react-redux'
+import {useDispatch} from 'react-redux'
 import {bl} from '../redux'
 
 import GlassButton from '../common/GlassButton'
 
-const Login = () => {
+
+export default function Login() {
 	const history = useHistory()
 	const dispatch = useDispatch()
-	const userInfo = useSelector(st => st.fb.userInfo)
 
 	const [email, setEmail] = useState()
 	const [password, setPassword] = useState()
@@ -27,23 +27,20 @@ const Login = () => {
 	const onKeyUserHandler = e => {
 		if (e.key === 'Enter') refPassword.current.focus()
 	}
-
 	const loginHandle = async event => {
 		event.preventDefault()
-		dispatch(bl.login({email, password}))
+        loginRedirect({email, password})
 	}
-
-	const autoLogin = () => {
-        dispatch(bl.login({email: 'patriciagonzalezvillar@gmail.com', password: '123456'}))
-		//dispatch(bl.login({email: 'pmassad@yahoo.com', password: '123456'}))
+	const autoLogin = async () => {
+        loginRedirect({email: 'patriciagonzalezvillar@gmail.com', password: '123456'})
 	}
-
-	useEffect(
-		() => {
-			if (userInfo) history.replace('/bills')
-		},
-		[userInfo]
-	)
+    const loginRedirect= async (o)=>{
+		const res = await dispatch(bl.login(o))
+        if (res){
+            dispatch(bl.initPushing())
+            history.replace('/bills')
+        }
+    }
 
 	useEffect(() => {
 		refEmail.current.focus()
@@ -83,7 +80,7 @@ const Login = () => {
 		</LoginFrame>
 	)
 }
-export default Login
+
 
 const LoginFrame = styled.div`
 	background: white;
