@@ -34,7 +34,7 @@ const Login = () => {
 	}
 
 	const autoLogin = () => {
-		dispatch(bl.login({email: 'patriciagonzalezvillar@gmail.com', password: '123456'}))
+        dispatch(bl.login({email: 'patriciagonzalezvillar@gmail.com', password: '123456'}))
 		//dispatch(bl.login({email: 'pmassad@yahoo.com', password: '123456'}))
 	}
 

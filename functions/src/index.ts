@@ -4,26 +4,26 @@ import * as moment from 'moment'
 
 admin.initializeApp(functions.config().firebase)
 const afs = admin.firestore()
-const sto = admin.storage()
+// const sto = admin.storage()
 
 
 
-export const deletePDFs = functions.firestore.document("facturas/{id}").onDelete((snap, context) => {
-    // const {id} = context.params;
-    const nombre = context.params['nombre']
-    console.log('nombre:', nombre)
-    const bucket = sto.bucket();
+// export const deletePDFs = functions.firestore.document("facturas/{id}").onDelete((snap, context) => {
+//     // const {id} = context.params;
+//     const nombre = context.params['nombre']
+//     console.log('nombre:', nombre)
+//     const bucket = sto.bucket();
 
-    // const imagesRemovePromises = deletedImages.map((imagePath: string) => {
-    //   return bucket.file(imagePath).delete();
-    // });
-    return new Promise((resolve, reject)=>{
-        resolve(true)
-    })
-    // return bucket.deleteFiles({
-    //     prefix: `facturas/${nombre}`
-    // });
-});
+//     // const imagesRemovePromises = deletedImages.map((imagePath: string) => {
+//     //   return bucket.file(imagePath).delete();
+//     // });
+//     return new Promise((resolve, reject)=>{
+//         resolve(true)
+//     })
+//     // return bucket.deleteFiles({
+//     //     prefix: `facturas/${nombre}`
+//     // });
+// });
 
 export const happyBirthday = functions.https.onRequest((request, response) => {
     fcmPush('YBHqrkv2VBS5VAJuWweey1TO8zf2', 'Pablito')
@@ -56,13 +56,18 @@ function fcmPush(target: string, kid: string) {
         data: {
         }
     };
-    admin.messaging().sendToTopic(target, payload)
-        .then(x => {
-            console.log('Msg sent ok to ' + target)
-        })
-        .catch(err => {
-            console.log('Error sending msg')
-        })
+    admin.messaging().sendToDevice('cLedIiDzTKe_GUvCbn0_qN:APA91bGkEmS0zYUqUrTCN_1ZSkb2L5AIkhIFgKnuxCcSz54fy8KbLfSa57Cjfhw5kiEGbOR97GTA2QtOBCbW4jlV6ZAZ', payload)
+    // admin.messaging().sendToTopic(target, payload)
+    //     .then(x => {
+    //         console.log('Msg sent ok to ' + target)
+    //     })
+    //     .catch(err => {
+    //         console.log('Error sending msg')
+    //     })
+
+
+
+
 
     // if (rec.uuid === '65791d28a26e25b3') {
     //    const payload = {

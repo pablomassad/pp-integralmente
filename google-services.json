@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "857389537904",
+    "firebase_url": "https://pp-integralmente.firebaseio.com",
+    "project_id": "pp-integralmente",
+    "storage_bucket": "pp-integralmente.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857389537904:android:b490305d859eac31e732b5",
+        "android_client_info": {
+          "package_name": "com.pp.integralmente"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "857389537904-v09e80nqmp5iv8keojr84r030l0ij5vt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6JYobeib8my8saf50DgNTJitGttT6thU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "857389537904-v09e80nqmp5iv8keojr84r030l0ij5vt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

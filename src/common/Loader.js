@@ -15,13 +15,6 @@ export default function Loader()
         left: '0', right: '0', top: '0', bottom: '0',
         backgroundColor: 'rgba(25,25,25,0.7)',
         zIndex: '9999'
-        // display: 'none'
-
-        // background: '#444444cc',
-        // height: '100vh',
-        // width: '100vw',
-        // position: 'absolute',
-        // zIndex: '1000'
     } : null
 
     if (!overlay)
@@ -45,7 +38,8 @@ const rotate = keyframes`
 `
 
 const Spinner = styled.img`
-    width: 50%;
-    padding: 25%;
     animation: ${rotate} 3s linear infinite;
+    width: 200px;
+    margin-top: 20%;
+    margin-left: 40%;
 `
