@@ -7,6 +7,8 @@ const initialState = {
     selFactura: undefined,
     patients: [],
     selPatient: undefined,
+    sessions: [],
+    selSession: undefined,
     notifications: [],
     token: undefined,
     webToken:undefined
@@ -46,7 +48,16 @@ export default handleActions(
         [fb.setFactura]: (state, action) =>
         {
             return {...state, selFactura: {...state.selFactura, ...action.payload}}
-        }
+        },
+        [fb.setSessions]: (state, action) =>
+        {
+            console.log(action.payload.sessions)
+            return {...state, sessions: action.payload.sessions}
+        },
+        [fb.setSession]: (state, action) =>
+        {
+            return {...state, selSession: {...state.selSession, ...action.payload}}
+        }        
     },
     initialState
 )

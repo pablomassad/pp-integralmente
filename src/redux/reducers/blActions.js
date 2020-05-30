@@ -210,6 +210,31 @@ const getPatients = () => async (dispatch, getState) =>
     dispatch(fb.setPatients({patients}))
     dispatch(ui.showLoader(false))
 }
+const updatePatient = patient => async (dispatch, getState) =>
+{
+    try {
+        if (patient.id === 0) delete patient.id
+
+        delete patient.dirty
+        patient.uid = getState().fb.userInfo.id
+
+        if (!patient.id) {
+            const pat = await fbFs.collection('pacientes').add(patient)
+            patient.id = pat.id
+        }
+        console.log('Paciente:', patient)
+        await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
+        await dispatch(bl.getPatients())
+        return true
+    } catch (error) {
+        return false
+    }
+}
+const removePatient = payload => async dispatch =>
+{
+    //await fbFs.collection('pacientes').doc(payload.id).delete()
+    await dispatch(getPatients())
+}
 const getFacturas = () => async (dispatch, getState) =>
 {
     dispatch(ui.showLoader(true))
@@ -227,32 +252,6 @@ const getFacturas = () => async (dispatch, getState) =>
     dispatch(fb.setFacturas({facturas}))
     dispatch(ui.showLoader(false))
     return true
-}
-const updatePatient = patient => async (dispatch, getState) =>
-{
-    try {
-        if (patient.id === 0) delete patient.id
-
-        delete patient.dirty
-        patient.uid = getState().fb.userInfo.id
-        
-        if (!patient.id) {
-            const pat = await fbFs.collection('testing').add(patient)
-            patient.id = pat.id
-        }
-        debugger
-        console.log('Paciente:', patient)
-        await fbFs.collection('testing').doc(patient.id).set(patient, {merge: true})
-        await dispatch(bl.getPatients())
-        return true
-    } catch (error) {
-        return false
-    }
-}
-const removePatient = payload => async dispatch =>
-{
-    //await fbFs.collection('pacientes').doc(payload.id).delete()
-    await dispatch(getPatients())
 }
 const updateFactura = factura => async (dispatch, getState) =>
 {
@@ -284,6 +283,53 @@ const removeFactura = factura => async dispatch =>
     //     await dispatch(deleteFileStorage('facturas', factura))
     await fbFs.collection('facturas').doc(factura.id).delete()
     await dispatch(getFacturas())
+}
+const getSessionsByPatient = (patientId) => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    const dsn = await fbFs.collection('pacientes').doc(patientId).collection('sesiones').get()
+    const sessions = dsn.docs.map(x =>
+    {
+        return {
+            ...x.data(),
+            ...{
+                id: x.id
+            }
+        }
+    })
+    dispatch(fb.setSessions({sessions}))
+    dispatch(ui.showLoader(false))
+    return true
+}
+const updateSession = (patId, session) => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    try {
+        if (session.id === 0) delete session.id
+
+        delete session.dirty
+        session.estado = session.fechaPago ? 'Cobrada' : 'Pendiente'
+
+        if (!session.id) {
+            const s = await fbFs.collection('pacientes').doc(patId).collection('sesiones').add(session)
+            session.id = s.id
+        }
+        await fbFs.collection('pacientes').doc(patId).collection('sesiones').doc(session.id).set(session, {merge: true})
+        await dispatch(getSessionsByPatient(patId))
+        return true
+    } catch (error) {
+        return false
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+    }
+}
+const removeSession = (patId, session) => async (dispatch) =>
+{
+    // if (session.nombre)
+    //     await dispatch(deleteFileStorage('sessions', session))
+    await fbFs.collection('pacientes').doc(patId).collection('sesiones').doc(session.id).delete()
+    await dispatch(getSessionsByPatient(patId))
 }
 const deleteFileStorage = (path, factura) => async dispatch =>
 {
@@ -367,6 +413,9 @@ export const bl = {
     getFacturas,
     updateFactura,
     removeFactura,
+    getSessionsByPatient,
+    updateSession,
+    removeSession,
     deleteFileStorage,
     uploadFileStorage,
     requestPermission

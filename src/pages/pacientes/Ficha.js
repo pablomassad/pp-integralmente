@@ -73,12 +73,12 @@ export default function Ficha()
             patient.uid = userInfo.id
 
             if (!patient.id) {
-                const pat = await fbFs.collection('testing').add(patient)
+                const pat = await fbFs.collection('pacientes').add(patient)
                 patient.id = pat.id
             }
             debugger
             console.log('Paciente:', patient)
-            await fbFs.collection('testing').doc(patient.id).set(patient, {merge: true})
+            await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
             await dispatch(bl.getPatients())
             return true
         } catch (error) {

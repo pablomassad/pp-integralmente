@@ -8,6 +8,8 @@ const setPatients = createAction('fb.setPatients')
 const setPatient = createAction('fb.setPatient')
 const setFacturas = createAction('fb.setFacturas')
 const setFactura = createAction('fb.setFactura')
+const setSessions = createAction('fb.setSessions')
+const setSession = createAction('fb.setSession')
 
 const fetchUserRequest = createAction('fetchUserRequest')
 const fetchUserSuccess = createAction('fetchUserSuccess')
@@ -36,5 +38,7 @@ export const fb = {
 	setPatients,
 	setPatient,
 	setFacturas,
-	setFactura
+	setFactura,
+    setSessions,
+    setSession
 }

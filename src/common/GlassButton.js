@@ -1,7 +1,21 @@
 import React from 'react'
 import styled from 'styled-components'
 
-export default (function GlassButton({children, onClick, absolute, top, right, bottom, left, radius, height, width, foreground, background, disabled})
+export default (function GlassButton({
+    children, 
+    onClick, 
+    absolute, 
+    top, 
+    right, 
+    bottom, 
+    left, 
+    radius, 
+    height, 
+    width, 
+    foreground, 
+    background, 
+    margin,
+    disabled})
 {
     return (
         <Container>
@@ -17,6 +31,7 @@ export default (function GlassButton({children, onClick, absolute, top, right, b
                 height={height}
                 width={width}
                 color={foreground}
+                margin={margin}
                 background={background}>
                 <FabChildren>
                     {children}
@@ -44,7 +59,7 @@ const FabBtn = styled.button`
     width:${props => (props.width) ? props.width + 'px' : '88%'};
     height:${props => (props.height) ? props.height + 'px' : '30px'};
 	border-radius: ${props => (props.radius) ? props.radius+'%' : '10px'};
-    margin: 10px;
+    margin: ${props => (props.margin) ? props.margin+'px' : '10px'};
 	box-shadow: 1px 1px 5px black;
     /* background-image: linear-gradient(#006280, #00c0ed); */
     background:${props => (props.disabled) ? 'grey' : ((props.background) ? props.background : '#1ba0e0')};

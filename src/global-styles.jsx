@@ -86,6 +86,7 @@ export default createGlobalStyle`
     box-shadow: 5px 8px 12px black;
     padding-top: 20px;
     top:50px;
+    z-index:1000;
 }
 
 .sbOpen{

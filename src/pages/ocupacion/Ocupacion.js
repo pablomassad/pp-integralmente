@@ -1,92 +1,122 @@
 import React from 'react'
 import styled from 'styled-components'
-import Modulo from './Modulo'
+import GlassButton from '../../common/GlassButton'
 
 
 export default function Ocupacion()
 {
-    const days = [
-        "Lun",
-        "Mar",
-        "Mie",
-        "Jue",
-        "Vie",
-        "Sab"
-    ]
-    const ocupationData = [
-        {
-            room: 1, weekday: [
-                {morning: '', afternoon: ''},
-                {morning: 'Helena', afternoon: ''},
-                {morning: '', afternoon: ''},
-                {morning: 'Helena', afternoon: ''},
-                {morning: '', afternoon: 'Marcela'},
-                {morning: '', afternoon: ''}
-            ]
+    const data = {
+        Lunes: {
+            M: ['', '', ''],
+            T: ['', 'Sofia', '']
         },
-        {
-            room: 2, weekday: [
-                {morning: '', afternoon: ''},
-                {morning: '', afternoon: 'Sofia De Gerardo'},
-                {morning: 'Marcela', afternoon: ''},
-                {morning: '', afternoon: 'Silvina Melguin'},
-                {morning: '', afternoon: 'Silvina Melguin'},
-                {morning: '', afternoon: ''}
-            ]
+        Martes: {
+            M: ['Silvina', '', ''],
+            T: ['Sofia', '', '']
         },
-        {
-            room: 3, weekday: [
-                {morning: 'Paula', afternoon: ''},
-                {morning: '', afternoon: ''},
-                {morning: '', afternoon: 'Gabriela Bettocini'},
-                {morning: 'Paula', afternoon: ''},
-                {morning: '', afternoon: 'Gabriela Bettocini'},
-                {morning: '', afternoon: ''}
-            ]
+        Miércoles: {
+            M: ['Silvina', '', ''],
+            T: ['', 'Sofia', '']
+        },
+        Jueves: {
+            M: ['', '', 'Bernarda'],
+            T: ['', 'Sofia', '']
+        },
+        Viernes: {
+            M: ['Silvina', '', ''],
+            T: ['', 'Sofia', '']
+        },
+        Sábado: {
+            M: ['', '', ''],
+            T: ['', 'Sofia', 'Bernarda']
         }
-    ]
+    }
+    console.log(data)
+
     return (
         <WeekFrame>
-            {ocupationData.map((c, i) =>
+            <DayFrame>
+                <div></div>
+                <RoomsFrame background={'transparent'}>
+                    <Room>Consultorio 1</Room>
+                    <Room>Consultorio 2</Room>
+                    <Room>Consultorio 3</Room>
+                </RoomsFrame>
+            </DayFrame>
+            {Object.keys(data).map((d, i) =>
                 (
-                    <>
-                        <Room>c.room</Room>
-                        <div key={i}>
-                            {c.weekday.map((d, i) => (
-                                <>
-                                    <Day>
-                                        days[i]
-                                    </Day>
-                                    <Morning>
-                                        <Modulo prof={d.morning}/>
-                                    </Morning>
-                                    <Afternoon>
-                                        <Modulo prof={d.afternoon}/>
-                                    </Afternoon>
-                                </>
+                    <DayFrame key={i}>
+                        <Day>
+                            {d}
+                        </Day>
+                        <RoomsFrame>
+                            {data[d].M.map((prof, i) => (
+                                <Module key={i}>
+                                    {prof ?
+                                        <GlassButton margin={5} background={'#0688de'}>
+                                            {prof}
+                                        </GlassButton>
+                                        :
+                                        <div></div>}
+                                </Module>
                             ))}
-                        </div>
-                    </>
+                            {data[d].T.map((prof, i) => (
+                                <Module key={i}>
+                                    {prof ?
+                                        <GlassButton margin={5} background={'#287c9c'}>
+                                            {prof}
+                                        </GlassButton>
+                                        :
+                                        <div></div>}
+                                </Module>
+                            ))}
+                        </RoomsFrame>
+                    </DayFrame>
                 ))
             }
-        </WeekFrame>
+        </WeekFrame >
     )
 }
 
+// <GlassButton margin={2} background={'purple'}>
+//     {prof}
+// </GlassButton>
+
+
 const WeekFrame = styled.div`
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    align-items:center;
+    --id: WeekFrame;
+    margin: 10px 5px;
+    padding: 5px;
 `
-const Room = styled.div`
-    background:lightgreen;
+const DayFrame = styled.div`
+    --id:DayFrame;
+    background: white;
+    margin: 5px;
+    padding: 5px;
+    display:grid;
+    grid-template-columns:25px 1fr ;
+    align-items:center;
+    border-radius:3px;
+    box-shadow:1px 1px 2px gray;
 `
 const Day = styled.div`
-    background:lightblue;
+    /* position: relative;
+    top: 50%;
+    left: 50%; */
+    transform: rotate(-90deg) translate(-15px, -3px);
 `
-const Morning = styled.div`
-    background:lightyellow;
+const RoomsFrame = styled.div`
+    --id:RoomsFrame;
+    background:${props => (props.background) ? props.background : 'linear-gradient(0,#fff4e9,#ebfbff)'};
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr ;
+    align-items:center;
+    text-align:center;
 `
-const Afternoon = styled.div`
-    background:lightgoldenrodyellow
+const Room = styled.div`
+`
+const Module = styled.div`
+    --id:Module;
+    height:40px;
+    border:1px solid lightgray;
 `

@@ -1,13 +1,17 @@
 ⏰ Agenda de pacientes global para campos comunes
-⏰ Seleccion de pacientes desde la agenda global para incluirlo en listado particular
+        .Seleccion de pacientes desde la agenda global para incluirlo en listado particular
 ⏰ Login individual de profesionales
+⏰ Registracion de nuevos profesionales
 ⏰ Apartado de comunicaciones globales
 ⏰ error boundary redirection to login
 ⏰ edit picture
-⏰ Formato fecha
-⏰ cancel / accept ficha
+⏰ Ocupacion de consultorios
+⏰ Auditoria de utilizacion (stats)
+⏰ Opciones/configuracion del perfil y preferencias
 
 
+👍 cancel / accept ficha
+👍 Formato fecha
 👍 Loader implementation
 👍 pacientes list
 👍 calculate edad

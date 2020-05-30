@@ -13,5 +13,4 @@ export const fbSto = fbConfig.storage()
 export const fbFs = fbConfig.firestore()
 
 console.log('Firebase initalization..............')
-fbFs.settings({timestampsInSnapshots:true})
 

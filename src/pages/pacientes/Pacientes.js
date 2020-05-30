@@ -130,13 +130,13 @@ const PatientFilter = styled.div`
 `
 const IconPerson = styled(PersonPin)`
     color: gray;
-    width: 40px;
+    width: 35px;
     margin: 10px;
 `
 
 const Criteria = styled.input`
     --name: 'Criteria';
-    padding: 5px 10px;
+    padding: 0px 10px;
     font-size: 15px;
     color: #444;
     background: white;
@@ -145,7 +145,7 @@ const Criteria = styled.input`
     height: 35px;
     border: none;
     display: block;
-    margin: 20px auto;
+    margin: 10px auto;
     text-align: center;
     box-shadow: inset 2px 2px 5px grey;
 
@@ -190,7 +190,7 @@ const PatientInfo = styled.div`
 const PatientList = styled.div`
     --id:PatientList;
     overflow:auto;
-    height: calc(100vh - 140px);
+    height: calc(100vh - 110px);
     margin-top: 3px;
     display: grid;
     grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));
