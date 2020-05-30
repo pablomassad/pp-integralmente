@@ -1,5 +1,5 @@
 import {fb, ui} from '../'
-import firebase from '../../firebase'
+import {fbAuth, fbMsg, fbSto, fbFs} from '../../fb.service'
 
 import {Plugins, PushNotification, PushNotificationToken, PushNotificationActionPerformed} from '@capacitor/core'
 import {FCM} from "capacitor-fcm";
@@ -16,9 +16,9 @@ const login = payload => async dispatch =>
     let res = false
     try {
         dispatch(ui.showLoader(true))
-        await firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
+        await fbAuth.signInWithEmailAndPassword(payload.email, payload.password)
         dispatch(ui.showMessage({msg: 'Bienvenido a Integralmente!', type: 'success'}))
-        const user = await firebase.auth().currentUser
+        const user = await fbAuth.currentUser
         const userInfo = await getFirebaseUserInfo(user.uid)
         await saveFirebaseUserInfo(userInfo)
         dispatch(fb.setUser({userInfo}))
@@ -51,7 +51,7 @@ const initWebNotifications = () => dispatch =>
     }))
     console.log('Init WebNotifications....')
 
-    const messaging = firebase.messaging()
+    const messaging = messaging()
     messaging.requestPermission()
         .then(() =>
         {
@@ -74,11 +74,6 @@ const initWebNotifications = () => dispatch =>
 const initMobileNotifications = () => (dispatch, getState) =>
 {
     const userInfo = getState().fb.userInfo
-    dispatch(ui.showMessage({
-        msg: 'Registration of user: ' + userInfo.id,
-        type: 'info'
-    }))
-
     try {
         // Register with Apple / Google to receive push via APNS/FCM
         PushNotifications.register()
@@ -196,7 +191,8 @@ const initMobileNotifications = () => (dispatch, getState) =>
 const getAllPatients = () => async (dispatch, getState) =>
 {
     dispatch(ui.showLoader(true))
-    const dsn = await firebase.firestore().collection('pacientes').get()
+    //const dsn = await fbFs.collection('pacientes').get()
+    const dsn = await fbFs.collection('pacientes').get()
     const patients = dsn.docs.map(x => x.data())
     dispatch(
         fb.setPatients({
@@ -209,20 +205,16 @@ const getPatients = () => async (dispatch, getState) =>
 {
     dispatch(ui.showLoader(true))
     const userInfo = getState().fb.userInfo
-    const dsn = await firebase.firestore().collection('pacientes').where('uid', '==', userInfo.id).get()
+    const dsn = await fbFs.collection('pacientes').where('uid', '==', userInfo.id).get()
     const patients = dsn.docs.map(x => x.data())
-    dispatch(
-        fb.setPatients({
-            patients
-        })
-    )
+    dispatch(fb.setPatients({patients}))
     dispatch(ui.showLoader(false))
 }
 const getFacturas = () => async (dispatch, getState) =>
 {
     dispatch(ui.showLoader(true))
     const userInfo = getState().fb.userInfo
-    const dsn = await firebase.firestore().collection('facturas').where('uid', '==', userInfo.id).get()
+    const dsn = await fbFs.collection('facturas').where('uid', '==', userInfo.id).get()
     const facturas = dsn.docs.map(x =>
     {
         return {
@@ -236,26 +228,34 @@ const getFacturas = () => async (dispatch, getState) =>
     dispatch(ui.showLoader(false))
     return true
 }
-const updatePatient = (id, patient) => async dispatch =>
+const updatePatient = patient => async (dispatch, getState) =>
 {
-    dispatch(ui.showLoader(true))
-    await firebase.firestore().collection('pacientes').doc(id).set(patient, {
-        merge: true
-    })
-    dispatch(
-        fb.setPatient({
-            patient
-        })
-    )
-    dispatch(ui.showLoader(false))
+    try {
+        if (patient.id === 0) delete patient.id
+
+        delete patient.dirty
+        patient.uid = getState().fb.userInfo.id
+        
+        if (!patient.id) {
+            const pat = await fbFs.collection('pacientes').add(patient)
+            patient.id = pat.id
+        }
+        debugger
+        //await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
+        await dispatch(getPatients())
+        return true
+    } catch (error) {
+        return false
+    }
 }
 const removePatient = payload => async dispatch =>
 {
-    //await firebase.firestore().collection('pacientes').doc(payload.id).delete()
+    //await fbFs.collection('pacientes').doc(payload.id).delete()
     getPatients()
 }
 const updateFactura = factura => async (dispatch, getState) =>
 {
+    dispatch(ui.showLoader(true))
     try {
         if (factura.id === 0) delete factura.id
 
@@ -264,31 +264,29 @@ const updateFactura = factura => async (dispatch, getState) =>
         factura.uid = getState().fb.userInfo.id
 
         if (!factura.id) {
-            const bill = await firebase.firestore().collection('facturas').add(factura)
+            const bill = await fbFs.collection('facturas').add(factura)
             factura.id = bill.id
         }
-        await firebase.firestore().collection('facturas').doc(factura.id).set(factura, {merge: true})
-
-        // debugger
-        // const oldBills = getState().fb.facturas
-        // const facturas = oldBills.map(f => (f.id == factura.id ? {...f, ...factura} : f))
-        // dispatch(fb.setFacturas({facturas}))
+        await fbFs.collection('facturas').doc(factura.id).set(factura, {merge: true})
         await dispatch(getFacturas())
         return true
     } catch (error) {
         return false
+    }
+    finally {
+        dispatch(ui.showLoader(false))
     }
 }
 const removeFactura = factura => async dispatch =>
 {
     // if (factura.nombre)
     //     await dispatch(deleteFileStorage('facturas', factura))
-    await firebase.firestore().collection('facturas').doc(factura.id).delete()
+    await fbFs.collection('facturas').doc(factura.id).delete()
     await dispatch(getFacturas())
 }
 const deleteFileStorage = (path, factura) => async dispatch =>
 {
-    const photoRef = firebase.storage.getReferenceFromUrl(factura.url)
+    const photoRef = fbSto.getReferenceFromUrl(factura.url)
     // @Override
     // public void onSuccess(Void aVoid) {
     //     // File deleted successfully
@@ -306,7 +304,7 @@ const uploadFileStorage = (path, file) => async dispatch =>
     dispatch(ui.showLoader(true))
     return new Promise((resolve, reject) =>
     {
-        const uploadTask = firebase.sto.ref(path + '/' + file.name).put(file)
+        const uploadTask = fbSto.ref(path + '/' + file.name).put(file)
         uploadTask.on(
             'state_changed',
             snapshot =>
@@ -321,7 +319,7 @@ const uploadFileStorage = (path, file) => async dispatch =>
             },
             async () =>
             {
-                const url = await firebase.sto.ref(path).child(file.name).getDownloadURL()
+                const url = await fbSto.ref(path).child(file.name).getDownloadURL()
                 console.log('url file: ', url)
                 dispatch(ui.showLoader(false))
                 resolve(url)
@@ -331,7 +329,7 @@ const uploadFileStorage = (path, file) => async dispatch =>
 }
 const requestPermission = () => async dispatch =>
 {
-    firebase.getToken()
+    //firebase.getToken()
     // firebase.requestPermission()
 }
 ///////////////////////////////////////
@@ -339,7 +337,7 @@ const requestPermission = () => async dispatch =>
 ///////////////////////////////////////
 const getFirebaseUserInfo = async id =>
 {
-    const dsn = await firebase.firestore().doc(`users/${id}`).get()
+    const dsn = await fbFs.doc(`users/${id}`).get()
     const user = dsn.data()
     user['id'] = id
     return user
@@ -349,7 +347,7 @@ const saveFirebaseUserInfo = async usr =>
     usr.lastLogin = new Date().getTime()
     usr.lastLoginStr = usr.lastLogin
     //   const obj = JSON.parse(JSON.stringify(usr))
-    await firebase.firestore().doc(`users/${usr.id}`).set(usr, {
+    await fbFs.doc(`users/${usr.id}`).set(usr, {
         merge: true
     })
 }

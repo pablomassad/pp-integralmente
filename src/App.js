@@ -11,6 +11,7 @@ import SignUp from './pages/SignUp'
 import Menu from './components/Menu'
 import Loader from './common/Loader'
 
+import Ficha from './pages/pacientes/Ficha'
 import Paciente from './pages/pacientes/Paciente'
 import Pacientes from './pages/pacientes/Pacientes'
 import Facturas from './pages/Facturas'
@@ -51,6 +52,7 @@ export default function App()
                 <Route exact path="/signup" component={SignUp} />
                 <Route exact path="/patients" component={Pacientes} />
                 <Route exact path="/patient" component={Paciente} />
+                <Route exact path="/ficha" component={Ficha} />
                 <Route exact path="/bills" component={Facturas} />
                 <Route exact path="/agenda" component={Agenda} />
                 <Route exact path="/comunication" component={Comunicacion} />

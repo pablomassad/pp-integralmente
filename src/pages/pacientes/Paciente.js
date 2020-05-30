@@ -8,40 +8,47 @@ import {TextDocument} from "@styled-icons/entypo/TextDocument"
 import Ficha from "./Ficha"
 import Historia from "./Historia"
 import Documentacion from "./Documentacion"
+import Facturas from "../Facturas"
+
+import {useDispatch, useSelector} from 'react-redux'
 
 export default function Paciente()
 {
-   console.log("....[Paciente]")
+    console.log("....[Paciente]")
 
-   const [selTool, setSelTool] = useState("ficha")
+    const selPatient = useSelector(st=>st.fb.selPatient)
+    const [selTool, setSelTool] = useState("ficha")
 
-   return (
-      <PatientFrame>
-         <Toolbar>
-            <Tool
-               onClick={() => setSelTool("ficha")}
-               active={selTool === "ficha"}>
-               <IconFicha active={selTool === "ficha"} />
+    if (!selPatient) return null
+    return (
+        <PatientFrame>
+            <Toolbar>
+                <Tool
+                    onClick={() => setSelTool("ficha")}
+                    active={selTool === "ficha"}>
+                    <IconFicha active={selTool === "ficha"} />
 					Ficha
 				</Tool>
-            <Tool
-               onClick={() => setSelTool("historia")}
-               active={selTool === "historia"}>
-               <IconHistoria active={selTool === "historia"} />
+                <Tool
+                    onClick={() => setSelTool("historia")}
+                    active={selTool === "historia"}>
+                    <IconHistoria active={selTool === "historia"} />
 					Historia
 				</Tool>
-            <Tool
-               onClick={() => setSelTool("documentacion")}
-               active={selTool === "documentacion"}>
-               <IconDocumentacion active={selTool === "documentacion"} />
+                <Tool
+                    onClick={() => setSelTool("documentacion")}
+                    active={selTool === "documentacion"}>
+                    <IconDocumentacion active={selTool === "documentacion"} />
 					Documentación
 				</Tool>
-         </Toolbar>
-         {selTool === "ficha" && <Ficha />}
-         {selTool === "historia" && <Historia />}
-         {selTool === "documentacion" && <Documentacion />}
-      </PatientFrame>
-   )
+            </Toolbar>
+            {selTool === "ficha" && <Ficha />}
+            {selTool === "historia" && <Historia />}
+            {selTool === "documentacion" && <Facturas />}
+            
+            {/* {selTool === "documentacion" && <Documentacion />} */}
+        </PatientFrame>
+    )
 }
 
 const PatientFrame = styled.div`background: #ddd;`
@@ -71,9 +78,9 @@ const Tool = styled.div`
 	justify-items: center;
 	grid-template-rows: 1fr 20px;
 	background: ${props =>
-   {
-      return props.active ? "#ccc" : "transparent"
-   }};
+    {
+        return props.active ? "#ccc" : "transparent"
+    }};
 	box-shadow: ${props => (props.active ? "inset 2px 2px 3px #444" : "none")};
 	transform: scale(.9) translateY(1px) translateX(1px);
 `

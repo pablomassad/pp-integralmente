@@ -26,6 +26,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
 
 export default function Facturas()
 {
+    console.log('......[Facturas]')
     const history = useHistory()
     const dispatch = useDispatch()
 
@@ -189,11 +190,7 @@ export default function Facturas()
     useEffect(() =>
     {
         if (userInfo)
-            dispatch(bl.getFacturas()).then(res =>
-            {
-                if (res)
-                    dispatch(ui.showMessage({msg: 'Facturas OK', type: 'info'}))
-            })
+            dispatch(bl.getFacturas())
         else history.replace('/')
     }, [])
 

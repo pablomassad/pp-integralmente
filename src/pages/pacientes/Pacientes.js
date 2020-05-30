@@ -20,24 +20,23 @@ import SwipeableList from "../../common/SwipeableList/SwipeableList";
 export default function Pacientes()
 {
     console.log('....[Pacientes]')
-
     const history = useHistory()
     const dispatch = useDispatch()
-    const [criteria, setCriteria] = useState('')
+
     const userInfo = useSelector(st => st.fb.userInfo)
     const patients = useSelector(st => st.fb.patients)
 
-    const evalEdad = (p) =>
+    const [criteria, setCriteria] = useState('')
+
+    const data = patients.filter((f) => criteria.length < 3 || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase())))
+
+    const evalEdad = (nac) =>
     {
         const today = moment()
-        if (!p) return '0 años'
-        const cumple = moment(p.nacimiento)
+        if (!nac) return '0 años'
+        const cumple = moment(nac)
         const edad = today.diff(cumple, 'y')
         return edad + " años"
-    }
-    const changeCriteriaHandle = (e) =>
-    {
-        setCriteria(e.target.value)
     }
     const removePatient = (e, p) =>
     {
@@ -61,6 +60,9 @@ export default function Pacientes()
     }
     const gotoPatient = (p) =>
     {
+        // const newPat = {...p}
+        // newPat.ciudad ="CABA" + new Date().getTime().toString()
+        // dispatch(bl.updatePatient(newPat))
         dispatch(fb.setPatient(p))
         history.replace('/patient')
     }
@@ -69,8 +71,7 @@ export default function Pacientes()
     {
         if (userInfo)
             dispatch(bl.getPatients())
-        else
-            history.replace('/')
+        else history.replace('/')
     }, [])
 
 
@@ -92,13 +93,15 @@ export default function Pacientes()
         <PatientsFrame>
             <PatientFilter>
                 <IconPerson />
-                <Criteria type="text"
-                    placeholder="Ingrese datos del paciente"
+                <Criteria
+                    type="text"
+                    placeholder="Ingrese dataos paciente"
                     value={criteria}
-                    onChange={(e) => changeCriteriaHandle(e)} />
+                    onChange={e => setCriteria(e.target.value)}
+                />
             </PatientFilter>
             <PatientList>
-                {patients.map((p, i) => (
+                {data.map((p, i) => (
                     <PatientCard key={i} onClick={() => gotoPatient(p)}>
                         <PatientData>
                             <PatientPic src={(p.foto === 'assets/images/anonymous.png') ? anonymous : p.foto} />
@@ -108,7 +111,7 @@ export default function Pacientes()
                                 <p>{p.atencion}</p>
                             </PatientInfo>
                         </PatientData>
-                        <IconRemove onClick={(e)=>removePatient(e,p)} />
+                        <IconRemove onClick={(e) => removePatient(e, p)} />
                     </PatientCard>
                 ))}
             </PatientList>

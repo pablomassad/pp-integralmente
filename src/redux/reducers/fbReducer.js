@@ -36,8 +36,7 @@ export default handleActions(
         },
         [fb.setPatient]: (state, action) =>
         {
-            const mergePatient = {...state.selPatient, ...action.payload}
-            return {...state, selPatient: mergePatient}
+            return {...state, selPatient: {...state.selPatient, ...action.payload}}
         },
         [fb.setFacturas]: (state, action) =>
         {
