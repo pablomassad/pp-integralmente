@@ -62,7 +62,7 @@ export default function Ficha()
         e.stopPropagation()
         e.preventDefault()
         setSelPatient(null)
-        history.replace('/patients')
+        history.push('/patients')
     }
     const localFirebaseUpdatePatient = async (patient) =>
     {
@@ -103,7 +103,7 @@ export default function Ficha()
             dispatch(ui.showMessage({msg: 'Paciente guardado', type: 'success'}))
             setFileInfo(undefined)
             setSelPatient(null)
-            history.replace('/patients')
+            history.push('/patients')
         } else {
             dispatch(ui.showMessage({msg: 'No se ha podido guardar los datos del paciente', type: 'error'}))
         }

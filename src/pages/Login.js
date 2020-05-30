@@ -38,7 +38,7 @@ export default function Login() {
 		const res = await dispatch(bl.login(o))
         if (res){
             dispatch(bl.initPushing())
-            history.replace('/patients')
+            history.push('/patients')
         }
     }
 

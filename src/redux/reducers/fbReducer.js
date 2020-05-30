@@ -11,7 +11,8 @@ const initialState = {
     selSession: undefined,
     notifications: [],
     token: undefined,
-    webToken:undefined
+    webToken:undefined,
+    attachments:[]
 }
 
 export default handleActions(
@@ -57,7 +58,12 @@ export default handleActions(
         [fb.setSession]: (state, action) =>
         {
             return {...state, selSession: {...state.selSession, ...action.payload}}
-        }        
+        },
+        [fb.setAttachments]: (state, action) =>
+        {
+            console.log(action.payload.Attachments)
+            return {...state, attachments: action.payload.attachments}
+        },               
     },
     initialState
 )

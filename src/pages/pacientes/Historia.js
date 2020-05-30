@@ -2,10 +2,8 @@ import React, {useEffect, useState, useRef} from 'react'
 import styled from 'styled-components'
 
 import {BackInTime} from '@styled-icons/entypo/BackInTime'
-import {FileUpload} from '@styled-icons/fa-solid/FileUpload'
 import {File} from '@styled-icons/boxicons-regular/File'
 import {Trash} from '@styled-icons/heroicons-outline/Trash'
-import {AttachOutline} from '@styled-icons/evaicons-outline/AttachOutline'
 
 import GlassButton from '../../common/GlassButton'
 import {useHistory} from 'react-router-dom'
@@ -32,7 +30,6 @@ export default function Historia()
     const selPatient = useSelector(st => st.fb.selPatient, shallowEqual)
 
     const [fileInfo, setFileInfo] = useState()
-    const inputFile = useRef()
     const sessionList = useRef()
 
     const [criteria, setCriteria] = useState('')
@@ -40,22 +37,33 @@ export default function Historia()
 
     const data = sessions
         .filter((s) => criteria.length < 3 || Object.keys(s).some((k) => `${s[k]}`.toLowerCase().includes(criteria.toLowerCase())))
-        .map((s) => selSession?.id === s.id ? selSession : s);
+        .map((s) => selSession?.id === s.id ? selSession : s)
+        .sort((f1, f2) =>
+        {
+            const d1 = f1['fecha']
+            const d2 = f2['fecha']
+            if (typeof d1 === 'number') {
+                return d2 - d1;
+            }
+            const s1 = `${d1}`;
+            const s2 = `${d2}`;
+            return s2.localeCompare(s1);
+        });
 
     const dataAndNew = (selSession?.id === 0 ? [selSession] : []).concat(data)
 
-    const removeSesion = e =>
+    const removeSession = e =>
     {
         e.stopPropagation()
         e.preventDefault()
 
         confirmAlert({
-            title: 'Borrar Sesion',
+            title: 'Borrar Sesión',
             message: 'Esta seguro?',
             buttons: [
                 {
                     label: 'Si',
-                    onClick: () => dispatch(bl.removeSesion({id: selSession.id}))
+                    onClick: () => dispatch(bl.removeSession(selPatient.id, selSession))
                 },
                 {
                     label: 'No',
@@ -90,19 +98,19 @@ export default function Historia()
         e.preventDefault()
         if (selSession?.dirty) return // Factura en edicion
 
-        const newSesion = {...s}
-        console.log('onSelSession', newSesion)
-        setSelSession(newSesion)
+        const newSession = {...s}
+        console.log('onSelSession', newSession)
+        setSelSession(newSession)
     }
     const updateselSession = (field, value) =>
     {
-        const newSesion = {...selSession, [field]: value, dirty: true}
-        setSelSession(newSesion)
+        const newSession = {...selSession, [field]: value, dirty: true}
+        setSelSession(newSession)
     }
-    const addSesionHandle = () =>
+    const addSessionHandle = () =>
     {
-        const newSesion = {id: 0, dirty: true}
-        setSelSession(newSesion)
+        const newSession = {id: 0, dirty: true}
+        setSelSession(newSession)
         sessionList.current.scrollTo(0, 0) //sessionList.current.scrollHeight+1000)
     }
     const cancelChanges = e =>
@@ -123,8 +131,8 @@ export default function Historia()
             selSession.url = url
             selSession.nombre = fileInfo.name
         }
-        console.log('updated Sesion: ', selSession)
-        const res = await dispatch(bl.updateSesion(selSession))
+        console.log('updated Session: ', selSession)
+        const res = await dispatch(bl.updateSession(selPatient.id, selSession))
         if (res) {
             dispatch(ui.showMessage({msg: 'Sesión guardada', type: 'success'}))
             setFileInfo(undefined)
@@ -133,20 +141,7 @@ export default function Historia()
             dispatch(ui.showMessage({msg: 'No se ha podido guardar la sesión', type: 'error'}))
         }
     }
-    const chooseAttachment = e =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-        inputFile.current.click()
-    }
-    const onAttachment = e =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
 
-        console.log('file: ', e.target.files[0])
-        setFileInfo(e.target.files[0])
-    }
 
     useEffect(() =>
     {
@@ -157,7 +152,6 @@ export default function Historia()
 
     return (
         <SessionsFrame>
-            <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onAttachment} />
             <SessionHeader>
                 <div>{selPatient.apellido}, {selPatient.nombres}</div>
                 <div>Sesiones:{data.length}</div>
@@ -173,16 +167,13 @@ export default function Historia()
             </SessionsFilter>
             <SessionList ref={sessionList}>
                 {dataAndNew.map((s, i) =>
-                    <div>
+                    <div key={i} >
                         {(s.id !== selSession?.id)
-                            ? <SessionCard key={i} onClick={e => onSelSession(e, s)}>
+                            ? <SessionCard onClick={e => onSelSession(e, s)}>
                                 <SessionInfo>
                                     <Label>Fecha de sesión:</Label>
                                     {moment(s.fecha).format('DD/MM/YY')}
                                     <Label>Observaciones:</Label>
-                                    <Alert alarm={s.fecha === undefined || s.fecha === null}>
-                                        <IconAttachment/>
-                                    </Alert>
                                 </SessionInfo>
                                 <Observaciones>
                                     {s.observaciones}
@@ -197,21 +188,11 @@ export default function Historia()
                                     onChange={e => updateselSession('fecha', e != null ? e.getTime() : null)}
                                     className="customDatePicker"
                                 />
-                                <Attachments>
-                                    <GlassButton onClick={chooseAttachment}>
-                                        <IconUpload />
-                                    </GlassButton>
-                                    {/* <GlassButton
-                                            background={(selSession.url || fileInfo) ? 'green' : 'gray'}
-                                            onClick={e => viewFactura(e)}>
-                                            <IconView />
-                                        </GlassButton> */}
-                                    {selSession.id !== 0 ? (
-                                        <GlassButton onClick={e => removeSesion(e, s)}>
-                                            <IconDelete />
-                                        </GlassButton>)
-                                        : <div></div>}
-                                </Attachments>
+                                {selSession.id !== 0 ? (
+                                    <GlassButton height={40} width={40} onClick={e => removeSession(e, s)}>
+                                        <IconDelete />
+                                    </GlassButton>)
+                                    : <div></div>}
                                 <ObsArea
                                     type="text"
                                     placeholder="Observaciones"
@@ -235,7 +216,7 @@ export default function Historia()
                     width={50}
                     height={50}
                     radius={50}
-                    onClick={addSesionHandle}>
+                    onClick={addSessionHandle}>
                     <IconAdd>+</IconAdd>
                 </GlassButton>}
         </SessionsFrame>
@@ -243,7 +224,7 @@ export default function Historia()
 }
 
 const SessionsFrame = styled.div`
-	background: #ddd;
+	background: #fff;
 	height: 100%;
 `
 const SessionsFilter = styled.div`
@@ -293,10 +274,9 @@ const SessionHeader = styled.div`
 	display: grid;
 	grid-template-columns: 1fr 120px;
 	align-items: center;
-	/* justify-content: center; */
 `
 const SessionList = styled.div`
-    --id:SessionList
+    --id:SessionList;
     background:white;
 	overflow: auto;
 	height: calc(100vh - 230px);
@@ -312,18 +292,15 @@ const SessionCard = styled.div`
     position: relative;
 `
 const SessionForm = styled.div`
-	--id: SessionForm;
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	align-items: center;
-	padding: 10px;
-`
-const Attachments = styled.div`
-	--id: Attachments;
-	display: grid;
-	grid-template-columns: 1fr 1fr 40px;
-	grid-column-gap: 10px;
-	align-items: center;
+    --id: SessionForm;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 10px;
+    background: lightgray;
+    margin: 20px 7px;
+    box-shadow: inset 2px 2px 5px #555;
+    border-radius: 5px;
 `
 const SessionInfo = styled.div`
     padding: 0 5px;
@@ -377,11 +354,7 @@ const IconAdd = styled.div`
 	font-size: 24px;
 	font-weight: bold;
 `
-const IconAttachment = styled(AttachOutline)`
-    color:white;
-    width:25px;
-    padding:2px;
-`
+
 const IconSessions = styled(BackInTime)`
     color: ${props => (props.active ? '#1c88e6' : 'gray')};
     width: ${props => (props.active ? '38px' : '40px')};
@@ -390,11 +363,6 @@ const IconSessions = styled(BackInTime)`
 const IconView = styled(File)`
     width: 25px;
     color: white;
-`
-const IconUpload = styled(FileUpload)`
-    width: 14px;
-    color: white;
-    padding-top: 3px;
 `
 const IconDelete = styled(Trash)`
     width:25px;

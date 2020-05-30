@@ -118,5 +118,5 @@ const Room = styled.div`
 const Module = styled.div`
     --id:Module;
     height:40px;
-    border:1px solid lightgray;
+    border:1px solid #888;
 `

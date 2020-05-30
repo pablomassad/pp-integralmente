@@ -8,7 +8,6 @@ import {TextDocument} from "@styled-icons/entypo/TextDocument"
 import Ficha from "./Ficha"
 import Historia from "./Historia"
 import Documentacion from "./Documentacion"
-import Facturas from "../Facturas"
 
 import {useDispatch, useSelector} from 'react-redux'
 import {bl, ui} from '../../redux'
@@ -55,9 +54,7 @@ export default function Paciente(props)
             </Toolbar>
             {selTool === "ficha" && <Ficha />}
             {selTool === "historia" && <Historia />}
-            {selTool === "documentacion" && <Facturas />}
-
-            {/* {selTool === "documentacion" && <Documentacion />} */}
+            {selTool === "documentacion" && <Documentacion />}
         </PatientFrame>
     )
 }

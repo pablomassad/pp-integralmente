@@ -301,7 +301,7 @@ const getSessionsByPatient = (patientId) => async (dispatch) =>
     dispatch(ui.showLoader(false))
     return true
 }
-const updateSession = (patId, session) => async (dispatch) =>
+const updateSession = (patientId, session) => async (dispatch) =>
 {
     dispatch(ui.showLoader(true))
     try {
@@ -311,11 +311,11 @@ const updateSession = (patId, session) => async (dispatch) =>
         session.estado = session.fechaPago ? 'Cobrada' : 'Pendiente'
 
         if (!session.id) {
-            const s = await fbFs.collection('pacientes').doc(patId).collection('sesiones').add(session)
+            const s = await fbFs.collection('pacientes').doc(patientId).collection('sesiones').add(session)
             session.id = s.id
         }
-        await fbFs.collection('pacientes').doc(patId).collection('sesiones').doc(session.id).set(session, {merge: true})
-        await dispatch(getSessionsByPatient(patId))
+        await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(session.id).set(session, {merge: true})
+        await dispatch(getSessionsByPatient(patientId))
         return true
     } catch (error) {
         return false
@@ -324,12 +324,35 @@ const updateSession = (patId, session) => async (dispatch) =>
         dispatch(ui.showLoader(false))
     }
 }
-const removeSession = (patId, session) => async (dispatch) =>
+const removeSession = (patientId, session) => async (dispatch) =>
 {
     // if (session.nombre)
     //     await dispatch(deleteFileStorage('sessions', session))
-    await fbFs.collection('pacientes').doc(patId).collection('sesiones').doc(session.id).delete()
-    await dispatch(getSessionsByPatient(patId))
+    await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(session.id).delete()
+    await dispatch(getSessionsByPatient(patientId))
+}
+const getAttachmentsByPatient = (patientId) => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    const dsn = await fbFs.collection('pacientes').doc(patientId).collection('adjuntos').get()
+    const attachments = dsn.docs.map(x =>
+    {
+        return {
+            ...x.data(),
+            ...{
+                id: x.id
+            }
+        }
+    })
+    dispatch(fb.setAttachments({attachments}))
+    dispatch(ui.showLoader(false))
+    return true
+}
+const addAttachmentByPatient = (patientId, attachment) => (dispatch)=>{
+
+}
+const removeAttachment = (attachmentId) => (dispatch)=>{
+    
 }
 const deleteFileStorage = (path, factura) => async dispatch =>
 {
@@ -416,6 +439,9 @@ export const bl = {
     getSessionsByPatient,
     updateSession,
     removeSession,
+    getAttachmentsByPatient,
+    addAttachmentByPatient,
+    removeAttachment,
     deleteFileStorage,
     uploadFileStorage,
     requestPermission

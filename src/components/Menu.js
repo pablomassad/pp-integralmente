@@ -25,7 +25,7 @@ export default function Menu()
     }
     const goto = (page) =>
     {
-        history.replace(page)
+        history.push(page)
         dispatch(ui.toggleSidebar())
     }
 

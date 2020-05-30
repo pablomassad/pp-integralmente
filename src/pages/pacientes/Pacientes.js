@@ -61,7 +61,7 @@ export default function Pacientes()
     const gotoPatient = (p) =>
     {
         dispatch(fb.setPatient(p))
-        history.replace(`/patient/${p.id}`)
+        history.push(`/patient/${p.id}`)
     }
 
     useEffect(() =>
