@@ -237,12 +237,13 @@ const updatePatient = patient => async (dispatch, getState) =>
         patient.uid = getState().fb.userInfo.id
         
         if (!patient.id) {
-            const pat = await fbFs.collection('pacientes').add(patient)
+            const pat = await fbFs.collection('testing').add(patient)
             patient.id = pat.id
         }
         debugger
-        //await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
-        await dispatch(getPatients())
+        console.log('Paciente:', patient)
+        await fbFs.collection('testing').doc(patient.id).set(patient, {merge: true})
+        await dispatch(bl.getPatients())
         return true
     } catch (error) {
         return false
@@ -251,7 +252,7 @@ const updatePatient = patient => async (dispatch, getState) =>
 const removePatient = payload => async dispatch =>
 {
     //await fbFs.collection('pacientes').doc(payload.id).delete()
-    getPatients()
+    await dispatch(getPatients())
 }
 const updateFactura = factura => async (dispatch, getState) =>
 {

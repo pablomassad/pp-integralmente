@@ -60,11 +60,8 @@ export default function Pacientes()
     }
     const gotoPatient = (p) =>
     {
-        // const newPat = {...p}
-        // newPat.ciudad ="CABA" + new Date().getTime().toString()
-        // dispatch(bl.updatePatient(newPat))
         dispatch(fb.setPatient(p))
-        history.replace('/patient')
+        history.replace(`/patient/${p.id}`)
     }
 
     useEffect(() =>

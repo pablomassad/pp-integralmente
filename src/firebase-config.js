@@ -1,4 +1,4 @@
-export const cfg = {
+export const config = {
 	apiKey: 'AIzaSyBA1Bkh-HjZzwBiokJrtdXvd6E0UhVR-pE',
 	authDomain: 'pp-integralmente.firebaseapp.com',
 	databaseURL: 'https://pp-integralmente.firebaseio.com',

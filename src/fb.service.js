@@ -4,12 +4,14 @@ import "firebase/storage"
 import "firebase/messaging"
 import "firebase/firebase-firestore"
 
-import {cfg} from './firebase-config'
+import {config} from './firebase-config'
 
-const fb = app.initializeApp(cfg)
+export const fbConfig = app.initializeApp(config)
+export const fbAuth = fbConfig.auth()
+export const fbMsg = fbConfig.messaging()
+export const fbSto = fbConfig.storage()
+export const fbFs = fbConfig.firestore()
 
-export const fbAuth = fb.auth()
-export const fbMsg = fb.messaging()
-export const fbSto = fb.storage()
-export const fbFs = fb.firestore()
+console.log('Firebase initalization..............')
+fbFs.settings({timestampsInSnapshots:true})
 

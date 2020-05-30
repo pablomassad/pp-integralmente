@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import styled from "styled-components"
 
 import {PersonPin} from "@styled-icons/material-outlined/PersonPin"
@@ -11,13 +11,24 @@ import Documentacion from "./Documentacion"
 import Facturas from "../Facturas"
 
 import {useDispatch, useSelector} from 'react-redux'
+import {bl, ui} from '../../redux'
 
-export default function Paciente()
+
+export default function Paciente(props)
 {
-    console.log("....[Paciente]")
+    console.log("....[Paciente]", props)
 
-    const selPatient = useSelector(st=>st.fb.selPatient)
+    const dispatch = useDispatch()
+    const selPatient = useSelector(st => st.fb.selPatient)
     const [selTool, setSelTool] = useState("ficha")
+
+    // useEffect(() =>
+    // {
+    //     console.log('selPatient', selPatient)
+    //     const newPat = {...selPatient}
+    //     newPat.ciudad = "CABA" + new Date().getTime().toString()
+    //     dispatch(bl.updatePatient(newPat))
+    // }, [])
 
     if (!selPatient) return null
     return (
@@ -45,7 +56,7 @@ export default function Paciente()
             {selTool === "ficha" && <Ficha />}
             {selTool === "historia" && <Historia />}
             {selTool === "documentacion" && <Facturas />}
-            
+
             {/* {selTool === "documentacion" && <Documentacion />} */}
         </PatientFrame>
     )

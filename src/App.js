@@ -51,6 +51,7 @@ export default function App()
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/signup" component={SignUp} />
                 <Route exact path="/patients" component={Pacientes} />
+                <Route exact path="/patient/:id" component={Paciente} />
                 <Route exact path="/patient" component={Paciente} />
                 <Route exact path="/ficha" component={Ficha} />
                 <Route exact path="/bills" component={Facturas} />

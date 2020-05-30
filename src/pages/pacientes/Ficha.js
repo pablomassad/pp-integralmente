@@ -4,6 +4,7 @@ import {useForm} from 'react-hook-form'
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {bl, ui} from '../../redux'
+import {fbAuth, fbMsg, fbSto, fbFs} from '../../fb.service'
 
 import moment from 'moment'
 import DatePicker from "react-datepicker"
@@ -19,7 +20,8 @@ export default function Ficha()
     const dispatch = useDispatch()
     const history = useHistory()
 
-    const origPatient = useSelector(st=>st.fb.selPatient)
+    const userInfo = useSelector(st => st.fb.userInfo)
+    const origPatient = useSelector(st => st.fb.selPatient)
     const [fileInfo, setFileInfo] = useState()
     const inputFile = useRef()
 
@@ -54,16 +56,39 @@ export default function Ficha()
 
         console.log('file: ', e.target.files[0])
         setFileInfo(e.target.files[0])
-    }    
+    }
     const cancelChanges = (e) =>
     {
         e.stopPropagation()
         e.preventDefault()
-        // setSelPatient(null)
+        setSelPatient(null)
         history.replace('/patients')
     }
-    const acceptChanges = async () =>
+    const localFirebaseUpdatePatient = async (patient) =>
     {
+        try {
+            if (patient.id === 0) delete patient.id
+
+            delete patient.dirty
+            patient.uid = userInfo.id
+
+            if (!patient.id) {
+                const pat = await fbFs.collection('testing').add(patient)
+                patient.id = pat.id
+            }
+            debugger
+            console.log('Paciente:', patient)
+            await fbFs.collection('testing').doc(patient.id).set(patient, {merge: true})
+            await dispatch(bl.getPatients())
+            return true
+        } catch (error) {
+            return false
+        }
+    }
+    const acceptChanges = async (e) =>
+    {
+        e.preventDefault()
+
         if (fileInfo) {
             if (selPatient.foto) {
                 //    await dispatch(bl.deleteFileStorage('pacientes', selPatient.foto))
@@ -73,11 +98,12 @@ export default function Ficha()
             selPatient.foto = url
         }
         console.log('updated Patient: ', selPatient)
-        const res = await dispatch(bl.updatePatient(selPatient))
+        const res = await localFirebaseUpdatePatient(selPatient)//await dispatch(bl.updatePatient(selPatient))
         if (res) {
             dispatch(ui.showMessage({msg: 'Paciente guardado', type: 'success'}))
             setFileInfo(undefined)
-            // setSelPatient(null)
+            setSelPatient(null)
+            history.replace('/patients')
         } else {
             dispatch(ui.showMessage({msg: 'No se ha podido guardar los datos del paciente', type: 'error'}))
         }
@@ -92,8 +118,8 @@ export default function Ficha()
                 <Avatar src={selPatient.foto} onClick={choosePic}>
                 </Avatar>
                 <FullName>
-                    <UserInput type="text" placeholder="Ingrese nombres" value={selPatient.nombres || ''} name="nombres" onChange={e => updateSelPatient('nombres', e.target.value)}/>
-                    <UserInput type="text" placeholder="Ingrese apellido" value={selPatient.apellido || ''} name="apellido" onChange={e => updateSelPatient('apellido', e.target.value)}/>
+                    <UserInput type="text" placeholder="Ingrese nombres" value={selPatient.nombres || ''} name="nombres" onChange={e => updateSelPatient('nombres', e.target.value)} />
+                    <UserInput type="text" placeholder="Ingrese apellido" value={selPatient.apellido || ''} name="apellido" onChange={e => updateSelPatient('apellido', e.target.value)} />
                 </FullName>
             </Main>
             <Row>
@@ -108,10 +134,10 @@ export default function Ficha()
                     dateFormatCalendar="MMMM"
                     yearDropdownItemNumber={15}
                     scrollableYearDropdown
-                    // locale="es"
-                    // dateFormat="MM/yyyy"
-                    // showMonthYearPicker
-                    // showFullMonthYearPicker
+                // locale="es"
+                // dateFormat="MM/yyyy"
+                // showMonthYearPicker
+                // showFullMonthYearPicker
                 />
                 <Edad><strong>Edad:</strong>{evalEdad(selPatient.nacimiento)}</Edad>
                 <UserInput type="text" placeholder="Colegio" value={selPatient.colegio || ''} name="colegio" onChange={e => updateSelPatient('colegio', e.target.value)} />
@@ -124,18 +150,18 @@ export default function Ficha()
 
             </Row>
             <Contacto>
-                <UserInput type="text" placeholder="Nombre madre" value={selPatient.madre || ''} name="madre" onChange={e => updateSelPatient('madre', e.target.value)}/>
-                <UserInput type="text" placeholder="Nombre padre" value={selPatient.padre || ''} name="padre" onChange={e => updateSelPatient('padre', e.target.value)}/>
+                <UserInput type="text" placeholder="Nombre madre" value={selPatient.madre || ''} name="madre" onChange={e => updateSelPatient('madre', e.target.value)} />
+                <UserInput type="text" placeholder="Nombre padre" value={selPatient.padre || ''} name="padre" onChange={e => updateSelPatient('padre', e.target.value)} />
                 <UserInput type="text" placeholder="Tel. madre" value={selPatient.telmadre || ''} name="telmadre" onChange={e => updateSelPatient('telmadre', e.target.value)} />
-                <UserInput type="number" placeholder="Tel. padre" value={selPatient.telpadre || ''} name="telpadre" onChange={e => updateSelPatient('telpadre', e.target.value)}/>
-                <UserInput type="text" placeholder="Correo electrónico" value={selPatient.email || ''} name="email" onChange={e => updateSelPatient('email', e.target.value)}/>
-                <UserInput type="text" placeholder="Domicilio" value={selPatient.domicilio || ''} name="domicilio"onChange={e => updateSelPatient('domicilio', e.target.value)} />
-                <UserInput type="text" placeholder="Ciudad" value={selPatient.ciudad || ''} name="ciudad" onChange={e => updateSelPatient('ciudad', e.target.value)}/>
+                <UserInput type="number" placeholder="Tel. padre" value={selPatient.telpadre || ''} name="telpadre" onChange={e => updateSelPatient('telpadre', e.target.value)} />
+                <UserInput type="text" placeholder="Correo electrónico" value={selPatient.email || ''} name="email" onChange={e => updateSelPatient('email', e.target.value)} />
+                <UserInput type="text" placeholder="Domicilio" value={selPatient.domicilio || ''} name="domicilio" onChange={e => updateSelPatient('domicilio', e.target.value)} />
+                <UserInput type="text" placeholder="Ciudad" value={selPatient.ciudad || ''} name="ciudad" onChange={e => updateSelPatient('ciudad', e.target.value)} />
             </Contacto>
             <Actions>
                 <GlassButton onClick={cancelChanges}>Cancelar</GlassButton>
                 <div></div>
-                <GlassButton onClick={acceptChanges}>Aceptar</GlassButton>
+                <GlassButton onClick={e => acceptChanges(e)}>Aceptar</GlassButton>
             </Actions>
         </Form>
     )
