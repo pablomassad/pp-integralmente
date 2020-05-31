@@ -221,18 +221,18 @@ const updatePatient = patient => async (dispatch, getState) =>
         if (!patient.id) {
             const pat = await fbFs.collection('pacientes').add(patient)
             patient.id = pat.id
-        }
-        console.log('Paciente:', patient)
+        } 
         await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
+        console.log('Paciente:', patient)
         await dispatch(bl.getPatients())
         return true
     } catch (error) {
         return false
     }
 }
-const removePatient = payload => async dispatch =>
+const removePatient = patientId => async dispatch =>
 {
-    //await fbFs.collection('pacientes').doc(payload.id).delete()
+    await fbFs.collection('pacientes').doc(patientId).delete()
     await dispatch(getPatients())
 }
 const getFacturas = () => async (dispatch, getState) =>
@@ -277,11 +277,11 @@ const updateFactura = factura => async (dispatch, getState) =>
         dispatch(ui.showLoader(false))
     }
 }
-const removeFactura = factura => async dispatch =>
+const removeFactura = facturaId => async dispatch =>
 {
     // if (factura.nombre)
     //     await dispatch(deleteFileStorage('facturas', factura))
-    await fbFs.collection('facturas').doc(factura.id).delete()
+    await fbFs.collection('facturas').doc(facturaId).delete()
     await dispatch(getFacturas())
 }
 const getSessionsByPatient = (patientId) => async (dispatch) =>
@@ -324,11 +324,11 @@ const updateSession = (patientId, session) => async (dispatch) =>
         dispatch(ui.showLoader(false))
     }
 }
-const removeSession = (patientId, session) => async (dispatch) =>
+const removeSession = (patientId, sessionId) => async (dispatch) =>
 {
     // if (session.nombre)
     //     await dispatch(deleteFileStorage('sessions', session))
-    await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(session.id).delete()
+    await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(sessionId).delete()
     await dispatch(getSessionsByPatient(patientId))
 }
 const getAttachmentsByPatient = (patientId) => async (dispatch) =>
@@ -348,11 +348,13 @@ const getAttachmentsByPatient = (patientId) => async (dispatch) =>
     dispatch(ui.showLoader(false))
     return true
 }
-const addAttachmentByPatient = (patientId, attachment) => (dispatch)=>{
+const addAttachmentByPatient = (patientId, attachment) => (dispatch) =>
+{
 
 }
-const removeAttachment = (attachmentId) => (dispatch)=>{
-    
+const removeAttachment = (attachmentId) => (dispatch) =>
+{
+
 }
 const deleteFileStorage = (path, factura) => async dispatch =>
 {

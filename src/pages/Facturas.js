@@ -84,7 +84,7 @@ export default function Facturas()
         const newState = e ? 'Cobrada' : 'Pendiente'
         setSelEstado(newState)
     }
-    const removeFactura = e =>
+    const removeFacturaHandle = e =>
     {
         e.stopPropagation()
         e.preventDefault()
@@ -95,7 +95,7 @@ export default function Facturas()
             buttons: [
                 {
                     label: 'Si',
-                    onClick: () => dispatch(bl.removeFactura({id: selFactura.id}))
+                    onClick: () => dispatch(bl.removeFactura(selFactura.id))
                 },
                 {
                     label: 'No',
@@ -109,9 +109,6 @@ export default function Facturas()
         e.stopPropagation()
         e.preventDefault()
 
-        if (selFactura.url) {
-            window.open(selFactura.url, '_system', 'location=yes')
-        }
         if (fileInfo) {
             // console.log('view PDF')
             // fetch(f.url)
@@ -123,6 +120,11 @@ export default function Facturas()
             a.download = fileInfo.name
             a.click()
             //window.location.href = response.url;
+        }
+        else {
+            if (selFactura.url) {
+                window.open(selFactura.url, '_system', 'location=yes')
+            }
         }
     }
     const onSelFactura = f =>
@@ -350,7 +352,7 @@ export default function Facturas()
                                             <IconView />
                                         </GlassButton>
                                         {selFactura.id !== 0 ? (
-                                            <GlassButton onClick={e => removeFactura(e, f)}>
+                                            <GlassButton onClick={e => removeFacturaHandle(e, f)}>
                                                 <IconDelete />
                                             </GlassButton>)
                                             : <div></div>}

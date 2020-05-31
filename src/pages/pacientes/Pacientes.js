@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 import {IconRemove} from '../../global-styles'
 import {PersonPin} from '@styled-icons/material-rounded/PersonPin'
+import GlassButton from '../../common/GlassButton'
 
 import {useHistory} from 'react-router-dom'
 
@@ -28,7 +29,19 @@ export default function Pacientes()
 
     const [criteria, setCriteria] = useState('')
 
-    const data = patients.filter((f) => criteria.length < 3 || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase())))
+    const data = patients
+        .filter((f) => criteria.length < 3 || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase())))
+        .sort((f1, f2) =>
+        {
+            const d1 = f1['apellido']
+            const d2 = f2['apellido']
+            if (typeof d1 === 'number') {
+                return d2 - d1;
+            }
+            const s1 = `${d1}`;
+            const s2 = `${d2}`;
+            return s2.localeCompare(s1);
+        });
 
     const evalEdad = (nac) =>
     {
@@ -49,7 +62,7 @@ export default function Pacientes()
             buttons: [
                 {
                     label: 'Si',
-                    onClick: dispatch(bl.removePatient({id: p.id}))
+                    onClick: ()=> dispatch(bl.removePatient(p.id))
                 },
                 {
                     label: 'No',
@@ -112,6 +125,16 @@ export default function Pacientes()
                     </PatientCard>
                 ))}
             </PatientList>
+            <GlassButton
+                absolute
+                right={5}
+                bottom={5}
+                width={50}
+                height={50}
+                radius={50}
+                onClick={() => gotoPatient({id: 0})}>
+                <IconAdd>+</IconAdd>
+            </GlassButton>}
         </PatientsFrame>
     )
 }
@@ -201,4 +224,8 @@ const Title = styled.div`
 `
 const Description = styled.div`
     font-size:15px;
+`
+const IconAdd = styled.div`
+	font-size: 24px;
+	font-weight: bold;
 `

@@ -1,6 +1,5 @@
 import React, {useState, useRef} from 'react'
 import styled from 'styled-components'
-import {useForm} from 'react-hook-form'
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {bl, ui} from '../../redux'
@@ -27,7 +26,7 @@ export default function Ficha()
 
     const [selPatient, setSelPatient] = useState(origPatient)
 
-    console.log('....[Ficha]', selPatient)
+    console.log('....[Ficha]')
 
 
     const evalEdad = (nac) =>
@@ -54,8 +53,11 @@ export default function Ficha()
         e.stopPropagation()
         e.preventDefault()
 
-        console.log('file: ', e.target.files[0])
         setFileInfo(e.target.files[0])
+        var reader = new FileReader();
+        reader.onload = (e) => selPatient.foto = e.target.result
+        reader.readAsDataURL(e.target.files[0]);
+        inputFile.current.id = "hola"
     }
     const cancelChanges = (e) =>
     {
@@ -67,6 +69,7 @@ export default function Ficha()
     const localFirebaseUpdatePatient = async (patient) =>
     {
         try {
+            debugger
             if (patient.id === 0) delete patient.id
 
             delete patient.dirty
@@ -75,10 +78,9 @@ export default function Ficha()
             if (!patient.id) {
                 const pat = await fbFs.collection('pacientes').add(patient)
                 patient.id = pat.id
-            }
-            debugger
-            console.log('Paciente:', patient)
+            } 
             await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
+            console.log('Paciente local:', patient)
             await dispatch(bl.getPatients())
             return true
         } catch (error) {
@@ -103,7 +105,6 @@ export default function Ficha()
             dispatch(ui.showMessage({msg: 'Paciente guardado', type: 'success'}))
             setFileInfo(undefined)
             setSelPatient(null)
-            history.push('/patients')
         } else {
             dispatch(ui.showMessage({msg: 'No se ha podido guardar los datos del paciente', type: 'error'}))
         }

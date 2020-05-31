@@ -9,27 +9,15 @@ import Ficha from "./Ficha"
 import Historia from "./Historia"
 import Documentacion from "./Documentacion"
 
-import {useDispatch, useSelector} from 'react-redux'
-import {bl, ui} from '../../redux'
+import {useSelector} from 'react-redux'
 
 
 export default function Paciente(props)
 {
     console.log("....[Paciente]", props)
 
-    const dispatch = useDispatch()
-    const selPatient = useSelector(st => st.fb.selPatient)
     const [selTool, setSelTool] = useState("ficha")
 
-    // useEffect(() =>
-    // {
-    //     console.log('selPatient', selPatient)
-    //     const newPat = {...selPatient}
-    //     newPat.ciudad = "CABA" + new Date().getTime().toString()
-    //     dispatch(bl.updatePatient(newPat))
-    // }, [])
-
-    if (!selPatient) return null
     return (
         <PatientFrame>
             <Toolbar>

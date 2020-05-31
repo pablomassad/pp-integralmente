@@ -52,7 +52,7 @@ export default function Historia()
 
     const dataAndNew = (selSession?.id === 0 ? [selSession] : []).concat(data)
 
-    const removeSession = e =>
+    const removeSessionHandle = e =>
     {
         e.stopPropagation()
         e.preventDefault()
@@ -63,7 +63,7 @@ export default function Historia()
             buttons: [
                 {
                     label: 'Si',
-                    onClick: () => dispatch(bl.removeSession(selPatient.id, selSession))
+                    onClick: () => dispatch(bl.removeSession(selPatient.id, selSession.id))
                 },
                 {
                     label: 'No',
@@ -189,7 +189,7 @@ export default function Historia()
                                     className="customDatePicker"
                                 />
                                 {selSession.id !== 0 ? (
-                                    <GlassButton height={40} width={40} onClick={e => removeSession(e, s)}>
+                                    <GlassButton height={40} width={40} onClick={e => removeSessionHandle(e, s)}>
                                         <IconDelete />
                                     </GlassButton>)
                                     : <div></div>}

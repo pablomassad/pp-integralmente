@@ -43,7 +43,7 @@ export default function Documentacion()
         console.log('file: ', e.target.files[0])
         setFileInfo(e.target.files[0])
     }
-    const removeAttachment = e =>
+    const removeAttachmentHandle = e =>
     {
         e.stopPropagation()
         e.preventDefault()
@@ -54,7 +54,7 @@ export default function Documentacion()
             buttons: [
                 {
                     label: 'Si',
-                    onClick: () => dispatch(bl.removeSessionAttachment({id: selAttachment.id}))
+                    onClick: () => dispatch(bl.removeSessionAttachment(selAttachment.id))
                 },
                 {
                     label: 'No',
@@ -90,7 +90,7 @@ export default function Documentacion()
                         onClick={e => viewFactura(e)}>
                         <IconView />
                     </GlassButton> */}
-                        <GlassButton height={40} onClick={e => removeAttachment(e, a)}>
+                        <GlassButton height={40} onClick={e => removeAttachmentHandle(e, a)}>
                             <IconDelete />
                         </GlassButton>
                     </div>
