@@ -37,7 +37,6 @@ const login = payload => async dispatch =>
 }
 const initPushing = payload => async dispatch =>
 {
-    // dispatch(initWebNotifications())
     setTimeout(() =>
     {
         dispatch(initMobileNotifications())
