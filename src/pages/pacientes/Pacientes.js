@@ -36,11 +36,11 @@ export default function Pacientes()
             const d1 = f1['apellido']
             const d2 = f2['apellido']
             if (typeof d1 === 'number') {
-                return d2 - d1;
+                return d1 - d2;
             }
             const s1 = `${d1}`;
             const s2 = `${d2}`;
-            return s2.localeCompare(s1);
+            return s1.localeCompare(s2);
         });
 
     const evalEdad = (nac) =>

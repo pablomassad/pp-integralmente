@@ -221,7 +221,7 @@ const updatePatient = patient => async (dispatch, getState) =>
         if (!patient.id) {
             const pat = await fbFs.collection('pacientes').add(patient)
             patient.id = pat.id
-        } 
+        }
         await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
         console.log('Paciente:', patient)
         await dispatch(bl.getPatients())

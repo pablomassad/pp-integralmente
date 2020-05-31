@@ -63,29 +63,7 @@ export default function Ficha()
     {
         e.stopPropagation()
         e.preventDefault()
-        setSelPatient(null)
         history.push('/patients')
-    }
-    const localFirebaseUpdatePatient = async (patient) =>
-    {
-        try {
-            debugger
-            if (patient.id === 0) delete patient.id
-
-            delete patient.dirty
-            patient.uid = userInfo.id
-
-            if (!patient.id) {
-                const pat = await fbFs.collection('pacientes').add(patient)
-                patient.id = pat.id
-            } 
-            await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
-            console.log('Paciente local:', patient)
-            await dispatch(bl.getPatients())
-            return true
-        } catch (error) {
-            return false
-        }
     }
     const acceptChanges = async (e) =>
     {
@@ -100,11 +78,10 @@ export default function Ficha()
             selPatient.foto = url
         }
         console.log('updated Patient: ', selPatient)
-        const res = await localFirebaseUpdatePatient(selPatient)//await dispatch(bl.updatePatient(selPatient))
+        const res = await dispatch(bl.updatePatient(selPatient))
         if (res) {
             dispatch(ui.showMessage({msg: 'Paciente guardado', type: 'success'}))
             setFileInfo(undefined)
-            setSelPatient(null)
         } else {
             dispatch(ui.showMessage({msg: 'No se ha podido guardar los datos del paciente', type: 'error'}))
         }
@@ -145,7 +122,7 @@ export default function Ficha()
                 <UserInput type="text" placeholder="Curso" value={selPatient.curso || ''} name="curso" onChange={e => updateSelPatient('curso', e.target.value)} />
                 <UserInput type="number" placeholder="DNI" value={selPatient.dni || ''} name="dni" onChange={e => updateSelPatient('dni', e.target.value)} />
                 <UserInput type="text" placeholder="Obra social" value={selPatient.obrasocial || ''} name="obrasocial" onChange={e => updateSelPatient('obrasocial', e.target.value)} />
-                <UserInput type="number" placeholder="Nro" value={selPatient.afiliado || ''} name="nro" onChange={e => updateSelPatient('nro', e.target.value)} />
+                <UserInput type="number" placeholder="Nro" value={selPatient.afiliado || ''} name="afiliado" onChange={e => updateSelPatient('afiliado', e.target.value)} />
                 <UserInput type="text" placeholder="Diagnóstico" value={selPatient.diagnostico || ''} name="diagnostico" onChange={e => updateSelPatient('diagnostico', e.target.value)} />
                 <UserInput type="text" placeholder="Días de atención" value={selPatient.atencion || ''} name="atencion" onChange={e => updateSelPatient('atencion', e.target.value)} />
 
