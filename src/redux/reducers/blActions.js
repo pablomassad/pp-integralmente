@@ -222,9 +222,7 @@ const updatePatient = patient => async (dispatch, getState) =>
             patient.id = pat.id
         }
         await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
-        console.log('Paciente:', patient)
-        await dispatch(bl.getPatients())
-        return true
+        return patient
     } catch (error) {
         return false
     }
@@ -267,7 +265,7 @@ const updateFactura = factura => async (dispatch, getState) =>
             factura.id = bill.id
         }
         await fbFs.collection('facturas').doc(factura.id).set(factura, {merge: true})
-        await dispatch(getFacturas())
+        // await dispatch(getFacturas())
         return true
     } catch (error) {
         return false
@@ -314,7 +312,7 @@ const updateSession = (patientId, session) => async (dispatch) =>
             session.id = s.id
         }
         await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(session.id).set(session, {merge: true})
-        await dispatch(getSessionsByPatient(patientId))
+        // await dispatch(getSessionsByPatient(patientId))
         return true
     } catch (error) {
         return false

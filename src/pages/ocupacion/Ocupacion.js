@@ -8,27 +8,27 @@ export default function Ocupacion()
     const data = {
         Lunes: {
             M: ['', '', ''],
-            T: ['', 'Sofia', '']
+            T: ['', '', '']
         },
         Martes: {
-            M: ['Silvina', '', ''],
-            T: ['Sofia', '', '']
+            M: ['', '', ''],
+            T: ['Bianca', 'Sofía', 'Bernarda']
         },
         Miércoles: {
-            M: ['Silvina', '', ''],
-            T: ['', 'Sofia', '']
+            M: ['', '', 'Gabriela'],
+            T: ['', '', '']
         },
         Jueves: {
-            M: ['', '', 'Bernarda'],
-            T: ['', 'Sofia', '']
+            M: ['', '', ''],
+            T: ['', 'Silvina', '']
         },
         Viernes: {
-            M: ['Silvina', '', ''],
-            T: ['', 'Sofia', '']
+            M: ['', '', 'Gabriela'],
+            T: ['', 'Silvina', '']
         },
         Sábado: {
-            M: ['', '', ''],
-            T: ['', 'Sofia', 'Bernarda']
+            M: ['Asociación', '', ''],
+            T: ['', '', '']
         }
     }
     console.log(data)

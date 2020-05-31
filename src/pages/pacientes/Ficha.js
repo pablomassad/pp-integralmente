@@ -68,18 +68,18 @@ export default function Ficha()
     const acceptChanges = async (e) =>
     {
         e.preventDefault()
-
-        if (fileInfo) {
-            if (selPatient.foto) {
-                //    await dispatch(bl.deleteFileStorage('pacientes', selPatient.foto))
-                console.log('nombre existente: ', selPatient.foto)
+        const pat = await dispatch(bl.updatePatient(selPatient))
+        if (pat) {
+            if (fileInfo) {
+                if (selPatient.foto) {
+                    //    await dispatch(bl.deleteFileStorage('pacientes', selPatient.foto))
+                    console.log('nombre existente: ', selPatient.foto)
+                }
+                const url = await dispatch(bl.uploadFileStorage(pat.id, fileInfo)) // res.id
+                selPatient.foto = url
+                await dispatch(bl.updatePatient(selPatient))
             }
-            const url = await dispatch(bl.uploadFileStorage('pacientes', fileInfo))
-            selPatient.foto = url
-        }
-        console.log('updated Patient: ', selPatient)
-        const res = await dispatch(bl.updatePatient(selPatient))
-        if (res) {
+            console.log('updated Patient: ', selPatient)
             dispatch(ui.showMessage({msg: 'Paciente guardado', type: 'success'}))
             setFileInfo(undefined)
         } else {

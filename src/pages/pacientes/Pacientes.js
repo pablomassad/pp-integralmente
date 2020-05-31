@@ -62,7 +62,7 @@ export default function Pacientes()
             buttons: [
                 {
                     label: 'Si',
-                    onClick: ()=> dispatch(bl.removePatient(p.id))
+                    onClick: () => dispatch(bl.removePatient(p.id))
                 },
                 {
                     label: 'No',
@@ -79,8 +79,11 @@ export default function Pacientes()
 
     useEffect(() =>
     {
-        if (userInfo)
+        if (userInfo) {
+            console.log('Filling Patients...................')
+            dispatch(fb.setPatient(null))
             dispatch(bl.getPatients())
+        }
         else history.replace('/')
     }, [])
 
