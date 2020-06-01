@@ -17,7 +17,7 @@ const login = payload => async dispatch =>
     try {
         dispatch(ui.showLoader(true))
         await fbAuth.signInWithEmailAndPassword(payload.email, payload.password)
-        dispatch(ui.showMessage({msg: 'Bienvenido a Integralmente!', type: 'success'}))
+        dispatch(ui.showMessage({msg: 'Bienvenido a IntegralMente!', type: 'success'}))
         const user = await fbAuth.currentUser
         const userInfo = await getFirebaseUserInfo(user.uid)
         await saveFirebaseUserInfo(userInfo)
@@ -230,6 +230,7 @@ const updatePatient = patient => async (dispatch, getState) =>
 const removePatient = patientId => async dispatch =>
 {
     await fbFs.collection('pacientes').doc(patientId).delete()
+    dispatch(fb.setPatient(null))
     await dispatch(getPatients())
 }
 const getFacturas = () => async (dispatch, getState) =>
@@ -327,6 +328,50 @@ const removeSession = (patientId, sessionId) => async (dispatch) =>
     //     await dispatch(deleteFileStorage('sessions', session))
     await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(sessionId).delete()
     await dispatch(getSessionsByPatient(patientId))
+}
+const getAllNews = () => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    debugger
+    const dsn = await fbFs.collection('news').get()
+    const allNews = dsn.docs.map(x =>
+    {
+        return {
+            ...x.data(),
+            ...{
+                id: x.id
+            }
+        }
+    })
+    dispatch(fb.setAllNews({allNews}))
+    dispatch(ui.showLoader(false))
+    return true
+}
+const updateNews = news => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    try {
+        if (news.id === 0) delete news.id
+
+        delete news.dirty
+
+        if (!news.id) {
+            const tmp = await fbFs.collection('news').add(news)
+            news.id = tmp.id
+        }
+        await fbFs.collection('news').doc(news.id).set(news, {merge: true})
+        return true
+    } catch (error) {
+        return false
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+    }
+}
+const removeNews = newsId => async dispatch =>
+{
+    await fbFs.collection('news').doc(newsId).delete()
+    await dispatch(getAllNews())
 }
 const getAttachmentsByPatient = (patientId) => async (dispatch) =>
 {
@@ -438,6 +483,9 @@ export const bl = {
     getSessionsByPatient,
     updateSession,
     removeSession,
+    getAllNews,
+    updateNews,
+    removeNews,
     getAttachmentsByPatient,
     addAttachmentByPatient,
     removeAttachment,

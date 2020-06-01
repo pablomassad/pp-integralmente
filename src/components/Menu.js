@@ -47,11 +47,11 @@ export default function Menu()
                     <IconAgenda />
                         Agenda
                 </MenuItem>
-                <MenuItem onClick={() => goto('/comunication')} >
+                <MenuItem onClick={() => goto('/news')} >
                     <IconChat />
                         Comunicados
                 </MenuItem>
-                <MenuItem onClick={() => goto('/ocupation')} >
+                <MenuItem onClick={() => goto('/occupation')} >
                     <IconOcupation />
                         Ocupación
                 </MenuItem>

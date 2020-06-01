@@ -10,6 +10,8 @@ const setFacturas = createAction('fb.setFacturas')
 const setFactura = createAction('fb.setFactura')
 const setSessions = createAction('fb.setSessions')
 const setSession = createAction('fb.setSession')
+const setAllNews = createAction('fb.setAllNews')
+const setNews = createAction('fb.setNews')
 const setAttachments = createAction('fb.setAttachments')
 
 const fetchUserRequest = createAction('fetchUserRequest')
@@ -42,5 +44,7 @@ export const fb = {
 	setFactura,
     setSessions,
     setSession,
+    setAllNews,
+    setNews,
     setAttachments
 }

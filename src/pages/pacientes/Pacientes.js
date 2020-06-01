@@ -14,8 +14,21 @@ import moment from 'moment'
 import {confirmAlert} from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
-import SwipeableListItem from "../../common/SwipeableList/SwipeableListItem";
-import SwipeableList from "../../common/SwipeableList/SwipeableList";
+// import SwipeableListItem from "../../common/SwipeableList/SwipeableListItem";
+// import SwipeableList from "../../common/SwipeableList/SwipeableList";
+// const background = <span>Archive</span>;
+// const fakeContent = (
+//     <div className="FakeContent">
+//         <span>Swipe to delete</span>
+//     </div>
+// );
+// < SwipeableList background = {background} >
+//     <SwipeableListItem>{fakeContent}</SwipeableListItem>
+//     <SwipeableListItem>{fakeContent}</SwipeableListItem>
+//     <SwipeableListItem>{fakeContent}</SwipeableListItem>
+//     <SwipeableListItem>{fakeContent}</SwipeableListItem>
+//     <SwipeableListItem>{fakeContent}</SwipeableListItem>
+// </SwipeableList >
 
 
 export default function Pacientes()
@@ -88,27 +101,13 @@ export default function Pacientes()
     }, [])
 
 
-    // const background = <span>Archive</span>;
-    // const fakeContent = (
-    //     <div className="FakeContent">
-    //         <span>Swipe to delete</span>
-    //     </div>
-    // );
-    // < SwipeableList background = {background} >
-    //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
-    //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
-    //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
-    //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
-    //     <SwipeableListItem>{fakeContent}</SwipeableListItem>
-    // </SwipeableList >
-
     return (
         <PatientsFrame>
             <PatientFilter>
                 <IconPerson />
                 <Criteria
                     type="text"
-                    placeholder="Ingrese dataos paciente"
+                    placeholder="Ingrese datos paciente"
                     value={criteria}
                     onChange={e => setCriteria(e.target.value)}
                 />
@@ -117,7 +116,7 @@ export default function Pacientes()
                 {data.map((p, i) => (
                     <PatientCard key={i} onClick={() => gotoPatient(p)}>
                         <PatientData>
-                            <PatientPic src={(p.foto === 'assets/images/anonymous.png') ? anonymous : p.foto} />
+                            <PatientPic src={(p.foto) ? p.foto : anonymous} />
                             <PatientInfo>
                                 <Title>{p.apellido}, {p.nombres}</Title>
                                 <Description>{evalEdad(p.nacimiento)}, {p.obrasocial}</Description>
@@ -159,7 +158,6 @@ const IconPerson = styled(PersonPin)`
     width: 35px;
     margin: 10px;
 `
-
 const Criteria = styled.input`
     --name: 'Criteria';
     padding: 0px 10px;

@@ -17,8 +17,8 @@ import Pacientes from './pages/pacientes/Pacientes'
 import Facturas from './pages/Facturas'
 import Opciones from './pages/Opciones'
 import Agenda from './pages/Agenda'
-import Comunicacion from './pages/Comunicacion'
-import Ocupacion from './pages/ocupacion/Ocupacion'
+import Comunicados from './pages/Comunicados'
+import Ocupacion from './pages/Ocupacion'
 
 export default function App()
 {
@@ -56,8 +56,8 @@ export default function App()
                 <Route exact path="/ficha" component={Ficha} />
                 <Route exact path="/bills" component={Facturas} />
                 <Route exact path="/agenda" component={Agenda} />
-                <Route exact path="/comunication" component={Comunicacion} />
-                <Route exact path="/ocupation" component={Ocupacion} />
+                <Route exact path="/news" component={Comunicados} />
+                <Route exact path="/occupation" component={Ocupacion} />
                 <Route exact path="/options" component={Opciones} />
                 <Route>
                     <h1>404</h1>

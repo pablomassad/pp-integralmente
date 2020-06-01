@@ -122,7 +122,7 @@ export default function Ficha()
                 <UserInput type="text" placeholder="Curso" value={selPatient.curso || ''} name="curso" onChange={e => updateSelPatient('curso', e.target.value)} />
                 <UserInput type="number" placeholder="DNI" value={selPatient.dni || ''} name="dni" onChange={e => updateSelPatient('dni', e.target.value)} />
                 <UserInput type="text" placeholder="Obra social" value={selPatient.obrasocial || ''} name="obrasocial" onChange={e => updateSelPatient('obrasocial', e.target.value)} />
-                <UserInput type="number" placeholder="Nro" value={selPatient.afiliado || ''} name="afiliado" onChange={e => updateSelPatient('afiliado', e.target.value)} />
+                <UserInput type="number" placeholder="Nro.Afiliado" value={selPatient.afiliado || ''} name="afiliado" onChange={e => updateSelPatient('afiliado', e.target.value)} />
                 <UserInput type="text" placeholder="Diagnóstico" value={selPatient.diagnostico || ''} name="diagnostico" onChange={e => updateSelPatient('diagnostico', e.target.value)} />
                 <UserInput type="text" placeholder="Días de atención" value={selPatient.atencion || ''} name="atencion" onChange={e => updateSelPatient('atencion', e.target.value)} />
 

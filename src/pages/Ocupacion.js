@@ -1,11 +1,11 @@
-import React from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components'
-import GlassButton from '../../common/GlassButton'
+import GlassButton from '../common/GlassButton'
 
 
 export default function Ocupacion()
 {
-    const data = {
+    const db = {
         Lunes: {
             M: ['', '', ''],
             T: ['', '', '']
@@ -31,7 +31,23 @@ export default function Ocupacion()
             T: ['', '', '']
         }
     }
-    console.log(data)
+
+    const [data, setData] = useState(db)
+
+    const selectorHandle = (d, t, i) =>
+    {
+        // mostrar modal con profesionales disponibles
+        const prof = data[d][t][i]
+        if (prof !== "")
+            data[d][t][i] = ""
+        else
+            data[d][t][i] = "Pablo"
+
+        const newData = {...data}
+        setData(newData)
+        //save occupation to DB 
+
+    }
 
     return (
         <WeekFrame>
@@ -53,21 +69,25 @@ export default function Ocupacion()
                             {data[d].M.map((prof, i) => (
                                 <Module key={i}>
                                     {prof ?
-                                        <GlassButton margin={5} background={'#0688de'}>
+                                        <GlassButton margin={5} background={'#0688de'} onClick={(e) => selectorHandle(d, 'M', i)}>
                                             {prof}
                                         </GlassButton>
                                         :
-                                        <div></div>}
+                                        <GlassButton margin={5} background={'#fff'} onClick={(e) => selectorHandle(d, 'M', i)} noShadow>
+                                            <p></p>
+                                        </GlassButton>}
                                 </Module>
                             ))}
                             {data[d].T.map((prof, i) => (
                                 <Module key={i}>
                                     {prof ?
-                                        <GlassButton margin={5} background={'#287c9c'}>
+                                        <GlassButton margin={5} background={'#2da91f'} onClick={(e) => selectorHandle(d, 'T', i)}>
                                             {prof}
                                         </GlassButton>
                                         :
-                                        <div></div>}
+                                        <GlassButton margin={5} background={'#fff'} onClick={(e) => selectorHandle(d, 'T', i)} noShadow>
+                                            <p></p>
+                                        </GlassButton>}
                                 </Module>
                             ))}
                         </RoomsFrame>
@@ -107,7 +127,7 @@ const Day = styled.div`
 `
 const RoomsFrame = styled.div`
     --id:RoomsFrame;
-    background:${props => (props.background) ? props.background : 'linear-gradient(0,#fff4e9,#ebfbff)'};
+    background:${props => (props.background) ? props.background : '#eee'};
     display:grid;
     grid-template-columns:1fr 1fr 1fr ;
     align-items:center;

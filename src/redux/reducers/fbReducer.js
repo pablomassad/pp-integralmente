@@ -9,6 +9,8 @@ const initialState = {
     selPatient: undefined,
     sessions: [],
     selSession: undefined,
+    allNews: [],
+    selNews: undefined,
     notifications: [],
     token: undefined,
     webToken:undefined,
@@ -59,6 +61,15 @@ export default handleActions(
         {
             return {...state, selSession: {...state.selSession, ...action.payload}}
         },
+        [fb.setAllNews]: (state, action) =>
+        {
+            console.log(action.payload.allNews)
+            return {...state, allNews: action.payload.allNews}
+        },
+        [fb.setNews]: (state, action) =>
+        {
+            return {...state, selNews: {...state.selNews, ...action.payload}}
+        },        
         [fb.setAttachments]: (state, action) =>
         {
             console.log(action.payload.Attachments)
