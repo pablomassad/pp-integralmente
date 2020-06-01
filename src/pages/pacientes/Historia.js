@@ -102,7 +102,7 @@ export default function Historia()
         console.log('onSelSession', newSession)
         setSelSession(newSession)
     }
-    const updateselSession = (field, value) =>
+    const updateSelSession = (field, value) =>
     {
         const newSession = {...selSession, [field]: value, dirty: true}
         setSelSession(newSession)
@@ -185,7 +185,7 @@ export default function Historia()
                                     dateFormat="dd-MM-yyyy"
                                     maxDate={new Date()}
                                     selected={selSession.fecha}
-                                    onChange={e => updateselSession('fecha', e != null ? e.getTime() : null)}
+                                    onChange={e => updateSelSession('fecha', e != null ? e.getTime() : null)}
                                     className="customDatePicker"
                                 />
                                 {selSession.id !== 0 ? (
@@ -198,7 +198,7 @@ export default function Historia()
                                     placeholder="Observaciones"
                                     value={selSession.observaciones || ''}
                                     name="observaciones"
-                                    onChange={e => updateselSession('observaciones', e.target.value)}
+                                    onChange={e => updateSelSession('observaciones', e.target.value)}
                                 />
                                 <GlassButton onClick={cancelChanges}>Cancelar</GlassButton>
                                 <GlassButton onClick={acceptChanges}>Aceptar</GlassButton>
@@ -288,7 +288,7 @@ const SessionCard = styled.div`
     border-radius: 5px;
     margin: 7px;
     box-shadow: 1px 1px 2px black;
-    font-size: 12px;
+    font-size: 14px;
     position: relative;
 `
 const SessionForm = styled.div`

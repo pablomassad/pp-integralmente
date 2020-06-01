@@ -36,18 +36,7 @@ export default function Comunicados()
 
     const data = news
         .filter((s) => criteria.length < 3 || Object.keys(s).some((k) => `${s[k]}`.toLowerCase().includes(criteria.toLowerCase())))
-        .map((s) => selNews?.id === s.id ? selNews : s)
-        .sort((f1, f2) =>
-        {
-            const d1 = f1['fecha']
-            const d2 = f2['fecha']
-            if (typeof d1 === 'number') {
-                return d2 - d1;
-            }
-            const s1 = `${d1}`;
-            const s2 = `${d2}`;
-            return s2.localeCompare(s1);
-        });
+        .map((s) => selNews?.id === s.id ? selNews : s);
 
     const dataAndNew = (selNews?.id === 0 ? [selNews] : []).concat(data)
 
@@ -74,9 +63,9 @@ export default function Comunicados()
     const onSelNews = (e, s) =>
     {
         e.preventDefault()
-        if (selNews?.dirty) return // Factura en edicion
+        if (selNews?.dirty) return // Comunicado en edicion
 
-        const News = {...s}
+        const news = {...s}
         console.log('onSelNews', news)
         setSelNews(news)
     }
@@ -84,7 +73,6 @@ export default function Comunicados()
     {
         const news = {...selNews, [field]: value, dirty: true}
         setSelNews(news)
-        dispatch(bl.getAllNews())
     }
     const addNewsHandle = () =>
     {
@@ -125,6 +113,7 @@ export default function Comunicados()
     useEffect(() =>
     {
         dispatch(bl.getAllNews())
+        dispatch(bl.updateNewsRead())
     }, [])
 
     return (
@@ -259,12 +248,12 @@ const NewsList = styled.div`
 `
 const NewsCard = styled.div`
     --id:NewsCard;
-    background: #c1c0c0;
+    background: #abd1dc;
     padding: 8px 8px;
     border-radius: 5px;
     margin: 7px;
     box-shadow: 1px 1px 2px black;
-    font-size: 12px;
+    font-size: 14px;
     position: relative;
 `
 const NewsForm = styled.div`

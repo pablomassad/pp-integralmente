@@ -4,7 +4,8 @@ import logo from './assets/images/integralmenteET.png'
 
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import {useToasts} from 'react-toast-notifications'
-import {useSelector} from 'react-redux'
+import {useDispatch,useSelector, shallowEqual} from 'react-redux'
+import {bl} from './redux'
 
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
@@ -25,8 +26,21 @@ export default function App()
     console.log('APP render.............')
 
     const {addToast} = useToasts()
+
+    const dispatch = useDispatch()
     const msgInfo = useSelector(st => st.ui.msgInfo)
     const userInfo = useSelector(st => st.fb.userInfo)
+    const allNews = useSelector(st => st.fb.allNews, shallowEqual)
+    const [newsCounter, setNewsCounter] = useState(0)
+
+
+    useEffect(() =>
+    {
+        if (userInfo!=null && userInfo){
+            const cnt = allNews.filter(a => a.fecha > userInfo.lastNewsRead).length
+            setNewsCounter(cnt)
+        }
+    }, [allNews, userInfo])
 
     useEffect(
         () =>
@@ -36,6 +50,10 @@ export default function App()
         [msgInfo]
     )
 
+    useEffect(() => {
+        dispatch(bl.getAllNews())
+    }, [])
+
     return (
         <Router>
             {userInfo
@@ -44,6 +62,9 @@ export default function App()
                     <Logo src={logo} />
                     <div />
                     <Avatar src={userInfo.photoURL} />
+                    <NewsAlert alert={newsCounter}>
+                        <AlertCounter>{newsCounter}</AlertCounter>
+                    </NewsAlert>
                 </Navbar>
                 : null}
             <Switch>
@@ -86,4 +107,21 @@ const Avatar = styled.img`
 	width: 50px;
 	height: 55px;
 	box-shadow: 1px 1px 3px black;
+`
+const NewsAlert = styled.div`
+    --id: NewsAlert;
+    position: absolute;
+    right: 45px;
+    top: 3px;
+    border-radius: 50%;
+    background: red;
+    box-shadow: 1px 1px 4px black;
+    width: 18px;
+    height: 18px;
+    opacity: ${props => ((props.alert>0) ? 1 : 0)};
+`
+const AlertCounter =styled.div`
+    color: white;
+    font-size:12px;
+    text-align:center;
 `

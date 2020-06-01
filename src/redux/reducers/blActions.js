@@ -266,7 +266,7 @@ const updateFactura = factura => async (dispatch, getState) =>
             factura.id = bill.id
         }
         await fbFs.collection('facturas').doc(factura.id).set(factura, {merge: true})
-        // await dispatch(getFacturas())
+        await dispatch(getFacturas())
         return true
     } catch (error) {
         return false
@@ -313,7 +313,7 @@ const updateSession = (patientId, session) => async (dispatch) =>
             session.id = s.id
         }
         await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(session.id).set(session, {merge: true})
-        // await dispatch(getSessionsByPatient(patientId))
+        await dispatch(getSessionsByPatient(patientId))
         return true
     } catch (error) {
         return false
@@ -332,9 +332,8 @@ const removeSession = (patientId, sessionId) => async (dispatch) =>
 const getAllNews = () => async (dispatch) =>
 {
     dispatch(ui.showLoader(true))
-    debugger
     const dsn = await fbFs.collection('news').get()
-    const allNews = dsn.docs.map(x =>
+    const arr = dsn.docs.map(x =>
     {
         return {
             ...x.data(),
@@ -343,6 +342,17 @@ const getAllNews = () => async (dispatch) =>
             }
         }
     })
+    const allNews = arr.sort((f1, f2) =>
+    {
+        const d1 = f1['fecha']
+        const d2 = f2['fecha']
+        if (typeof d1 === 'number') {
+            return d2 - d1;
+        }
+        const s1 = `${d1}`;
+        const s2 = `${d2}`;
+        return s2.localeCompare(s1);
+    });
     dispatch(fb.setAllNews({allNews}))
     dispatch(ui.showLoader(false))
     return true
@@ -360,6 +370,7 @@ const updateNews = news => async (dispatch) =>
             news.id = tmp.id
         }
         await fbFs.collection('news').doc(news.id).set(news, {merge: true})
+        await dispatch(getAllNews())
         return true
     } catch (error) {
         return false
@@ -446,6 +457,12 @@ const requestPermission = () => async dispatch =>
     //firebase.getToken()
     // firebase.requestPermission()
 }
+const updateNewsRead = () => async (dispatch, getState) =>
+{
+    const user = getState().fb.userInfo
+    user.lastNewsRead = new Date().getTime()
+    await fbFs.collection('users').doc(user.id).set(user, {merge: true})
+}
 ///////////////////////////////////////
 // Private functions
 ///////////////////////////////////////
@@ -460,6 +477,8 @@ const saveFirebaseUserInfo = async usr =>
 {
     usr.lastLogin = new Date().getTime()
     usr.lastLoginStr = usr.lastLogin
+    if (!usr.lastNewsRead)
+        usr.lastNewsRead = new Date(1262314800000)
     //   const obj = JSON.parse(JSON.stringify(usr))
     await fbFs.doc(`users/${usr.id}`).set(usr, {
         merge: true
@@ -491,5 +510,6 @@ export const bl = {
     removeAttachment,
     deleteFileStorage,
     uploadFileStorage,
-    requestPermission
+    requestPermission,
+    updateNewsRead
 }
