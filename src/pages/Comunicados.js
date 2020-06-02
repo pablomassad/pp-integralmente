@@ -112,7 +112,6 @@ export default function Comunicados()
 
     useEffect(() =>
     {
-        dispatch(bl.getAllNews())
         dispatch(bl.updateNewsRead())
     }, [])
 

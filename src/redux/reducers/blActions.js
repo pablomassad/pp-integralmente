@@ -365,33 +365,32 @@ const removeSession = (patientId, sessionId) => async (dispatch) =>
     await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(sessionId).delete()
     await dispatch(getSessionsByPatient(patientId))
 }
-const getAllNews = () => async (dispatch) =>
+const getAllNews = () => (dispatch) =>
 {
-    dispatch(ui.showLoader(true))
-    const dsn = await fbFs.collection('news').get()
-    const arr = dsn.docs.map(x =>
+    fbFs.collection('news').onSnapshot(qsn =>
     {
-        return {
-            ...x.data(),
-            ...{
-                id: x.id
+        const arr = qsn.docs.map(x =>
+        {
+            return {
+                ...x.data(),
+                ...{
+                    id: x.id
+                }
             }
-        }
+        })
+        const allNews = arr.sort((f1, f2) =>
+        {
+            const d1 = f1['fecha']
+            const d2 = f2['fecha']
+            if (typeof d1 === 'number') {
+                return d2 - d1;
+            }
+            const s1 = `${d1}`;
+            const s2 = `${d2}`;
+            return s2.localeCompare(s1);
+        });
+        dispatch(fb.setAllNews({allNews}))
     })
-    const allNews = arr.sort((f1, f2) =>
-    {
-        const d1 = f1['fecha']
-        const d2 = f2['fecha']
-        if (typeof d1 === 'number') {
-            return d2 - d1;
-        }
-        const s1 = `${d1}`;
-        const s2 = `${d2}`;
-        return s2.localeCompare(s1);
-    });
-    dispatch(fb.setAllNews({allNews}))
-    dispatch(ui.showLoader(false))
-    return true
 }
 const updateNews = news => async (dispatch) =>
 {
