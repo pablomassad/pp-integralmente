@@ -14,3 +14,12 @@ export const fbFs = fbConfig.firestore()
 
 console.log('Firebase initalization..............')
 
+
+// const providers = {
+//     googleProvider: new firebase.auth.GoogleAuthProvider(),
+// };
+// export default withFirebaseAuth({
+//     providers,
+//     firebaseAppAuth,
+// })(App);
+

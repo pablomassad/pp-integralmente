@@ -20,7 +20,7 @@ const login = payload => async dispatch =>
         dispatch(ui.showMessage({msg: 'Bienvenido a IntegralMente!', type: 'success'}))
         const user = await fbAuth.currentUser
         const userInfo = await getFirebaseUserInfo(user.uid)
-        await saveFirebaseUserInfo(userInfo)
+        await dispatch(saveFirebaseUserInfo(userInfo))
         dispatch(fb.setUser({userInfo}))
         res = true
     } catch (error) {
@@ -34,6 +34,42 @@ const login = payload => async dispatch =>
         dispatch(ui.showLoader(false))
         return res
     }
+}
+const register = payload => async dispatch =>
+{
+    let res = false
+    try {
+        dispatch(ui.showLoader(true))
+
+        const {user} = await fbAuth.createUserWithEmailAndPassword(payload.email, payload.password);
+        generateUserDocument(user, {displayName: payload.displayName});
+
+        dispatch(ui.showMessage({msg: 'Registración terminada. Bienvenido a IntegralMente!', type: 'success'}))
+        res = true
+    } catch (error) {
+        dispatch(
+            ui.showMessage({
+                msg: error.message,
+                type: 'error'
+            })
+        )
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+        return res
+    }
+}
+const sendResetEmail = email => async dispatch =>
+{
+    return fbAuth.sendPasswordResetEmail(email)
+        .then(() =>
+        {
+            return true
+        })
+        .catch(() =>
+        {
+            return false
+        })
 }
 const initPushing = payload => async dispatch =>
 {
@@ -463,9 +499,19 @@ const updateNewsRead = () => async (dispatch, getState) =>
     user.lastNewsRead = new Date().getTime()
     await fbFs.collection('users').doc(user.id).set(user, {merge: true})
 }
-///////////////////////////////////////
-// Private functions
-///////////////////////////////////////
+const saveFirebaseUserInfo = usr => async dispatch =>
+{
+    usr.lastLogin = new Date().getTime()
+    usr.lastLoginStr = new Date()
+    if (!usr.lastNewsRead)
+        usr.lastNewsRead = new Date(1262314800000)
+    await fbFs.doc(`users/${usr.id}`).set(usr, {
+        merge: true
+    })
+}
+
+
+///////////////////////////////////////////////////////
 const getFirebaseUserInfo = async id =>
 {
     const dsn = await fbFs.doc(`users/${id}`).get()
@@ -473,22 +519,46 @@ const getFirebaseUserInfo = async id =>
     user['id'] = id
     return user
 }
-const saveFirebaseUserInfo = async usr =>
+const generateUserDocument = async (user, additionalData) =>
 {
-    usr.lastLogin = new Date().getTime()
-    usr.lastLoginStr = usr.lastLogin
-    if (!usr.lastNewsRead)
-        usr.lastNewsRead = new Date(1262314800000)
-    //   const obj = JSON.parse(JSON.stringify(usr))
-    await fbFs.doc(`users/${usr.id}`).set(usr, {
-        merge: true
-    })
+    if (!user) return;
+    const userRef = fbFs.doc(`users/${user.uid}`);
+    const snapshot = await userRef.get();
+    if (!snapshot.exists) {
+        const {email, displayName, photoURL} = user;
+        try {
+            await userRef.set({
+                displayName,
+                email,
+                photoURL,
+                ...additionalData
+            });
+        } catch (error) {
+            console.error("Error creating user document", error);
+        }
+    }
+    return getUserDocument(user.uid);
+}
+const getUserDocument = async uid =>
+{
+    if (!uid) return null;
+    try {
+        const userDocument = await fbFs.doc(`users/${uid}`).get();
+        return {
+            uid,
+            ...userDocument.data()
+        };
+    } catch (error) {
+        console.error("Error fetching user", error);
+    }
 }
 
 
 
 export const bl = {
     login,
+    register,
+    sendResetEmail,
     initPushing,
     initWebNotifications,
     initMobileNotifications,
@@ -511,5 +581,6 @@ export const bl = {
     deleteFileStorage,
     uploadFileStorage,
     requestPermission,
-    updateNewsRead
+    updateNewsRead,
+    saveFirebaseUserInfo
 }

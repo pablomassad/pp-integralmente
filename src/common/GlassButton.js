@@ -16,6 +16,7 @@ export default (function GlassButton({
     background, 
     margin,
     noShadow,
+    font,
     disabled})
 {
     return (
@@ -34,7 +35,8 @@ export default (function GlassButton({
                 color={foreground}
                 margin={margin}
                 background={background}
-                noShadow={noShadow}>
+                noShadow={noShadow}
+                font={font}>
                 <FabChildren>
                     {children}
                 </FabChildren>
@@ -97,10 +99,10 @@ const FabBtn = styled.button`
 `
 
 const FabChildren = styled.div`
-    font-size:13px; 
+    font-size:${props => (props.font) ? props.font+'px' : '14px'};
 
     @media screen and (min-width: 800px) {
-        font-size:1.13rem;
+        font-size:1.15rem;
     } 
     /* position: absolute;
 	color: white;

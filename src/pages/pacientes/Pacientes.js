@@ -203,8 +203,9 @@ const PatientData = styled.div`
 `
 const PatientPic = styled.img`
     border-radius:50%;
-    width:11vw;
-    height:11vw;
+    width:12vw;
+    height:12vw;
+    object-fit: cover;
     box-shadow:1px 1px 3px black;
 `
 const PatientInfo = styled.div`

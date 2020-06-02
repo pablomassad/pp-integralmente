@@ -17,6 +17,7 @@ export default function Menu()
 {
     const history = useHistory()
     const dispatch = useDispatch()
+    const userInfo = useSelector(st => st.fb.userInfo)
     const sidebarFlag = useSelector(st => st.ui.sidebarFlag)
 
     const onToggleHandle = () =>
@@ -35,6 +36,11 @@ export default function Menu()
                 &#8801;
             </ToggleButton>
             <MenuItems className={(sidebarFlag) ? "sidebar sbOpen" : "sidebar sbClose"}>
+                <MenuItem onClick={() => goto('/profile')}>
+                    <Avatar src={userInfo.photoURL} />
+                        {userInfo.displayName}
+                </MenuItem>
+                <hr />
                 <MenuItem onClick={() => goto('/patients')}>
                     <IconPatients />
                         Pacientes
@@ -55,12 +61,12 @@ export default function Menu()
                     <IconOcupation />
                         Ocupación
                 </MenuItem>
-                <MenuItem onClick={() => goto('/options')} >
+                {/* <MenuItem onClick={() => goto('/options')} >
                     <IconOptions />
                         Configuración
-                </MenuItem>
-                <hr/>
-                <MenuItem onClick={() => goto('/login')} >
+                </MenuItem> */}
+                <hr />
+                <MenuItem onClick={() => goto('/signIn')} >
                     <IconExit />
                         Salir
                 </MenuItem>
@@ -77,6 +83,14 @@ const ToggleButton = styled.div`
     font-size: 40px;
     background: transparent;
     border: none;
+`
+const Avatar = styled.img`
+	overflow: hidden;
+	border-radius: 50%;
+    margin-left:-20px;
+	width: 50px;
+	height: 50px;
+	box-shadow: 1px 1px 3px black;
 `
 const MenuFrame = styled.div`
 `

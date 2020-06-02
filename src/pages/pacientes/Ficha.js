@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {bl, ui} from '../../redux'
-import {fbAuth, fbMsg, fbSto, fbFs} from '../../fb.service'
 
 import moment from 'moment'
 import DatePicker from "react-datepicker"

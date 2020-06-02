@@ -2,13 +2,16 @@ import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 import logo from './assets/images/integralmenteET.png'
 
+import {useHistory} from 'react-router-dom'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import {useToasts} from 'react-toast-notifications'
 import {useDispatch,useSelector, shallowEqual} from 'react-redux'
 import {bl} from './redux'
 
-import Login from './pages/Login'
 import SignUp from './pages/SignUp'
+import SignIn from "./pages/SignIn";
+import Profile from "./pages/Profile";
+import PasswordReset from "./pages/PasswordReset";
 import Menu from './components/Menu'
 import Loader from './common/Loader'
 
@@ -26,13 +29,17 @@ export default function App()
     console.log('APP render.............')
 
     const {addToast} = useToasts()
-
+    const history = useHistory()
     const dispatch = useDispatch()
     const msgInfo = useSelector(st => st.ui.msgInfo)
     const userInfo = useSelector(st => st.fb.userInfo)
     const allNews = useSelector(st => st.fb.allNews, shallowEqual)
     const [newsCounter, setNewsCounter] = useState(0)
 
+
+    const newsHandle = (e)=>{
+        history.push('/news')
+    }
 
     useEffect(() =>
     {
@@ -55,22 +62,24 @@ export default function App()
     }, [])
 
     return (
-        <Router>
+        <>
             {userInfo
                 ? <Navbar>
                     <Menu />
                     <Logo src={logo} />
                     <div />
-                    <Avatar src={userInfo.photoURL} />
+                    <Avatar src={userInfo.photoURL} onClick={newsHandle}/>
                     <NewsAlert alert={newsCounter}>
                         <AlertCounter>{newsCounter}</AlertCounter>
                     </NewsAlert>
                 </Navbar>
                 : null}
             <Switch>
-                <Route exact path="/" exact component={Login} />
-                <Route exact path="/login" component={Login} />
+                <Route exact path="/" exact component={SignIn} />
+                <Route exact path="/signin" component={SignIn} />
                 <Route exact path="/signup" component={SignUp} />
+                <Route exact path="/pwdreset" component={PasswordReset} />
+                <Route exact path="/profile" component={Profile} />
                 <Route exact path="/patients" component={Pacientes} />
                 <Route exact path="/patient/:id" component={Paciente} />
                 <Route exact path="/patient" component={Paciente} />
@@ -85,7 +94,7 @@ export default function App()
                 </Route>
             </Switch>
             <Loader />
-        </Router>
+        </>
     )
 }
 
@@ -105,7 +114,7 @@ const Avatar = styled.img`
 	overflow: hidden;
 	border-radius: 50%;
 	width: 50px;
-	height: 55px;
+	height: 50px;
 	box-shadow: 1px 1px 3px black;
 `
 const NewsAlert = styled.div`
