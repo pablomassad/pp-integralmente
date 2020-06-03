@@ -56,41 +56,6 @@ exports.evalCumples = functions.https.onRequest(async (request, response) =>
     response.send('total pacientes: ' + rta + ' fecha:' + today + ' cumples hoy: ' + birthdaysToday + ' errors: ' + birthdaysErrors)
 })
 
-exports.processFacturas = functions.https.onRequest(async (request, response) =>
-{
-    const uid = 'YBHqrkv2VBS5VAJuWweey1TO8zf2'
-    const dsn = await afs.collection('facturas').where('uid', '==', uid).get()
-    const facturas = dsn.docs.map(x => x.data())
-
-    // Recorro todas las facturas y voy acumulando x mes los totales de pendientes y cobradas
-    let facCob = {}
-    let facPend = {}
-    let facEmit = {}
-
-    for (let f of facturas) {
-        const day = moment(f.fecha).format('YYMMDD')
-        if ((f.estado === 'Cobrada') || (f.fechaPago)) {
-            if (!facCob[day])
-                facCob[day] = 0
-            facCob[day] += Number.parseInt(f.monto)
-        }
-        else {
-            if (!facPend[day])
-                facPend[day] = 0
-            facPend[day] += Number.parseInt(f.monto)
-        }
-        if (!facEmit[day])
-            facEmit[day] = 0
-        facEmit[day] += Number.parseInt(f.monto)
-    }
-    const rta = {
-        emitidas:facEmit,
-        cobradas:facCob,
-        pendientes:facPend
-    }
-    response.send(rta)
-    //await afs.collection("facturacion").doc(oldVersion).set(oldData, {merge: true})
-})
 
 
 function fcmPush(target, kid)

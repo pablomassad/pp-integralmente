@@ -19,6 +19,7 @@ import Ficha from './pages/pacientes/Ficha'
 import Paciente from './pages/pacientes/Paciente'
 import Pacientes from './pages/pacientes/Pacientes'
 import Facturas from './pages/Facturas'
+import Estadisticas from './pages/Estadisticas'
 import Opciones from './pages/Opciones'
 import Agenda from './pages/Agenda'
 import Comunicados from './pages/Comunicados'
@@ -85,6 +86,7 @@ export default function App()
                 <Route exact path="/patient" component={Paciente} />
                 <Route exact path="/ficha" component={Ficha} />
                 <Route exact path="/bills" component={Facturas} />
+                <Route exact path="/stats" component={Estadisticas} />
                 <Route exact path="/agenda" component={Agenda} />
                 <Route exact path="/news" component={Comunicados} />
                 <Route exact path="/occupation" component={Ocupacion} />

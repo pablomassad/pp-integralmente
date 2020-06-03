@@ -7,8 +7,8 @@ import {composeWithDevTools} from 'redux-devtools-extension'
 import {logger} from 'redux-logger'
 import thunk from 'redux-thunk'
 
-import {reduxFirestore, getFirestore} from 'redux-firestore'
-import {reactReduxFirebase, getFirebase} from 'react-redux-firebase'
+// import {reduxFirestore, getFirestore} from 'redux-firestore'
+// import {reactReduxFirebase, getFirebase} from 'react-redux-firebase'
 import {fbConfig} from '../fb.service'
 import firebase from 'firebase/app'
 

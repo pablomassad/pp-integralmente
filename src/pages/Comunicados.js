@@ -241,7 +241,7 @@ const NewsHeader = styled.div`
 `
 const NewsList = styled.div`
     --id:NewsList;
-    background:white;
+    background:#aaa;
 	overflow: auto;
 	height: calc(100vh - 150px);
 `

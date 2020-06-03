@@ -28,13 +28,13 @@ export default function SignIn()
     const resetPassHandle = async e =>
     {
         if (!email)
-            dispatch(ui.showMessage({msg:'Debe ingresar un correo válido!', type:'error'}))
+            dispatch(ui.showMessage({msg: 'Debe ingresar un correo válido!', type: 'error'}))
         else {
             const res = await dispatch(bl.sendResetEmail(email))
             if (res)
-                dispatch(ui.showMessage({msg: 'Se ha enviado el correo de recuperación', type: 'info' }))
+                dispatch(ui.showMessage({msg: 'Se ha enviado el correo de recuperación', type: 'info'}))
             else
-                dispatch(ui.showMessage({msg: 'Error al enviar correo de recuperación', type: 'error' }))
+                dispatch(ui.showMessage({msg: 'Error al enviar correo de recuperación', type: 'error'}))
         }
     }
     const gotoRegisterHandle = e =>
@@ -92,7 +92,7 @@ export default function SignIn()
                     name="password"
                     value={password || ''}
                     onChange={onChangeHandler}
-                    placeholder="Constraseña"
+                    placeholder="Contraseña"
                     required
                 />
                 <GlassButton type="submit" height="40" onClick={loginHandle}>
@@ -107,16 +107,18 @@ export default function SignIn()
 				    </GlassButton>
                 </RegisterReset>
             </FormLogin>
+            <Version>v1.1</Version>
         </LoginFrame>
     )
 }
 
 
 const LoginFrame = styled.div`
+    --id:LoginFrame;
 	background: white;
 	box-shadow: 5px 5px 15px black;
 	border-radius: 20px;
-	padding: 20px;
+	padding: 20px 20px 10px 20px;
 	margin: auto;
 	margin-top: 10%;
 	max-width: 500px;
@@ -159,4 +161,10 @@ const RegisterReset = styled.div`
     display:grid;
     grid-template-columns:1fr 1fr;
     align-items:center;
+`
+const Version = styled.div`
+    font-size:10px;
+    text-align:center;
+    margin:0;
+    padding:0;
 `

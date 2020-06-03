@@ -1,5 +1,6 @@
 import React, {useEffect, useState, useRef} from 'react'
 import styled from 'styled-components'
+import {StatsDots} from '@styled-icons/icomoon/StatsDots'
 import {AttachMoney} from '@styled-icons/material-sharp/AttachMoney'
 import {FileUpload} from '@styled-icons/fa-solid/FileUpload'
 import {File} from '@styled-icons/boxicons-regular/File'
@@ -188,6 +189,9 @@ export default function Facturas()
         console.log('file: ', e.target.files[0])
         setFileInfo(e.target.files[0])
     }
+    const openStatsHandle =  e=>{
+        history.push('/stats')
+    }
 
     useEffect(() =>
     {
@@ -251,6 +255,9 @@ export default function Facturas()
                     className="react-switch"
                     id="icon-switch"
                 />
+                <GlassButton onClick={openStatsHandle}>
+                    <IconStats/>
+                </GlassButton>
             </FacturasFilter>
             <FacturasLayout>
                 <FactHeader>
@@ -303,6 +310,7 @@ export default function Facturas()
                                     </Cell>
                                 </FacturaCard>
                                 : <FacturaForm>
+                                    <div style={{fontSize:'11px', gridColumn:'1 / 3'}}>{f.observaciones}</div>
                                     <DatePicker
                                         placeholderText="Fecha de Emisión"
                                         dateFormat="dd-MM-yyyy"
@@ -388,7 +396,7 @@ const FacturasFilter = styled.div`
 	--id: PatientFilter;
 	background: #ccc;
 	display: grid;
-	grid-template-columns: 50px 1fr 80px;
+	grid-template-columns: 50px 1fr 80px 50px;
 	align-items: center;
 	box-shadow: 0 1px 3px black;
 `
@@ -398,7 +406,7 @@ const Criteria = styled.input`
 	color: #444;
 	background: white;
 	border-radius: 5px;
-	width: 80%;
+	width: 95%;
 	height: 35px;
 	border: none;
 	display: block;
@@ -518,9 +526,14 @@ const Alert = styled.div`
 	font-size: 11px;
 	text-shadow: 1px 1px 1px gray;
 `
+
 const IconAdd = styled.div`
 	font-size: 24px;
 	font-weight: bold;
+`
+const IconStats = styled(StatsDots)`
+    width: 25px;
+    color: white;
 `
 const IconFacturas = styled(AttachMoney)`
     color: ${props => (props.active ? '#1c88e6' : 'gray')};

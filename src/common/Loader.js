@@ -45,10 +45,9 @@ const heart = keyframes`
         transform: scale(.8);
     }
 `
-
 const Spinner = styled.img`
     animation: ${heart} 1s linear infinite;
     width: 200px;
     margin-top: 20%;
-    margin-left: 30%;
+    margin-left: 40%;
 `
