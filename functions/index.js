@@ -1,6 +1,8 @@
-import * as functions from 'firebase-functions'
-import * as admin from 'firebase-admin'
-import * as moment from 'moment'
+const functions = require('firebase-functions');
+const admin = require('firebase-admin')
+const moment = require('moment')
+
+
 
 admin.initializeApp(functions.config().firebase)
 const afs = admin.firestore()
@@ -23,19 +25,22 @@ const afs = admin.firestore()
 //     // });
 // });
 
-export const happyBirthday = functions.https.onRequest((request, response) => {
+exports.happyBirthday = functions.https.onRequest((request, response) =>
+{
     fcmPush('YBHqrkv2VBS5VAJuWweey1TO8zf2', 'Pablito')
     response.send("Happy Birtday!");
-});
+})
 
-export const evalCumples = functions.https.onRequest(async (request, response) => {
+exports.evalCumples = functions.https.onRequest(async (request, response) =>
+{
     const qsn = await afs.collection('pacientes').get()
     const docs = qsn.docs.map(x => x.data())
 
     const today = moment().format('YYMMDD')
     let birthdaysErrors = 0
     let birthdaysToday = 0
-    docs.forEach(pac => {
+    docs.forEach(pac =>
+    {
         try {
             if (today === moment(pac.nacimiento).format('YYMMDD')) {
                 fcmPush(pac.uid, pac.apellido + ', ' + pac.nombres)
@@ -51,7 +56,45 @@ export const evalCumples = functions.https.onRequest(async (request, response) =
     response.send('total pacientes: ' + rta + ' fecha:' + today + ' cumples hoy: ' + birthdaysToday + ' errors: ' + birthdaysErrors)
 })
 
-function fcmPush(target: string, kid: string) {
+exports.processFacturas = functions.https.onRequest(async (request, response) =>
+{
+    const uid = 'YBHqrkv2VBS5VAJuWweey1TO8zf2'
+    const dsn = await afs.collection('facturas').where('uid', '==', uid).get()
+    const facturas = dsn.docs.map(x => x.data())
+
+    // Recorro todas las facturas y voy acumulando x mes los totales de pendientes y cobradas
+    let facCob = {}
+    let facPend = {}
+    let facEmit = {}
+
+    for (let f of facturas) {
+        const day = moment(f.fecha).format('YYMMDD')
+        if ((f.estado === 'Cobrada') || (f.fechaPago)) {
+            if (!facCob[day])
+                facCob[day] = 0
+            facCob[day] += Number.parseInt(f.monto)
+        }
+        else {
+            if (!facPend[day])
+                facPend[day] = 0
+            facPend[day] += Number.parseInt(f.monto)
+        }
+        if (!facEmit[day])
+            facEmit[day] = 0
+        facEmit[day] += Number.parseInt(f.monto)
+    }
+    const rta = {
+        emitidas:facEmit,
+        cobradas:facCob,
+        pendientes:facPend
+    }
+    response.send(rta)
+    //await afs.collection("facturacion").doc(oldVersion).set(oldData, {merge: true})
+})
+
+
+function fcmPush(target, kid)
+{
     const payload = {
         notification: {
             title: 'Cumples INTEGRALMENTE',
@@ -62,10 +105,12 @@ function fcmPush(target: string, kid: string) {
     };
     //admin.messaging().sendToDevice('cLedIiDzTKe_GUvCbn0_qN:APA91bGkEmS0zYUqUrTCN_1ZSkb2L5AIkhIFgKnuxCcSz54fy8KbLfSa57Cjfhw5kiEGbOR97GTA2QtOBCbW4jlV6ZAZ', payload)
     admin.messaging().sendToTopic(target, payload)
-        .then(x => {
+        .then(x =>
+        {
             console.log('Msg sent ok to ' + target)
         })
-        .catch(err => {
+        .catch(err =>
+        {
             console.log('Error sending msg')
         })
 }
