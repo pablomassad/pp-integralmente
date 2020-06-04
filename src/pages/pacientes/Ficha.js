@@ -91,7 +91,7 @@ export default function Ficha()
         <Form>
             <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onChangePic} />
             <Main>
-                <Avatar src={selPatient.foto||tmpFoto} onClick={choosePic}>
+                <Avatar src={tmpFoto || selPatient.foto} onClick={choosePic}>
                 </Avatar>
                 <FullName>
                     <UserInput type="text" placeholder="Ingrese nombres" value={selPatient.nombres || ''} name="nombres" onChange={e => updateSelPatient('nombres', e.target.value)} />

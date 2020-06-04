@@ -256,7 +256,7 @@ export default function Facturas()
                     className="react-switch"
                     id="icon-switch"
                 />
-                <GlassButton onClick={openStatsHandle}>
+                <GlassButton width={40} onClick={openStatsHandle}>
                     <IconStats />
                 </GlassButton>
             </FacturasFilter>
@@ -389,19 +389,20 @@ export default function Facturas()
 }
 
 const FacturasFrame = styled.div`
+    --id:FacturasFrame;
 	background: #ddd;
 	height: 100%;
 `
 const FacturasFilter = styled.div`
-	--id: PatientFilter;
+	--id: FacturasFilter;
 	background: #ccc;
 	display: grid;
-	grid-template-columns: 50px 1fr 80px 50px;
+	grid-template-columns: 50px 1fr 80px 70px;
 	align-items: center;
 	box-shadow: 0 1px 3px black;
 `
 const Criteria = styled.input`
-	--name: 'Criteria';
+	--id: Criteria;
 	font-size: 15px;
 	color: #444;
 	background: white;
@@ -539,7 +540,7 @@ const IconAdd = styled.div`
 	font-weight: bold;
 `
 const IconStats = styled(StatsDots)`
-    width: 25px;
+    width: 18px;
     color: white;
 `
 const IconFacturas = styled(AttachMoney)`

@@ -447,9 +447,11 @@ const removeAttachment = (attachmentId) => (dispatch) =>
 {
 
 }
-const deleteFileStorage = (path, factura) => async dispatch =>
+const deleteFileStorage = (path, url) => async dispatch =>
 {
-    const photoRef = fbSto.getReferenceFromUrl(factura.url)
+    //const file = fbSto.getReferenceFromUrl(url)
+    
+    
     // @Override
     // public void onSuccess(Void aVoid) {
     //     // File deleted successfully

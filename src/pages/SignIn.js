@@ -107,7 +107,7 @@ export default function SignIn()
 				    </GlassButton>
                 </RegisterReset>
             </FormLogin>
-            <Version>v1.2</Version>
+            <Version>v1.4</Version>
         </LoginFrame>
     )
 }
@@ -120,7 +120,7 @@ const LoginFrame = styled.div`
 	border-radius: 20px;
 	padding: 20px 20px 10px 20px;
 	margin: auto;
-	margin-top: 10%;
+	margin-top: 8%;
 	max-width: 500px;
 	width: 80%;
 `

@@ -23,6 +23,8 @@ export default function Profile()
     const userInfo = useSelector(st => st.fb.userInfo)
     const [selUser, setSelUser] = useState(userInfo)
     const [fileInfo, setFileInfo] = useState()
+    const [tmpFoto, setTmpFoto] = useState()
+
     const inputFile = useRef()
 
     const evalEdad = (nac) =>
@@ -58,8 +60,11 @@ export default function Profile()
 
         setFileInfo(e.target.files[0])
         var reader = new FileReader();
-        reader.onload = (e) => selUser.foto = e.target.result
+        reader.onload = (e) => {
+            setTmpFoto(e.target.result)
+        }
         reader.readAsDataURL(e.target.files[0])
+        inputFile.current.id = new Date().getTime()
     }
     const resetPassword = (e)=>{
         dispatch(bl.sendResetEmail(selUser.email))
@@ -95,7 +100,7 @@ export default function Profile()
     return (
         <UserFrame>
             <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onChangePic} />
-            <Avatar src={selUser.photoURL} onClick={choosePic}>
+            <Avatar src={tmpFoto || selUser.photoURL} onClick={choosePic}>
             </Avatar>
             <div>
                 <FieldDescription>
