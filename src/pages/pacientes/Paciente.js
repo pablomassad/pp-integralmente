@@ -14,8 +14,6 @@ import {useSelector} from 'react-redux'
 
 export default function Paciente(props)
 {
-    console.log("....[Paciente]", props)
-
     const [selTool, setSelTool] = useState("ficha")
 
     return (

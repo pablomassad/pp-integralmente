@@ -13,6 +13,7 @@ const setSession = createAction('fb.setSession')
 const setAllNews = createAction('fb.setAllNews')
 const setNews = createAction('fb.setNews')
 const setAttachments = createAction('fb.setAttachments')
+const setStats = createAction('fb.setStats')
 
 const fetchUserRequest = createAction('fetchUserRequest')
 const fetchUserSuccess = createAction('fetchUserSuccess')
@@ -46,5 +47,6 @@ export const fb = {
     setSession,
     setAllNews,
     setNews,
-    setAttachments
+    setAttachments,
+    setStats
 }

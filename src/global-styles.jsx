@@ -29,6 +29,11 @@ export default createGlobalStyle`
         background-position: center;
     }
 
+    .zoom {
+        fill: none;
+        pointer-events: all;
+    }
+
 
 .comboFieldsControl{
     font-size:14px;

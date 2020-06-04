@@ -18,15 +18,12 @@ export default function Ficha()
     const dispatch = useDispatch()
     const history = useHistory()
 
-    const userInfo = useSelector(st => st.fb.userInfo)
     const origPatient = useSelector(st => st.fb.selPatient)
     const [fileInfo, setFileInfo] = useState()
     const inputFile = useRef()
 
     const [selPatient, setSelPatient] = useState(origPatient)
-
-    console.log('....[Ficha]')
-
+    const [tmpFoto, setTmpFoto] = useState()
 
     const evalEdad = (nac) =>
     {
@@ -54,9 +51,11 @@ export default function Ficha()
 
         setFileInfo(e.target.files[0])
         var reader = new FileReader();
-        reader.onload = (e) => selPatient.foto = e.target.result
-        reader.readAsDataURL(e.target.files[0]);
-        inputFile.current.id = "hola"
+        reader.onload = (e) => {
+            setTmpFoto(e.target.result)
+        }
+        reader.readAsDataURL(e.target.files[0])
+        inputFile.current.id = new Date().getTime()
     }
     const cancelChanges = (e) =>
     {
@@ -71,8 +70,8 @@ export default function Ficha()
         if (pat) {
             if (fileInfo) {
                 if (selPatient.foto) {
-                    //    await dispatch(bl.deleteFileStorage('pacientes', selPatient.foto))
                     console.log('nombre existente: ', selPatient.foto)
+                    await dispatch(bl.deleteFileStorage(selPatient.id, selPatient.foto))
                 }
                 const url = await dispatch(bl.uploadFileStorage(pat.id, fileInfo)) // res.id
                 selPatient.foto = url
@@ -92,7 +91,7 @@ export default function Ficha()
         <Form>
             <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onChangePic} />
             <Main>
-                <Avatar src={selPatient.foto} onClick={choosePic}>
+                <Avatar src={selPatient.foto||tmpFoto} onClick={choosePic}>
                 </Avatar>
                 <FullName>
                     <UserInput type="text" placeholder="Ingrese nombres" value={selPatient.nombres || ''} name="nombres" onChange={e => updateSelPatient('nombres', e.target.value)} />
@@ -127,13 +126,13 @@ export default function Ficha()
 
             </Row>
             <Contacto>
-                <UserInput type="text" placeholder="Nombre madre" value={selPatient.madre || ''} name="madre" onChange={e => updateSelPatient('madre', e.target.value)} />
-                <UserInput type="text" placeholder="Nombre padre" value={selPatient.padre || ''} name="padre" onChange={e => updateSelPatient('padre', e.target.value)} />
-                <UserInput type="text" placeholder="Tel. madre" value={selPatient.telmadre || ''} name="telmadre" onChange={e => updateSelPatient('telmadre', e.target.value)} />
-                <UserInput type="number" placeholder="Tel. padre" value={selPatient.telpadre || ''} name="telpadre" onChange={e => updateSelPatient('telpadre', e.target.value)} />
-                <UserInput type="text" placeholder="Correo electrónico" value={selPatient.email || ''} name="email" onChange={e => updateSelPatient('email', e.target.value)} />
-                <UserInput type="text" placeholder="Domicilio" value={selPatient.domicilio || ''} name="domicilio" onChange={e => updateSelPatient('domicilio', e.target.value)} />
-                <UserInput type="text" placeholder="Ciudad" value={selPatient.ciudad || ''} name="ciudad" onChange={e => updateSelPatient('ciudad', e.target.value)} />
+                <Field>Madre</Field><UserInput type="text" placeholder="Nombre madre" value={selPatient.madre || ''} name="madre" onChange={e => updateSelPatient('madre', e.target.value)} />
+                <Field>Tel.Madre</Field><UserInput type="text" placeholder="Tel. madre" value={selPatient.telmadre || ''} name="telmadre" onChange={e => updateSelPatient('telmadre', e.target.value)} />
+                <Field>Padre</Field><UserInput type="text" placeholder="Nombre padre" value={selPatient.padre || ''} name="padre" onChange={e => updateSelPatient('padre', e.target.value)} />
+                <Field>Tel.Padre</Field><UserInput type="number" placeholder="Tel. padre" value={selPatient.telpadre || ''} name="telpadre" onChange={e => updateSelPatient('telpadre', e.target.value)} />
+                <Field>Correo</Field><UserInput type="text" placeholder="Correo electrónico" value={selPatient.email || ''} name="email" onChange={e => updateSelPatient('email', e.target.value)} />
+                <Field>Domicilio</Field><UserInput type="text" placeholder="Domicilio" value={selPatient.domicilio || ''} name="domicilio" onChange={e => updateSelPatient('domicilio', e.target.value)} />
+                <Field>Ciudad</Field><UserInput type="text" placeholder="Ciudad" value={selPatient.ciudad || ''} name="ciudad" onChange={e => updateSelPatient('ciudad', e.target.value)} />
             </Contacto>
             <Actions>
                 <GlassButton onClick={cancelChanges}>Cancelar</GlassButton>
@@ -166,6 +165,7 @@ const Avatar = styled.img`
     width:85px;
     height: 85px;
     box-shadow:1px 1px 3px black;
+    object-fit: cover;
 `
 const UserInput = styled.input`
     --name: 'UserInput';
@@ -192,7 +192,7 @@ const UserInput = styled.input`
 	}
 `
 const Edad = styled.div`
-    text-align:center
+    text-align:center;
 `
 const Row = styled.div`
     display:grid;
@@ -200,11 +200,17 @@ const Row = styled.div`
     align-items:center;
 `
 const Contacto = styled.div`
+    display:grid;
+    grid-template-columns:50px 1fr;
+    align-items: center;
     background: lightgray;
     border-radius: 10px;
     box-shadow: 1px 1px 3px black;
     margin: 10px;
-    padding: 10px 0;
+    padding: 10px 0 10px 10px;
+`
+const Field = styled.div`
+    font-weight:bold;
 `
 const Actions = styled.div`
     display:grid;

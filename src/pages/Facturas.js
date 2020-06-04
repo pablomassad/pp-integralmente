@@ -189,7 +189,8 @@ export default function Facturas()
         console.log('file: ', e.target.files[0])
         setFileInfo(e.target.files[0])
     }
-    const openStatsHandle =  e=>{
+    const openStatsHandle = e =>
+    {
         history.push('/stats')
     }
 
@@ -256,7 +257,7 @@ export default function Facturas()
                     id="icon-switch"
                 />
                 <GlassButton onClick={openStatsHandle}>
-                    <IconStats/>
+                    <IconStats />
                 </GlassButton>
             </FacturasFilter>
             <FacturasLayout>
@@ -276,7 +277,7 @@ export default function Facturas()
                         value={selField}
                         placeholder="Orden por"
                     />
-                    <div onClick={onSelDirectionHandle} style={{textAlign: 'right'}}>
+                    <div onClick={onSelDirectionHandle} style={{textAlign: 'center'}}>
                         {selDirection === 'asc' ? <div>🔼</div> : <div>🔽</div>}
                     </div>
                 </FactHeader>
@@ -286,19 +287,19 @@ export default function Facturas()
                             {f.id !== selFactura?.id
                                 ? <FacturaCard onClick={e => onSelFactura(f)}>
                                     <Cell>
+                                        <Label>O.Social:</Label>
+                                        <ObraSoc>{f.obrasocial?.toUpperCase()}</ObraSoc>
+                                    </Cell>
+                                    <Cell>
+                                        <Label>Monto</Label>${f.monto}
+                                    </Cell>                                    
+                                    <Cell>
                                         <Label>Emitida:</Label>
                                         {moment(f.fecha).format('DD/MM/YY')}
                                     </Cell>
                                     <Cell>
                                         <Label>Pago:</Label>
                                         {f.fechaPago ? moment(f.fechaPago).format('DD/MM/YY') : ''}
-                                    </Cell>
-                                    <Cell>
-                                        <Label>O.Social:</Label>
-                                        {f.obrasocial}
-                                    </Cell>
-                                    <Cell>
-                                        <Label>Monto</Label>${f.monto}
                                     </Cell>
                                     <Cell>
                                         <Label>Nr:</Label>
@@ -310,7 +311,22 @@ export default function Facturas()
                                     </Cell>
                                 </FacturaCard>
                                 : <FacturaForm>
-                                    <div style={{fontSize:'11px', gridColumn:'1 / 3'}}>{f.observaciones}</div>
+                                    <div style={{fontSize: '11px', gridColumn: '1 / 3'}}>{f.observaciones}</div>
+                                    <UserInput
+                                        type="text"
+                                        placeholder="Obra Social"
+                                        value={selFactura.obrasocial || ''}
+                                        name="obrasocial"
+                                        onChange={e => updateSelFactura('obrasocial', e.target.value)}
+                                    />
+                                    <UserInput
+                                        type="number"
+                                        placeholder="Monto"
+                                        value={selFactura?.monto || ''}
+                                        name="monto"
+                                        onChange={e => updateSelFactura('monto', e.target.value)}
+                                        style={{textAlign: 'right'}}
+                                    />
                                     <DatePicker
                                         placeholderText="Fecha de Emisión"
                                         dateFormat="dd-MM-yyyy"
@@ -327,22 +343,6 @@ export default function Facturas()
                                         onChange={e => updateSelFactura('fechaPago', e != null ? e.getTime() : null)}
                                         className="customDatePicker"
                                     />
-                                    <UserInput
-                                        type="text"
-                                        placeholder="Obra Social"
-                                        value={selFactura.obrasocial || ''}
-                                        name="obrasocial"
-                                        onChange={e => updateSelFactura('obrasocial', e.target.value)}
-                                    />
-                                    <UserInput
-                                        type="number"
-                                        placeholder="Monto"
-                                        value={selFactura?.monto || ''}
-                                        name="monto"
-                                        onChange={e => updateSelFactura('monto', e.target.value)}
-                                        style={{textAlign: 'right'}}
-                                    />
-
                                     <UserInput
                                         type="number"
                                         placeholder="Nr.Factura"
@@ -431,14 +431,18 @@ const Label = styled.div`
 	font-weight: bold;
 	float: left;
 `
-const Status = styled.div`text-align: right;`
+const ObraSoc = styled.div`
+    text-align: right;
+    font-weight:bold;
+    color:blue;
+`
 const FactHeader = styled.div`
 	--id: FactHeader;
 	margin: 5px;
 	font-size: 19px;
 	color: black;
 	display: grid;
-	grid-template-columns: 100px 1fr 150px 30px;
+	grid-template-columns: 100px 1fr 150px 40px;
 	align-items: center;
 	/* justify-content: center; */
 `
@@ -451,6 +455,9 @@ const FacturasLayout = styled.div`--id: FacturasLayout;`
 const FacturasList = styled.div`
 	overflow: auto;
 	height: calc(100vh - 155px);
+    display: grid;
+    grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));
+    align-items:center;
 `
 const FactItem = styled.div`
 	--id: FactItem;

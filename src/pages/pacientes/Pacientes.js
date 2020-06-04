@@ -43,7 +43,7 @@ export default function Pacientes()
     const [criteria, setCriteria] = useState('')
 
     const data = patients
-        .filter((f) => criteria.length < 3 || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase())))
+        .filter((f) => criteria.length < 2 || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase())))
         .sort((f1, f2) =>
         {
             const d1 = f1['apellido']
@@ -111,6 +111,9 @@ export default function Pacientes()
                     value={criteria}
                     onChange={e => setCriteria(e.target.value)}
                 />
+                <Total>
+                    Total: {data.length}
+                </Total>
             </PatientFilter>
             <PatientList>
                 {data.map((p, i) => (
@@ -149,7 +152,7 @@ const PatientFilter = styled.div`
     --id:PatientFilter;
     background:#ccc;
     display:grid;
-    grid-template-columns:50px 1fr;
+    grid-template-columns:50px 1fr 75px;
     align-items:center;
     box-shadow: 0 1px 3px black;
 `
@@ -230,4 +233,8 @@ const Description = styled.div`
 const IconAdd = styled.div`
 	font-size: 24px;
 	font-weight: bold;
+`
+const Total = styled.div`
+	font-weight: bold;
+	color: black;
 `

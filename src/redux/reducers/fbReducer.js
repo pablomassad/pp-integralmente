@@ -14,7 +14,8 @@ const initialState = {
     notifications: [],
     token: undefined,
     webToken:undefined,
-    attachments:[]
+    attachments:[],
+    stats:undefined
 }
 
 export default handleActions(
@@ -72,9 +73,13 @@ export default handleActions(
         },        
         [fb.setAttachments]: (state, action) =>
         {
-            console.log(action.payload.Attachments)
+            console.log(action.payload.attachments)
             return {...state, attachments: action.payload.attachments}
-        },               
+        },  
+        [fb.setStats]: (state, action) =>
+        {
+            return {...state, stats: action.payload.stats}
+        },                       
     },
     initialState
 )

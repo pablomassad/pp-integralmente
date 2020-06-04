@@ -107,7 +107,7 @@ export default function SignIn()
 				    </GlassButton>
                 </RegisterReset>
             </FormLogin>
-            <Version>v1.1</Version>
+            <Version>v1.2</Version>
         </LoginFrame>
     )
 }
@@ -163,8 +163,9 @@ const RegisterReset = styled.div`
     align-items:center;
 `
 const Version = styled.div`
-    font-size:10px;
+    font-size:12px;
     text-align:center;
     margin:0;
     padding:0;
+    color:black;
 `

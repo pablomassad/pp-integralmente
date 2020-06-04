@@ -1,6 +1,6 @@
 import {fb, ui} from '../'
 import {fbAuth, fbMsg, fbSto, fbFs} from '../../fb.service'
-
+import moment from 'moment'
 import {Plugins, PushNotification, PushNotificationToken, PushNotificationActionPerformed} from '@capacitor/core'
 import {FCM} from "capacitor-fcm";
 
@@ -8,7 +8,6 @@ const {PushNotifications} = Plugins;
 const fcm = new FCM();
 // alternatively - without types
 const {FCMPlugin} = Plugins;
-
 
 
 const login = payload => async dispatch =>
@@ -248,6 +247,7 @@ const getPatients = () => async (dispatch, getState) =>
 const updatePatient = patient => async (dispatch, getState) =>
 {
     try {
+        dispatch(ui.showLoader(true))
         if (patient.id === 0) delete patient.id
 
         delete patient.dirty
@@ -261,6 +261,9 @@ const updatePatient = patient => async (dispatch, getState) =>
         return patient
     } catch (error) {
         return false
+    }
+    finally{
+        dispatch(ui.showLoader(false))
     }
 }
 const removePatient = patientId => async dispatch =>
@@ -508,9 +511,35 @@ const saveFirebaseUserInfo = usr => async dispatch =>
         merge: true
     })
 }
+const getStatistics = () => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    const dsn = await fbFs.collection('facturacion').get()
+    const stats = dsn.docs.map(x =>
+    {
+        return {
+            ...x.data(),
+            ...{
+                id: convertToDate(x.id) //moment(x.id, "YYMM").toDate() //x.id
+            }
+        }
+    })
+    dispatch(fb.setStats({stats}))
+    dispatch(ui.showLoader(false))
+    return true
+}
 
 
 ///////////////////////////////////////////////////////
+const convertToDate = (yymm) =>
+{
+    var year = 20 + yymm.substring(0, 2);
+    var month = yymm.substring(2, 4);
+
+    var date = new Date(year, month - 1);
+    console.log('date: ', date)
+    return date
+}
 const getFirebaseUserInfo = async id =>
 {
     const dsn = await fbFs.doc(`users/${id}`).get()
@@ -581,5 +610,6 @@ export const bl = {
     uploadFileStorage,
     requestPermission,
     updateNewsRead,
-    saveFirebaseUserInfo
+    saveFirebaseUserInfo,
+    getStatistics
 }

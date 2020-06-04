@@ -1,13 +1,24 @@
+⏰ Spinner location center
+⏰ Spinner progress bar para uploads binarios
 ⏰ Agenda de pacientes global para campos comunes
         .Seleccion de pacientes desde la agenda global para incluirlo en listado particular
-⏰ Login individual de profesionales
-⏰ Registracion de nuevos profesionales
-⏰ Apartado de comunicaciones globales
+        .Mostrar en la tarjeta datos de contacto 
+
 ⏰ error boundary redirection to login
 ⏰ Auditoria de utilizacion (stats)
-⏰ Opciones/configuracion del perfil y preferencias
+⏰ Comunicados: Quien administra los comunicados? administrador? o cualqueira
+⏰ Proporcionalidad en graficos fotos del resto de la applicacion (como en pacientes)
 
 
+👍 Boton de acceso a Stats graphics desde Facturas
+👍 Agregar contador de pacientes dinamico
+👍 Titulo de campos en contacto de paciente
+👍 Factuas invertido de campos primeras dos filas
+👍 Agregado de Observaciones en edicion de Facturas
+👍 Opciones/configuracion del perfil y preferencias
+👍 Login individual de profesionales
+👍 Registracion de nuevos profesionales
+👍 Apartado de comunicaciones globales
 👍 edit picture
 👍 Ocupacion de consultorios
 👍 cancel / accept ficha
