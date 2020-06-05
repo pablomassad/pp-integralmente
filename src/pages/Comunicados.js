@@ -6,7 +6,6 @@ import {File} from '@styled-icons/boxicons-regular/File'
 import {Trash} from '@styled-icons/heroicons-outline/Trash'
 
 import GlassButton from '../common/GlassButton'
-import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector, shallowEqual} from 'react-redux'
 import {bl, ui} from '../redux'
 
@@ -23,18 +22,25 @@ import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
 export default function Comunicados()
 {
     console.log('......[Comunicados]')
-    const history = useHistory()
     const dispatch = useDispatch()
 
     const news = useSelector(st => st.fb.allNews)
+    const userInfo = useSelector(st => st.fb.userInfo)
+    const users = useSelector(st => st.fb.users)
 
-    const [fileInfo, setFileInfo] = useState()
     const newsList = useRef()
 
     const [criteria, setCriteria] = useState('')
     const [selNews, setSelNews] = useState(null)
 
+
     const data = news
+        .map(s=>{
+            const usr = users.find(u=>u.id === s.uid)
+            console.log('usuario:', usr)
+            const o = {...s, displayName:usr.displayName, photo:usr.photoURL}
+            return o
+        })
         .filter((s) => criteria.length < 3 || Object.keys(s).some((k) => `${s[k]}`.toLowerCase().includes(criteria.toLowerCase())))
         .map((s) => selNews?.id === s.id ? selNews : s);
 
@@ -62,12 +68,17 @@ export default function Comunicados()
     }
     const onSelNews = (e, s) =>
     {
-        e.preventDefault()
-        if (selNews?.dirty) return // Comunicado en edicion
+        if (s.uid === userInfo.id) {
+            e.preventDefault()
+            if (selNews?.dirty) return // Comunicado en edicion
 
-        const news = {...s}
-        console.log('onSelNews', news)
-        setSelNews(news)
+            const news = {...s}
+            console.log('onSelNews', news)
+            setSelNews(news)
+        }
+        else {
+            dispatch(ui.showMessage({msg: 'Unicamente el autor del comunicado puede editarlo!', type: 'info'}))
+        }
     }
     const updateNews = (field, value) =>
     {
@@ -88,27 +99,15 @@ export default function Comunicados()
     }
     const acceptChanges = async () =>
     {
-        // if (fileInfo) {
-        //     if (selNews.nombre) {
-        //         //    await dispatch(bl.deleteFileStorage('news', selFactura.nombre))
-        //         console.log('nombre existente: ', selNews.nombre)
-        //     }
-
-        //     const url = await dispatch(bl.uploadFileStorage('news', fileInfo))
-        //     selNews.url = url
-        //     selNews.nombre = fileInfo.name
-        // }
         console.log('updated News: ', selNews)
         const res = await dispatch(bl.updateNews(selNews))
         if (res) {
             dispatch(ui.showMessage({msg: 'Comunicado guardado', type: 'success'}))
-            setFileInfo(undefined)
             setSelNews(null)
         } else {
             dispatch(ui.showMessage({msg: 'No se ha podido guardar el comunicado', type: 'error'}))
         }
     }
-
 
     useEffect(() =>
     {
@@ -128,7 +127,7 @@ export default function Comunicados()
             </NewsFilter>
             <NewsHeader>
                 <div>Total de Comunicados:{data.length}</div>
-            </NewsHeader>            
+            </NewsHeader>
             <NewsList ref={newsList}>
                 {dataAndNew.map((s, i) =>
                     <div key={i} >
@@ -137,11 +136,13 @@ export default function Comunicados()
                                 <NewsInfo>
                                     <Label>Fecha:</Label>
                                     {moment(s.fecha).format('DD/MM/YY')}
-                                    <Label>Comunicado:</Label>
+                                    <Label>Autor:</Label>
+                                    <Label>{s.displayName}</Label>
                                 </NewsInfo>
                                 <Observaciones>
                                     {s.descripcion}
                                 </Observaciones>
+                                <Avatar src={s.photo} />
                             </NewsCard>
                             : <NewsForm>
                                 <DatePicker
@@ -230,6 +231,18 @@ const Label = styled.div`
 	font-weight: bold;
 	float: left;
 `
+const Avatar = styled.img`
+    position:absolute;
+	overflow: hidden;
+	border-radius: 50%;
+    top: 0px;
+    right: 0px;
+	width: 50px;
+	height: 50px;
+    object-fit: cover;
+    margin:auto;
+	box-shadow: 1px 1px 5px black;
+`
 const NewsHeader = styled.div`
 	--id:NewsHeader;
 	margin: 5px;
@@ -267,9 +280,11 @@ const NewsForm = styled.div`
     border-radius: 5px;
 `
 const NewsInfo = styled.div`
+    --id:NewsInfo;
     padding: 0 5px;
     display: grid;
-    grid-template-columns: 90px 1fr;
+    grid-gap: 10px;
+    grid-template-columns: 70px 1fr;
 `
 const Observaciones = styled.div`
 	--id: Observaciones;
@@ -323,10 +338,6 @@ const IconNews = styled(BackInTime)`
     color: ${props => (props.active ? '#1c88e6' : 'gray')};
     width: ${props => (props.active ? '38px' : '40px')};
     margin: 10px;
-`
-const IconView = styled(File)`
-    width: 25px;
-    color: white;
 `
 const IconDelete = styled(Trash)`
     width:25px;

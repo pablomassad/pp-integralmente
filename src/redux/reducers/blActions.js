@@ -9,7 +9,16 @@ const fcm = new FCM();
 // alternatively - without types
 const {FCMPlugin} = Plugins;
 
-
+const getUsers = payload => async dispatch =>
+{
+    try {
+        const dsn = await fbFs.collection('users').get()
+        const users = dsn.docs.map(x => x.data())
+        dispatch(fb.setUsers({users}))
+    } catch (error) {
+        dispatch(ui.showMessage({msg: 'No se pudo obtener usuarios.', type: 'error'}))
+    }
+}
 const login = payload => async dispatch =>
 {
     let res = false
@@ -224,25 +233,37 @@ const initMobileNotifications = () => (dispatch, getState) =>
 }
 const getAllPatients = () => async (dispatch, getState) =>
 {
-    dispatch(ui.showLoader(true))
-    //const dsn = await fbFs.collection('pacientes').get()
-    const dsn = await fbFs.collection('pacientes').get()
-    const patients = dsn.docs.map(x => x.data())
-    dispatch(
-        fb.setPatients({
-            patients
-        })
-    )
-    dispatch(ui.showLoader(false))
+    try {
+        dispatch(ui.showLoader(true))
+        //const dsn = await fbFs.collection('pacientes').get()
+        const dsn = await fbFs.collection('pacientes').get()
+        const patients = dsn.docs.map(x => x.data())
+        dispatch(
+            fb.setPatients({
+                patients
+            })
+        )
+    } catch (error) {
+        dispatch(ui.showMessage({msg: 'No se pudo obtener pacientes de la agenda, intente nuevamente.', type: 'error'}))
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+    }
 }
 const getPatients = () => async (dispatch, getState) =>
 {
-    dispatch(ui.showLoader(true))
-    const userInfo = getState().fb.userInfo
-    const dsn = await fbFs.collection('pacientes').where('uid', '==', userInfo.id).get()
-    const patients = dsn.docs.map(x => x.data())
-    dispatch(fb.setPatients({patients}))
-    dispatch(ui.showLoader(false))
+    try {
+        dispatch(ui.showLoader(true))
+        const userInfo = getState().fb.userInfo
+        const dsn = await fbFs.collection('pacientes').where('uid', '==', userInfo.id).get()
+        const patients = dsn.docs.map(x => x.data())
+        dispatch(fb.setPatients({patients}))
+    } catch (error) {
+        dispatch(ui.showMessage({msg: 'No se pudo obtener los pacientes, intente nuevamente.', type: 'error'}))
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+    }
 }
 const updatePatient = patient => async (dispatch, getState) =>
 {
@@ -262,7 +283,7 @@ const updatePatient = patient => async (dispatch, getState) =>
     } catch (error) {
         return false
     }
-    finally{
+    finally {
         dispatch(ui.showLoader(false))
     }
 }
@@ -372,6 +393,7 @@ const getAllNews = () => (dispatch) =>
 {
     fbFs.collection('news').onSnapshot(qsn =>
     {
+        console.log('Snapshot News!!!!')
         const arr = qsn.docs.map(x =>
         {
             return {
@@ -395,18 +417,22 @@ const getAllNews = () => (dispatch) =>
         dispatch(fb.setAllNews({allNews}))
     })
 }
-const updateNews = news => async (dispatch) =>
+const updateNews = news => async (dispatch, getState) =>
 {
     dispatch(ui.showLoader(true))
     try {
         if (news.id === 0) delete news.id
 
         delete news.dirty
+        delete news.photo
+        delete news.displayName
 
         if (!news.id) {
             const tmp = await fbFs.collection('news').add(news)
             news.id = tmp.id
         }
+        const uid = getState().fb.userInfo.uid
+        news.uid = uid
         await fbFs.collection('news').doc(news.id).set(news, {merge: true})
         await dispatch(getAllNews())
         return true
@@ -450,8 +476,8 @@ const removeAttachment = (attachmentId) => (dispatch) =>
 const deleteFileStorage = (path, url) => async dispatch =>
 {
     //const file = fbSto.getReferenceFromUrl(url)
-    
-    
+
+
     // @Override
     // public void onSuccess(Void aVoid) {
     //     // File deleted successfully
@@ -530,6 +556,30 @@ const getStatistics = () => async (dispatch) =>
     dispatch(ui.showLoader(false))
     return true
 }
+const getOccupation = () => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    const dd = await fbFs.collection('config').doc('modules').get()
+    const occupation = dd.data().occupation
+    dispatch(fb.setOccupation({occupation}))
+    dispatch(ui.showLoader(false))
+    return true
+}
+const updateOccupation = (occupation) => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    try {
+        await fbFs.collection('config').doc('modules').set(occupation, {merge: true})
+        await dispatch(getOccupation())
+        return true
+    } catch (error) {
+        return false
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+    }
+}
+
 
 
 ///////////////////////////////////////////////////////
@@ -586,6 +636,7 @@ const getUserDocument = async uid =>
 
 
 export const bl = {
+    getUsers,
     login,
     register,
     sendResetEmail,
@@ -613,5 +664,7 @@ export const bl = {
     requestPermission,
     updateNewsRead,
     saveFirebaseUserInfo,
-    getStatistics
+    getStatistics,
+    getOccupation,
+    updateOccupation
 }

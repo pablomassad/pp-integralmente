@@ -2,6 +2,7 @@ import {handleActions} from 'redux-actions'
 import {fb} from './fbActions'
 
 const initialState = {
+    users: [],
     userInfo: null,
     facturas: [],
     selFactura: undefined,
@@ -13,13 +14,22 @@ const initialState = {
     selNews: undefined,
     notifications: [],
     token: undefined,
-    webToken:undefined,
-    attachments:[],
-    stats:undefined
+    webToken: undefined,
+    attachments: [],
+    stats: undefined,
+    occupation: {}
 }
 
 export default handleActions(
     {
+        [fb.setOccupation]: (state, action) =>
+        {
+            return {...state, occupation: action.payload.occupation}
+        },
+        [fb.setUsers]: (state, action) =>
+        {
+            return {...state, users: action.payload.users}
+        },
         [fb.addNotification]: (state, action) =>
         {
             return {...state, notifications: [...state.notifications, action.payload.notification]}
@@ -27,7 +37,7 @@ export default handleActions(
         [fb.setToken]: (state, action) =>
         {
             return {...state, token: action.payload.token}
-        }, 
+        },
         [fb.setWebToken]: (state, action) =>
         {
             return {...state, webToken: action.payload.webToken}
@@ -70,16 +80,16 @@ export default handleActions(
         [fb.setNews]: (state, action) =>
         {
             return {...state, selNews: {...state.selNews, ...action.payload}}
-        },        
+        },
         [fb.setAttachments]: (state, action) =>
         {
             console.log(action.payload.attachments)
             return {...state, attachments: action.payload.attachments}
-        },  
+        },
         [fb.setStats]: (state, action) =>
         {
             return {...state, stats: action.payload.stats}
-        },                       
+        },
     },
     initialState
 )

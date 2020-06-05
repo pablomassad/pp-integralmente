@@ -17,6 +17,11 @@ export default function Estadisticas()
     const [width, height] = useResizeObserver(wrapperRef)
     const dimensions = {width, height} //useResizeObserver(wrapperRef)
 
+    const factTypes = [
+        {tipo: 'facturadas', color: '#247fd0'},
+        {tipo: 'cobradas', color: 'green'},
+        {tipo: 'pendientes', color: 'red'}
+    ]
 
     const calculateMax = () =>
     {
@@ -102,11 +107,6 @@ export default function Estadisticas()
         axisXY.append('g').attr('class', 'axis axis--y').call(yAxis)
         //var points = clipLineas.append('g').attr('clip-path', 'url(#clip)')
 
-        const factTypes = [
-            {tipo: 'facturadas', color: 'blue'},
-            {tipo: 'cobradas', color: 'green'},
-            {tipo: 'pendientes', color: 'red'}
-        ]
         factTypes.forEach((ft, i) =>
         {
             clipLineas.append('path')
@@ -238,6 +238,17 @@ export default function Estadisticas()
 
     return (
         <StatsFrame ref={wrapperRef}>
+            <Title>Historial de facturación
+            </Title>
+
+            <References>
+                <Led background={'#247fd0'} />
+                <RefItem>Facturadas</RefItem>
+                <Led background={'green'} />
+                <RefItem>Cobradas</RefItem>
+                <Led background={'red'} />
+                <RefItem>Pendientes</RefItem>
+            </References>
             <Chart ref={svgRef} />
         </StatsFrame>
     )
@@ -248,6 +259,49 @@ const StatsFrame = styled.div`
 	--id: StatsFrame;
     background: lightgray;
     height: 94vh;
+`
+const Title = styled.div`
+    --id:Title;
+    padding:10px;
+    font-size:20px;
+    color:#333;
+    width:100vw;
+    text-align:center;
+    text-shadow: 1px 1px 1px white;
+    margin-bottom:10px;
+`
+const References = styled.div`
+    --id:References;
+    top: 650px;
+    border-radius: 10px;
+    background: white;
+    display: grid;
+    grid-template-columns: 30px 1fr 30px 1fr 30px 1fr ;
+    box-shadow: 0 0 2px grey;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    color: gray;
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 330px;
+    height: 25px;
+    font-size: 12px;
+    margin: auto;
+`
+const Led = styled.div`
+    --id:Led;
+    border-radius:50%;
+    width:15px;
+    height:15px;
+    background: ${props => ((props.background) ? props.background : 'gray')};
+    box-shadow:1px 1px 4px black;
+    justify-self:center;
+`
+const RefItem = styled.div`
+
 `
 const Chart = styled.svg`
 	--id: Chart;

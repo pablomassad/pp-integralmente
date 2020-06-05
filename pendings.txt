@@ -1,4 +1,3 @@
-⏰ Spinner location center
 ⏰ Spinner progress bar para uploads binarios
 ⏰ Agenda de pacientes global para campos comunes
         .Seleccion de pacientes desde la agenda global para incluirlo en listado particular
@@ -6,10 +5,12 @@
 
 ⏰ error boundary redirection to login
 ⏰ Auditoria de utilizacion (stats)
-⏰ Comunicados: Quien administra los comunicados? administrador? o cualqueira
-⏰ Proporcionalidad en graficos fotos del resto de la applicacion (como en pacientes)
+⏰ Comunicados: Verificar realtime de mensajeria
 
-
+👍 Estadisticas: Titulo y referencias 
+👍 Comunicados: Solo edita el autor
+👍 Spinner location center
+👍 Proporcionalidad en graficos fotos del resto de la applicacion (como en pacientes)
 👍 Boton de acceso a Stats graphics desde Facturas
 👍 Agregar contador de pacientes dinamico
 👍 Titulo de campos en contacto de paciente

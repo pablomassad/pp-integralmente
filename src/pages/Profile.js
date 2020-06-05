@@ -38,13 +38,13 @@ export default function Profile()
 
     const updateSelUser = (field, val) =>
     {
-        const newData = {...selUser, [field]:val}
+        const newData = {...selUser, [field]: val}
         setSelUser(newData)
     }
 
     const changeRoleHandle = isAdmin =>
     {
-        const newData = {...selUser, isAdmin:isAdmin}
+        const newData = {...selUser, isAdmin: isAdmin}
         setSelUser(newData)
     }
     const choosePic = e =>
@@ -60,13 +60,15 @@ export default function Profile()
 
         setFileInfo(e.target.files[0])
         var reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = (e) =>
+        {
             setTmpFoto(e.target.result)
         }
         reader.readAsDataURL(e.target.files[0])
         inputFile.current.id = new Date().getTime()
     }
-    const resetPassword = (e)=>{
+    const resetPassword = (e) =>
+    {
         dispatch(bl.sendResetEmail(selUser.email))
     }
     const cancelChanges = (e) =>
@@ -110,8 +112,8 @@ export default function Profile()
             </div>
 
             <RoleFrame>
-                <IconUser on={selUser.isAdmin !== true} name="usuario" onClick={e=>changeRoleHandle(false)}/>
-                <IconAdmin on={selUser.isAdmin === true} name="admin" onClick={e=>changeRoleHandle(true)}/>
+                <IconUser on={selUser.isAdmin !== true} name="usuario" onClick={e => changeRoleHandle(false)} />
+                <IconAdmin on={selUser.isAdmin === true} name="admin" onClick={e => changeRoleHandle(true)} />
             </RoleFrame>
 
             <BirthdayFrame>
@@ -211,7 +213,7 @@ const IconUser = styled(User)`
     width:${props => (props.on) ? '25px' : '25px'};
     opacity: ${props => (props.on) ? 1 : .5};
     color: ${props => (props.on) ? '#3181d6' : 'black'};
-    box-shadow: ${props => (props.on) ?'inset 1px 1px 3px black': '1px 1px 3px black'};
+    box-shadow: ${props => (props.on) ? 'inset 1px 1px 3px black' : '1px 1px 3px black'};
     padding: 10px;
     border-radius: 9px 0 0 9px;
 `
@@ -220,7 +222,8 @@ const IconAdmin = styled(UserGraduate)`
     width:${props => (props.on) ? '25px' : '25px'};
     opacity: ${props => (props.on) ? 1 : .5};
     color: ${props => (props.on) ? '#3181d6' : 'gray'};
-    box-shadow: ${props => (props.on) ?'inset 1px 1px 3px black': '1px 1px 3px black'};
+    box-shadow: ${props => (props.on) ? 'inset 1px 1px 3px black' : '1px 1px 3px black'};
     padding: 10px;
     border-radius: 0 9px 9px 0;
 `
+

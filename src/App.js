@@ -117,7 +117,7 @@ const Avatar = styled.img`
 	border-radius: 50%;
 	width: 50px;
 	height: 50px;
-	box-shadow: 1px 1px 3px black;
+	box-shadow: 2px 2px 6px black;
 `
 const NewsAlert = styled.div`
     --id: NewsAlert;

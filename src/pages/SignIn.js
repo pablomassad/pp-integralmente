@@ -59,6 +59,7 @@ export default function SignIn()
         const res = await dispatch(bl.login(o))
         if (res) {
             dispatch(bl.initPushing())
+            dispatch(bl.getUsers())
             history.push('/patients')
         }
     }
@@ -107,7 +108,7 @@ export default function SignIn()
 				    </GlassButton>
                 </RegisterReset>
             </FormLogin>
-            <Version>v1.4</Version>
+            <Version>v1.5</Version>
         </LoginFrame>
     )
 }

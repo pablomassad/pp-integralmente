@@ -10,11 +10,12 @@ export default function Loader()
 
     const styled = (overlay) ? {
         position: 'fixed',
-        width: '100%',
         height: '100vh',
         left: '0', right: '0', top: '0', bottom: '0',
         backgroundColor: 'rgba(25,25,25,0.7)',
-        zIndex: '9999'
+        zIndex: '9999',
+        paddingTop: '250px',
+        textAlign: 'center'
     } : null
 
     if (!overlay)
@@ -46,8 +47,7 @@ const heart = keyframes`
     }
 `
 const Spinner = styled.img`
+    --id:Spinner;
     animation: ${heart} 1s linear infinite;
     width: 200px;
-    margin-top: 20%;
-    margin-left: 40%;
 `

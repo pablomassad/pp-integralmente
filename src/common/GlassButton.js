@@ -15,7 +15,7 @@ export default (function GlassButton({
     foreground, 
     background, 
     margin,
-    noShadow,
+    empty,
     font,
     disabled})
 {
@@ -35,7 +35,7 @@ export default (function GlassButton({
                 color={foreground}
                 margin={margin}
                 background={background}
-                noShadow={noShadow}
+                empty={empty}
                 font={font}>
                 <FabChildren>
                     {children}
@@ -64,10 +64,10 @@ const FabBtn = styled.button`
     height:${props => (props.height) ? props.height + 'px' : '30px'};
 	border-radius: ${props => (props.radius) ? props.radius+'%' : '10px'};
     margin: ${props => (props.margin) ? props.margin+'px' : '10px'};
-	box-shadow: ${props => (props.noShadow) ? 'none': '1px 1px 5px black'};
+	box-shadow: ${props => (props.empty) ? 'none': '1px 1px 5px black'};
+	border: ${props => (props.empty) ? 'none': '1px solid black'};
     /* background-image: linear-gradient(#006280, #00c0ed); */
     background:${props => (props.disabled) ? 'grey' : ((props.background) ? props.background : '#1ba0e0')};
-    /* , 0 0 50px #aaa; */
 
     &:after{
         content: '';
