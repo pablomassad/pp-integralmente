@@ -24,6 +24,7 @@ import Opciones from './pages/Opciones'
 import Agenda from './pages/Agenda'
 import Comunicados from './pages/Comunicados'
 import Ocupacion from './pages/Ocupacion'
+import Feedback from './pages/Feedback'
 
 export default function App()
 {
@@ -91,6 +92,7 @@ export default function App()
                 <Route exact path="/news" component={Comunicados} />
                 <Route exact path="/occupation" component={Ocupacion} />
                 <Route exact path="/options" component={Opciones} />
+                <Route exact path="/feedback" component={Feedback} />
                 <Route>
                     <h1>404</h1>
                 </Route>
@@ -117,6 +119,7 @@ const Avatar = styled.img`
 	border-radius: 50%;
 	width: 50px;
 	height: 50px;
+    object-fit: cover;
 	box-shadow: 2px 2px 6px black;
 `
 const NewsAlert = styled.div`

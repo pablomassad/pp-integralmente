@@ -5,6 +5,7 @@ import {AttachMoney} from '@styled-icons/material-sharp/AttachMoney'
 import {FileUpload} from '@styled-icons/fa-solid/FileUpload'
 import {File} from '@styled-icons/boxicons-regular/File'
 import {Trash} from '@styled-icons/heroicons-outline/Trash'
+import {Download} from '@styled-icons/boxicons-regular/Download'
 import GlassButton from '../common/GlassButton'
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector, shallowEqual} from 'react-redux'
@@ -155,24 +156,29 @@ export default function Facturas()
     }
     const acceptChanges = async () =>
     {
-        if (fileInfo) {
-            if (selFactura.nombre) {
-                //    await dispatch(bl.deleteFileStorage('facturas', selFactura.nombre))
-                console.log('nombre existente: ', selFactura.nombre)
-            }
+        const found = dataAndNew.filter(x => x.nro === selFactura.nro)
+        if (found.length > 1)
+            dispatch(ui.showMessage({msg: 'El nro.de factura ya existe!', type: 'warning'}))
+        else {
+            if (fileInfo) {
+                if (selFactura.nombre) {
+                    //    await dispatch(bl.deleteFileStorage('facturas', selFactura.nombre))
+                    console.log('nombre existente: ', selFactura.nombre)
+                }
 
-            const url = await dispatch(bl.uploadFileStorage('facturas', fileInfo))
-            selFactura.url = url
-            selFactura.nombre = fileInfo.name
-        }
-        console.log('updated Factura: ', selFactura)
-        const res = await dispatch(bl.updateFactura(selFactura))
-        if (res) {
-            dispatch(ui.showMessage({msg: 'Factura guardada', type: 'success'}))
-            setFileInfo(undefined)
-            setSelFactura(null)
-        } else {
-            dispatch(ui.showMessage({msg: 'No se ha podido guardar la factura', type: 'error'}))
+                const url = await dispatch(bl.uploadFileStorage('facturas', fileInfo))
+                selFactura.url = url
+                selFactura.nombre = fileInfo.name
+            }
+            console.log('updated Factura: ', selFactura)
+            const res = await dispatch(bl.updateFactura(selFactura))
+            if (res) {
+                dispatch(ui.showMessage({msg: 'Factura guardada', type: 'success'}))
+                setFileInfo(undefined)
+                setSelFactura(null)
+            } else {
+                dispatch(ui.showMessage({msg: 'No se ha podido guardar la factura', type: 'error'}))
+            }
         }
     }
     const choosePDF = e =>
@@ -192,6 +198,33 @@ export default function Facturas()
     const openStatsHandle = e =>
     {
         history.push('/stats')
+    }
+    const downloadCSVHandle = e =>
+    {
+        const info = data
+            .sort((f1, f2) =>
+            {
+                const d1 = f1['fecha']
+                const d2 = f2['fecha']
+                const s1 = `${d1}`
+                const s2 = `${d2}`
+                return s2.localeCompare(s1)
+            })
+        let result = "Nro, ObraSocial, Monto, Fecha" + '\n'
+        for (let fact of info) {
+            result += fact.nro + ',' + fact.obrasocial + ',' + fact.monto + ',' + moment(fact.fecha).format('DD-MM-YYYY') + '\n'
+        }
+        downloadCSV("facturas.csv", result)
+    }
+    const downloadCSV = (filename, text) =>
+    {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
     }
 
     useEffect(() =>
@@ -256,13 +289,16 @@ export default function Facturas()
                     className="react-switch"
                     id="icon-switch"
                 />
+                <GlassButton width={40} onClick={downloadCSVHandle}>
+                    <IconDownload />
+                </GlassButton>
                 <GlassButton width={40} onClick={openStatsHandle}>
                     <IconStats />
                 </GlassButton>
             </FacturasFilter>
             <FacturasLayout>
                 <FactHeader>
-                    <div>
+                    <div style={{fontSize:'18px', paddingTop:'1px'}}>
                         Total:({data.length}) $
 					</div>
                     <Total>
@@ -292,7 +328,7 @@ export default function Facturas()
                                     </Cell>
                                     <Cell>
                                         <Label>Monto</Label>${f.monto}
-                                    </Cell>                                    
+                                    </Cell>
                                     <Cell>
                                         <Label>Emitida:</Label>
                                         {moment(f.fecha).format('DD/MM/YY')}
@@ -397,7 +433,7 @@ const FacturasFilter = styled.div`
 	--id: FacturasFilter;
 	background: #ccc;
 	display: grid;
-	grid-template-columns: 50px 1fr 80px 70px;
+	grid-template-columns: 50px 1fr 80px 60px 70px;
 	align-items: center;
 	box-shadow: 0 1px 3px black;
 `
@@ -443,7 +479,7 @@ const FactHeader = styled.div`
 	font-size: 19px;
 	color: black;
 	display: grid;
-	grid-template-columns: 100px 1fr 150px 40px;
+	grid-template-columns: 95px 1fr 150px 40px;
 	align-items: center;
 	/* justify-content: center; */
 `
@@ -451,7 +487,6 @@ const Total = styled.div`
 	font-weight: bold;
 	color: black;
 `
-const OrderFields = styled.div``
 const FacturasLayout = styled.div`--id: FacturasLayout;`
 const FacturasList = styled.div`
 	overflow: auto;
@@ -543,6 +578,10 @@ const IconStats = styled(StatsDots)`
     width: 18px;
     color: white;
 `
+const IconDownload = styled(Download)`
+    width:18px;
+    color: white;
+`
 const IconFacturas = styled(AttachMoney)`
     color: ${props => (props.active ? '#1c88e6' : 'gray')};
     width: ${props => (props.active ? '38px' : '40px')};
@@ -561,3 +600,4 @@ const IconDelete = styled(Trash)`
     width:25px;
     color: white;
 `
+

@@ -109,7 +109,7 @@ export default function SignIn()
 				    </GlassButton>
                 </RegisterReset>
             </FormLogin>
-            <Version>v1.5</Version>
+            <Version>v1.7</Version>
         </LoginFrame>
     )
 }

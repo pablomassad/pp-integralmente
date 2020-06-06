@@ -191,6 +191,8 @@ export default function Comunicados()
 const NewsFrame = styled.div`
 	background: #fff;
 	height: 100%;
+    max-width:500px;
+    margin:auto;
 `
 const NewsFilter = styled.div`
 	--id: NewsFilter;

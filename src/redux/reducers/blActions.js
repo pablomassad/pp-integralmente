@@ -577,9 +577,30 @@ const updateDistribution = (payload) => async (dispatch) =>
 {
     try {
         dispatch(ui.showLoader(true))
-        const o = {distribution:payload}
+        const o = {distribution: payload}
         await fbFs.collection('config').doc('modules').set(o, {merge: true})
         //await dispatch(getDistribution())
+        return true
+    } catch (error) {
+        return false
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+    }
+}
+const addFeedback = (feedback) => async (dispatch) =>
+{
+    try {
+        dispatch(ui.showLoader(true))
+        if (feedback.id === 0) delete feedback.id
+
+        delete feedback.dirty
+
+        if (!feedback.id) {
+            const fback = await fbFs.collection('feedback').add(feedback)
+            feedback.id = fback.id
+        }
+        await fbFs.collection('feedback').doc(feedback.id).set(feedback, {merge: true})
         return true
     } catch (error) {
         return false
@@ -675,5 +696,6 @@ export const bl = {
     updateUser,
     getStatistics,
     getDistribution,
-    updateDistribution
+    updateDistribution,
+    addFeedback
 }

@@ -6,11 +6,10 @@
 ⏰ error boundary redirection to login
 ⏰ Auditoria de utilizacion (stats)
 ⏰ Comunicados: Verificar realtime de mensajeria
-⏰ Profile: persistencia y cambio de foto
-⏰ Logout remover NavBar
+⏰ Facturas: No permitir carga de factura con mismo numero
 
-
-
+👍 Profile: persistencia y cambio de foto
+👍 Logout remover NavBar
 👍 Occupation: persistencia
 👍 Occupation: orden de los dias de las semana
 👍 Estadisticas: Titulo y referencias 

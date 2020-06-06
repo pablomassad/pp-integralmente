@@ -7,6 +7,7 @@ import {Gear} from '@styled-icons/octicons/Gear'
 import {PersonAdd} from '@styled-icons/material/PersonAdd'
 import {Chat} from '@styled-icons/material/Chat'
 import {Calendar} from '@styled-icons/evil/Calendar'
+import {Feedback} from '@styled-icons/material/Feedback'
 import {Exit} from '@styled-icons/icomoon/Exit'
 
 import {useHistory} from 'react-router-dom'
@@ -61,10 +62,10 @@ export default function Menu()
                     <IconOcupation />
                         Ocupación
                 </MenuItem>
-                {/* <MenuItem onClick={() => goto('/options')} >
-                    <IconOptions />
-                        Configuración
-                </MenuItem> */}
+                <MenuItem onClick={() => goto('/feedback')} >
+                    <IconFeedback />
+                        Mejoras
+                </MenuItem>
                 <hr />
                 <MenuItem onClick={() => goto('/signIn')} >
                     <IconExit />
@@ -127,6 +128,12 @@ const IconOcupation = styled(Calendar)`
     color:gray;
     justify-self:center;
 `
+const IconFeedback = styled(Feedback)`
+    width:35px;
+    color:gray;
+    justify-self:center;
+`
+
 const IconExit = styled(Exit)`
     width:35px;
     color:gray;
