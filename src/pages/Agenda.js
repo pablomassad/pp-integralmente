@@ -12,60 +12,64 @@ import moment from 'moment'
 import {confirmAlert} from 'react-confirm-alert' // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
 
-export default function Agenda() {
-	const history = useHistory()
-	const dispatch = useDispatch()
-	const [criteria, setCriteria] = useState('')
-	const userInfo = useSelector(st => st.fb.userInfo)
-	const patients = useSelector(st => st.fb.patients)
+export default function Agenda()
+{
+    const history = useHistory()
+    const dispatch = useDispatch()
+    const [criteria, setCriteria] = useState('')
+    const userInfo = useSelector(st => st.fb.userInfo)
+    const patients = useSelector(st => st.fb.patients)
 
-	const evalEdad = p => {
-		const today = moment()
-		if (!p) return '0 años'
-		const cumple = moment(p.nacimiento)
-		const edad = today.diff(cumple, 'y')
-		return edad + ' años'
-	}
-	const changeCriteriaHandle = e => {
-		setCriteria(e.target.value)
-	}
-	const includePatient = e => {}
+    const evalEdad = p =>
+    {
+        const today = moment()
+        if (!p) return '0 años'
+        const cumple = moment(p.nacimiento)
+        const edad = today.diff(cumple, 'y')
+        return edad + ' años'
+    }
+    const changeCriteriaHandle = e =>
+    {
+        setCriteria(e.target.value)
+    }
+    const includePatient = e => {}
 
-	useEffect(() => {
-		if (userInfo) dispatch(bl.getAllPatients())
-		else history.replace('/')
-	}, [])
+    useEffect(() =>
+    {
+        if (userInfo) dispatch(bl.getAllPatients())
+        else history.replace('/')
+    }, [])
 
-	return (
-		<PatientsFrame>
-			<PatientFilter>
-				<IconPerson />
-				<Criteria
-					type="text"
-					placeholder="Ingrese datos del paciente"
-					value={criteria}
-					onChange={e => changeCriteriaHandle(e)}
-				/>
-			</PatientFilter>
-			<PatientList>
-				{patients.map((p, i) =>
-					<PatientCard key={i} onClick={() => includePatient(p)}>
-						<PatientData>
-							<PatientPic src={p.foto === 'assets/images/anonymous.png' ? anonymous : p.foto} />
-							<PatientInfo>
-								<Title>
-									{p.apellido}, {p.nombres}
-								</Title>
-								<Description>
-									{evalEdad(p.nacimiento)}, {p.obrasocial}
-								</Description>
-							</PatientInfo>
-						</PatientData>
-					</PatientCard>
-				)}
-			</PatientList>
-		</PatientsFrame>
-	)
+    return (
+        <PatientsFrame>
+            <PatientFilter>
+                <IconPerson />
+                <Criteria
+                    type="text"
+                    placeholder="Ingrese datos del paciente"
+                    value={criteria}
+                    onChange={e => changeCriteriaHandle(e)}
+                />
+            </PatientFilter>
+            <PatientList>
+                {patients.map((p, i) =>
+                    <PatientCard key={i} onClick={() => includePatient(p)}>
+                        <PatientData>
+                            <PatientPic src={p.foto === 'assets/images/anonymous.png' ? anonymous : p.foto} />
+                            <PatientInfo>
+                                <Title>
+                                    {p.apellido}, {p.nombres}
+                                </Title>
+                                <Description>
+                                    {evalEdad(p.nacimiento)}, {p.obrasocial}
+                                </Description>
+                            </PatientInfo>
+                        </PatientData>
+                    </PatientCard>
+                )}
+            </PatientList>
+        </PatientsFrame>
+    )
 }
 
 const PatientsFrame = styled.div`
@@ -131,8 +135,9 @@ const PatientData = styled.div`
 `
 const PatientPic = styled.img`
 	border-radius: 50%;
-	width: 11vw;
-	height: 11vw;
+	width: 12vw;
+	height: 12vw;
+    object-fit: cover;
 	box-shadow: 1px 1px 3px black;
 `
 const PatientInfo = styled.div`

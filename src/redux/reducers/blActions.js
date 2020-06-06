@@ -28,7 +28,12 @@ const login = payload => async dispatch =>
         dispatch(ui.showMessage({msg: 'Bienvenido a IntegralMente!', type: 'success'}))
         const user = await fbAuth.currentUser
         const userInfo = await getFirebaseUserInfo(user.uid)
-        await dispatch(saveFirebaseUserInfo(userInfo))
+        userInfo.lastLogin = new Date().getTime()
+        userInfo.lastLoginStr = new Date()
+        if (!userInfo.lastNewsRead)
+            userInfo.lastNewsRead = new Date(1262314800000)
+
+        await dispatch(updateUser(userInfo))
         dispatch(fb.setUser({userInfo}))
         res = true
     } catch (error) {
@@ -529,15 +534,18 @@ const updateNewsRead = () => async (dispatch, getState) =>
     user.lastNewsRead = new Date().getTime()
     await fbFs.collection('users').doc(user.id).set(user, {merge: true})
 }
-const saveFirebaseUserInfo = usr => async dispatch =>
+const updateUser = usr => async dispatch =>
 {
-    usr.lastLogin = new Date().getTime()
-    usr.lastLoginStr = new Date()
-    if (!usr.lastNewsRead)
-        usr.lastNewsRead = new Date(1262314800000)
-    await fbFs.doc(`users/${usr.id}`).set(usr, {
-        merge: true
-    })
+    try {
+        dispatch(ui.showLoader(true))
+        await fbFs.doc(`users/${usr.id}`).set(usr, {merge: true})
+        return usr
+    } catch (error) {
+        return false
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+    }
 }
 const getStatistics = () => async (dispatch) =>
 {
@@ -556,21 +564,22 @@ const getStatistics = () => async (dispatch) =>
     dispatch(ui.showLoader(false))
     return true
 }
-const getOccupation = () => async (dispatch) =>
+const getDistribution = () => async (dispatch) =>
 {
     dispatch(ui.showLoader(true))
     const dd = await fbFs.collection('config').doc('modules').get()
-    const occupation = dd.data().occupation
-    dispatch(fb.setOccupation({occupation}))
+    const distribution = dd.data().distribution
+    dispatch(fb.setDistribution({distribution}))
     dispatch(ui.showLoader(false))
     return true
 }
-const updateOccupation = (occupation) => async (dispatch) =>
+const updateDistribution = (payload) => async (dispatch) =>
 {
-    dispatch(ui.showLoader(true))
     try {
-        await fbFs.collection('config').doc('modules').set(occupation, {merge: true})
-        await dispatch(getOccupation())
+        dispatch(ui.showLoader(true))
+        const o = {distribution:payload}
+        await fbFs.collection('config').doc('modules').set(o, {merge: true})
+        //await dispatch(getDistribution())
         return true
     } catch (error) {
         return false
@@ -663,8 +672,8 @@ export const bl = {
     uploadFileStorage,
     requestPermission,
     updateNewsRead,
-    saveFirebaseUserInfo,
+    updateUser,
     getStatistics,
-    getOccupation,
-    updateOccupation
+    getDistribution,
+    updateDistribution
 }

@@ -4,7 +4,7 @@ import logo from '../assets/images/integralmenteET.png'
 
 import {useHistory} from 'react-router-dom'
 import {useDispatch} from 'react-redux'
-import {bl, ui} from '../redux'
+import {bl, fb, ui} from '../redux'
 
 import GlassButton from '../common/GlassButton'
 
@@ -66,6 +66,7 @@ export default function SignIn()
 
     useEffect(() =>
     {
+        dispatch(fb.setUser({userInfo:null}))
         refEmail.current.focus()
     }, [])
 

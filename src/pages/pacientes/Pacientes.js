@@ -119,7 +119,7 @@ export default function Pacientes()
                 {data.map((p, i) => (
                     <PatientCard key={i} onClick={() => gotoPatient(p)}>
                         <PatientData>
-                            <PatientPic src={(p.foto) ? p.foto : anonymous} />
+                            <PatientPic src={p.foto || anonymous} />
                             <PatientInfo>
                                 <Title>{p.apellido}, {p.nombres}</Title>
                                 <Description>{evalEdad(p.nacimiento)}, {p.obrasocial}</Description>

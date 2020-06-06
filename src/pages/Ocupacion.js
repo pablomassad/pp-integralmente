@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
-import styled from 'styled-components'
+import styled, {keyframes} from 'styled-components'
+
 import GlassButton from '../common/GlassButton'
 
 import {useDispatch, useSelector, shallowEqual} from 'react-redux'
@@ -36,40 +37,51 @@ export default function Ocupacion()
     // }
 
     const dispatch = useDispatch()
-    const db = useSelector(st => st.fb.occupation)
+    const userInfo = useSelector(st => st.fb.userInfo)
+    const db = useSelector(st => st.fb.distribution)
     const users = useSelector(st => st.fb.users)
     const [showSelector, setShowSelector] = useState(false)
     const [cell, setCell] = useState()
-    // const [data, setData] = useState()
+    const [anim, setAnim] = useState('popin')
 
-    const data = {...db}
+    const data = db
+    // .map(s =>
+    // {
+    //     const usr = users.find(u => u.id === s.uid)
+    //     const o = {...s, displayName: usr.displayName, photo: usr.photoURL}
+    //     return o
+    // })
 
-    const openSelector = (d, t, i) =>
+
+    const openSelector = (e, id, t, i) =>
     {
-        setShowSelector(true)
-        setCell({
-            day: d,
-            turn: t,
-            room: i
-        })
+        if (userInfo.isAdmin) {
+            // console.log(e.clientX + ':' + e.clientY)
+            // setCoords({x:e.clientX, y:e.clientY})
+            setAnim('popout')
+            setShowSelector(true)
+            setCell({
+                dayId: id,
+                turn: t,
+                room: i
+            })
+        }
     }
-    const selectUserHandle = (u) =>
+    const selectUserHandle = (usr) =>
     {
-        data[cell.day][cell.turn][cell.room] = (u) ? u : ""
-        const newData = {...data}
-        // setData(newData)
-        dispatch(bl.updateOccupation(newData))
+        setAnim('popout')
+        data[cell.dayId][cell.turn][cell.room] = (usr) ? {name: usr.displayName, photo: usr.photoURL} : ""
+
+        dispatch(bl.updateDistribution(data))
         setShowSelector(false)
     }
 
     useEffect(() =>
     {
-        dispatch(bl.getOccupation())
+        console.log('call getOcuppation')
+        dispatch(bl.getDistribution())
     }, [])
 
-    if (!data) return null
-
-    console.log('data:', data)
     return (
         <WeekFrame>
             <DayFrame>
@@ -80,35 +92,39 @@ export default function Ocupacion()
                     <Room>Consultorio 3</Room>
                 </RoomsFrame>
             </DayFrame>
-            {Object.keys(data).map((d, i) =>
+            {data.map((d, id) =>
                 (
-                    <DayFrame key={i}>
+                    <DayFrame key={id}>
                         <Day>
-                            {d}
+                            {d.day}
                         </Day>
                         <RoomsFrame>
-                            {data[d].M.map((prof, i) => (
+                            {d.M.map((mod, i) => (
                                 <Module key={i}>
-                                    {prof ?
-                                        <GlassButton margin={5} background={'#0688de'} onClick={(e) => openSelector(d, 'M', i)}>
-                                            <ProfPhoto src={prof.photoURL} />
-                                            <Name>{prof.displayName}</Name>
+                                    {mod ?
+                                        <GlassButton height={50} margin={5} background={'#0688de'} onClick={(e) => openSelector(e, id, 'M', i)}>
+                                            <ProfFrame>
+                                                <ProfPhoto src={mod.photo} />
+                                                <Name>{mod.name}</Name>
+                                            </ProfFrame>
                                         </GlassButton>
                                         :
-                                        <GlassButton margin={5} background={'#fff'} onClick={(e) => openSelector(d, 'M', i)} empty>
+                                        <GlassButton height={50} margin={5} background={'#fff'} onClick={(e) => openSelector(e, id, 'M', i)} empty>
                                             <p></p>
                                         </GlassButton>}
                                 </Module>
                             ))}
-                            {data && data[d].T.map((prof, i) => (
+                            {d.T.map((mod, i) => (
                                 <Module key={i}>
-                                    {prof ?
-                                        <GlassButton margin={5} background={'#2da91f'} onClick={(e) => openSelector(d, 'T', i)}>
-                                            <ProfPhoto src={prof.photoURL} />
-                                            <Name>{prof.displayName}</Name>
+                                    {mod ?
+                                        <GlassButton height={50} margin={5} background={'#2da91f'} onClick={(e) => openSelector(e, id, 'T', i)}>
+                                            <ProfFrame>
+                                                <ProfPhoto src={mod.photo} />
+                                                <Name>{mod.name}</Name>
+                                            </ProfFrame>
                                         </GlassButton>
                                         :
-                                        <GlassButton margin={5} background={'#fff'} onClick={(e) => openSelector(d, 'T', i)} empty>
+                                        <GlassButton height={50} margin={5} background={'#fff'} onClick={(e) => openSelector(e, id, 'T', i)} empty>
                                             <p></p>
                                         </GlassButton>}
                                 </Module>
@@ -120,7 +136,7 @@ export default function Ocupacion()
             {showSelector ?
                 <div>
                     <DisabledPanel />
-                    <Selector>
+                    <Selector popAnim={anim}>
                         <GlassButton onClick={(e) => selectUserHandle()}>
                             Disponible
                         </GlassButton>
@@ -171,7 +187,7 @@ const Room = styled.div`
 `
 const Module = styled.div`
     --id:Module;
-    height:40px;
+    height:60px;
     border:1px solid #888;
 `
 const DisabledPanel = styled.div`
@@ -184,8 +200,30 @@ const DisabledPanel = styled.div`
     background:black;
     opacity:.4;
 `
+
+const popin = keyframes`
+    from {
+        transform: scale(.1); 
+    }
+    to {
+        transform: scale(1);
+    }
+`
+const popout = keyframes`
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(0);
+    }
+`
+// animation: //${props => props.popAnim? props.popAnim : 'none'} .6s linear;
+    
 const Selector = styled.div`
     --id:Selector;
+    animation:  ${popin} .6s linear;
+    overflow:hidden;
+    overflow-y:auto;
     position:absolute;
     background:lightgray;
     border-radius:10px;
@@ -200,7 +238,7 @@ const Selector = styled.div`
     box-shadow: 2px 2px 10px;    
 `
 const User = styled.div`
-display: grid;
+    display: grid;
     grid-template-columns: 60px 1fr;
     align-items: center;
     background: white;
@@ -209,6 +247,11 @@ display: grid;
     border-radius: 5px;
     box-shadow: 1px 1px 3px;
     padding: 10px;
+`
+const ProfFrame = styled.div`
+    display:grid;
+    grid-template-columns:50px 1fr;
+    align-items:center;
 `
 const Name = styled.div`
     font-size:14px;
@@ -236,3 +279,4 @@ const ProfPhoto = styled.img`
     margin:auto;
 	box-shadow: 1px 1px 5px black;
 `
+

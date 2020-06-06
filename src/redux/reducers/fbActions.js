@@ -15,7 +15,7 @@ const setNews = createAction('fb.setNews')
 const setAttachments = createAction('fb.setAttachments')
 const setStats = createAction('fb.setStats')
 const setUsers = createAction('fb.setUsers')
-const setOccupation = createAction('fb.setOccupation')
+const setDistribution = createAction('fb.setDistribution')
 
 const fetchUserRequest = createAction('fetchUserRequest')
 const fetchUserSuccess = createAction('fetchUserSuccess')
@@ -52,5 +52,5 @@ export const fb = {
     setAttachments,
     setStats,
     setUsers,
-    setOccupation
+    setDistribution
 }

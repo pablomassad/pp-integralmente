@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {bl, ui} from '../../redux'
+import anonymous from '../../assets/images/anonymous.png'
 
 import moment from 'moment'
 import DatePicker from "react-datepicker"
@@ -71,7 +72,7 @@ export default function Ficha()
             if (fileInfo) {
                 if (selPatient.foto) {
                     console.log('nombre existente: ', selPatient.foto)
-                    await dispatch(bl.deleteFileStorage(selPatient.id, selPatient.foto))
+                    //await dispatch(bl.deleteFileStorage(selPatient.id, selPatient.foto))
                 }
                 const url = await dispatch(bl.uploadFileStorage(pat.id, fileInfo)) // res.id
                 selPatient.foto = url
@@ -91,7 +92,7 @@ export default function Ficha()
         <Form>
             <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onChangePic} />
             <Main>
-                <Avatar src={tmpFoto || selPatient.foto} onClick={choosePic}>
+                <Avatar src={tmpFoto || selPatient.foto || anonymous} onClick={choosePic}>
                 </Avatar>
                 <FullName>
                     <UserInput type="text" placeholder="Ingrese nombres" value={selPatient.nombres || ''} name="nombres" onChange={e => updateSelPatient('nombres', e.target.value)} />

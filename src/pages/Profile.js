@@ -13,6 +13,7 @@ import "react-datepicker/dist/react-datepicker.css"
 import {registerLocale, setDefaultLocale} from "react-datepicker";
 import es from 'date-fns/locale/es';
 
+import {anonymous} from '../assets/images/anonymous.png'
 import GlassButton from '../common/GlassButton'
 
 
@@ -80,7 +81,7 @@ export default function Profile()
     const acceptChanges = async (e) =>
     {
         e.preventDefault()
-        const usr = await dispatch(bl.saveFirebaseUserInfo(selUser))
+        const usr = await dispatch(bl.updateUser(selUser))
         if (usr) {
             if (fileInfo) {
                 if (selUser.photoURL) {
@@ -89,7 +90,7 @@ export default function Profile()
                 }
                 const url = await dispatch(bl.uploadFileStorage('avatars', fileInfo)) // res.id
                 selUser.photoURL = url
-                await dispatch(bl.saveFirebaseUserInfo(selUser))
+                await dispatch(bl.updateUser(selUser))
             }
             console.log('updated User: ', selUser)
             dispatch(ui.showMessage({msg: 'Usuario guardado', type: 'success'}))
@@ -102,7 +103,7 @@ export default function Profile()
     return (
         <UserFrame>
             <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onChangePic} />
-            <Avatar src={tmpFoto || selUser.photoURL} onClick={choosePic}>
+            <Avatar src={tmpFoto || selUser.photoURL || anonymous} onClick={choosePic}>
             </Avatar>
             <div>
                 <FieldDescription>

@@ -76,8 +76,8 @@ const FabBtn = styled.button`
         top: 2px;
         left: 4px;
         width: calc(100% - 8px);
-        height: 50%;
-        background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
+        height: 60%;
+        background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
     }
     &:active {
         background: #4e8fa3;
@@ -89,7 +89,7 @@ const FabBtn = styled.button`
     &:active::after {
     	background: linear-gradient(
 		rgba(255, 255, 255, 0.3),
-		rgba(255, 255, 255, 0.1)
+		rgba(255, 255, 255, 0)
 	);
 
     &:focus {
@@ -99,6 +99,7 @@ const FabBtn = styled.button`
 `
 
 const FabChildren = styled.div`
+    --id:FabChildren;
     font-size:${props => (props.font) ? props.font+'px' : '14px'};
 
     @media screen and (min-width: 800px) {
@@ -112,6 +113,7 @@ const FabChildren = styled.div`
 `
 
 const DisabledPanel = styled.div`
+    --id:DisabledPanel; 
 	position: absolute;;
 	z-index: 10;
 	height: 100%;

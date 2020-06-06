@@ -17,14 +17,14 @@ const initialState = {
     webToken: undefined,
     attachments: [],
     stats: undefined,
-    occupation: {}
+    distribution: []
 }
 
 export default handleActions(
     {
-        [fb.setOccupation]: (state, action) =>
+        [fb.setDistribution]: (state, action) =>
         {
-            return {...state, occupation: action.payload.occupation}
+            return {...state, distribution: action.payload.distribution}
         },
         [fb.setUsers]: (state, action) =>
         {
@@ -56,7 +56,6 @@ export default handleActions(
         },
         [fb.setFacturas]: (state, action) =>
         {
-            console.log(action.payload.facturas)
             return {...state, facturas: action.payload.facturas}
         },
         [fb.setFactura]: (state, action) =>
@@ -65,7 +64,6 @@ export default handleActions(
         },
         [fb.setSessions]: (state, action) =>
         {
-            console.log(action.payload.sessions)
             return {...state, sessions: action.payload.sessions}
         },
         [fb.setSession]: (state, action) =>
@@ -74,7 +72,6 @@ export default handleActions(
         },
         [fb.setAllNews]: (state, action) =>
         {
-            console.log(action.payload.allNews)
             return {...state, allNews: action.payload.allNews}
         },
         [fb.setNews]: (state, action) =>
@@ -83,7 +80,6 @@ export default handleActions(
         },
         [fb.setAttachments]: (state, action) =>
         {
-            console.log(action.payload.attachments)
             return {...state, attachments: action.payload.attachments}
         },
         [fb.setStats]: (state, action) =>

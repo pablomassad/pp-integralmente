@@ -457,7 +457,7 @@ const FacturasList = styled.div`
 	overflow: auto;
 	height: calc(100vh - 155px);
     display: grid;
-    grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));
+    grid-template-columns:repeat(auto-fill, minmax(340px, 1fr));
     align-items:center;
 `
 const FactItem = styled.div`
