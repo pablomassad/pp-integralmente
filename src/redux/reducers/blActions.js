@@ -434,22 +434,17 @@ const getAllNews = () => (dispatch) =>
         dispatch(fb.setAllNews({allNews}))
     })
 }
-const updateNews = news => async (dispatch, getState) =>
+const updateNews = news => async (dispatch) =>
 {
     dispatch(ui.showLoader(true))
     try {
         if (news.id === 0) delete news.id
-
         delete news.dirty
-        delete news.photo
-        delete news.displayName
 
         if (!news.id) {
             const tmp = await fbFs.collection('news').add(news)
             news.id = tmp.id
         }
-        const uid = getState().fb.userInfo.uid
-        news.uid = uid
         await fbFs.collection('news').doc(news.id).set(news, {merge: true})
         await dispatch(getAllNews())
         return true
@@ -464,6 +459,12 @@ const removeNews = newsId => async dispatch =>
 {
     await fbFs.collection('news').doc(newsId).delete()
     await dispatch(getAllNews())
+}
+const updateNewsRead = () => async (dispatch, getState) =>
+{
+    const user = getState().fb.userInfo
+    user.lastNewsRead = new Date().getTime()
+    await fbFs.collection('users').doc(user.id).set(user, {merge: true})
 }
 const getAttachmentsByPatient = (patientId) => async (dispatch) =>
 {
@@ -577,12 +578,6 @@ const requestPermission = () => async dispatch =>
 {
     //firebase.getToken()
     // firebase.requestPermission()
-}
-const updateNewsRead = () => async (dispatch, getState) =>
-{
-    const user = getState().fb.userInfo
-    user.lastNewsRead = new Date().getTime()
-    await fbFs.collection('users').doc(user.id).set(user, {merge: true})
 }
 const updateUser = usr => async dispatch =>
 {

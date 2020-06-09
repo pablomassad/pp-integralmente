@@ -60,6 +60,7 @@ export default function App()
     )
 
     useEffect(() => {
+        dispatch(bl.getUsers())
         dispatch(bl.getAllNews())
     }, [])
 

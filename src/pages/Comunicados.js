@@ -2,10 +2,10 @@ import React, {useEffect, useState, useRef} from 'react'
 import styled from 'styled-components'
 
 import {BackInTime} from '@styled-icons/entypo/BackInTime'
-import {File} from '@styled-icons/boxicons-regular/File'
 import {Trash} from '@styled-icons/heroicons-outline/Trash'
 
 import GlassButton from '../common/GlassButton'
+import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector, shallowEqual} from 'react-redux'
 import {bl, ui} from '../redux'
 
@@ -23,7 +23,7 @@ export default function Comunicados()
 {
     console.log('......[Comunicados]')
     const dispatch = useDispatch()
-
+    const history = useHistory()
     const news = useSelector(st => st.fb.allNews)
     const userInfo = useSelector(st => st.fb.userInfo)
     const users = useSelector(st => st.fb.users)
@@ -35,12 +35,12 @@ export default function Comunicados()
 
 
     const data = news
-        .map(s=>{
-            const usr = users.find(u=>u.id === s.uid)
-            console.log('usuario:', usr)
-            const o = {...s, displayName:usr.displayName, photo:usr.photoURL}
-            return o
-        })
+        // .map(s=>{
+        //     const usr = users.find(u=>u.id === s.uid)
+        //     console.log('usuario:', usr)
+        //     const o = {...s, displayName:usr.displayName, photo:usr.photoURL}
+        //     return o
+        // })
         .filter((s) => criteria.length < 3 || Object.keys(s).some((k) => `${s[k]}`.toLowerCase().includes(criteria.toLowerCase())))
         .map((s) => selNews?.id === s.id ? selNews : s);
 
@@ -87,15 +87,14 @@ export default function Comunicados()
     }
     const addNewsHandle = () =>
     {
-        const news = {id: 0, dirty: true}
+        const news = {id: 0, uid: userInfo.id, displayName: userInfo.displayName, photo: userInfo.photoURL, dirty: true}
         setSelNews(news)
         newsList.current.scrollTo(0, 0) //newsList.current.scrollHeight+1000)
     }
     const cancelChanges = e =>
     {
-        e.stopPropagation()
-        e.preventDefault()
         setSelNews(null)
+        history.goBack()
     }
     const acceptChanges = async () =>
     {
@@ -104,6 +103,7 @@ export default function Comunicados()
         if (res) {
             dispatch(ui.showMessage({msg: 'Comunicado guardado', type: 'success'}))
             setSelNews(null)
+            history.goBack()
         } else {
             dispatch(ui.showMessage({msg: 'No se ha podido guardar el comunicado', type: 'error'}))
         }
@@ -111,6 +111,7 @@ export default function Comunicados()
 
     useEffect(() =>
     {
+        console.log('')
         dispatch(bl.updateNewsRead())
     }, [])
 
@@ -135,12 +136,12 @@ export default function Comunicados()
                             ? <NewsCard onClick={e => onSelNews(e, s)}>
                                 <NewsInfo>
                                     <Label>Fecha:</Label>
-                                    {moment(s.fecha).format('DD/MM/YY')}
+                                    {moment(s.fecha).format('DD/MM/YY HH:mm')}
                                     <Label>Autor:</Label>
                                     <Label>{s.displayName}</Label>
                                 </NewsInfo>
                                 <Observaciones>
-                                    {s.descripcion}
+                                    {s.description}
                                 </Observaciones>
                                 <Avatar src={s.photo} />
                             </NewsCard>
@@ -150,7 +151,7 @@ export default function Comunicados()
                                     dateFormat="dd-MM-yyyy"
                                     maxDate={new Date()}
                                     selected={selNews.fecha}
-                                    onChange={e => updateNews('fecha', e != null ? e.getTime() : null)}
+                                    onChange={e => updateNews('fecha', e != null ? new Date().getTime() : null)}
                                     className="customDatePicker"
                                 />
                                 {selNews.id !== 0 ? (
@@ -161,9 +162,9 @@ export default function Comunicados()
                                 <ObsArea
                                     type="text"
                                     placeholder="Descripcion del comunicado"
-                                    value={selNews.descripcion || ''}
-                                    name="descripcion"
-                                    onChange={e => updateNews('descripcion', e.target.value)}
+                                    value={selNews.description || ''}
+                                    name="description"
+                                    onChange={e => updateNews('description', e.target.value)}
                                 />
                                 <GlassButton onClick={cancelChanges}>Cancelar</GlassButton>
                                 <GlassButton onClick={acceptChanges}>Aceptar</GlassButton>

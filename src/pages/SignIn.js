@@ -59,7 +59,6 @@ export default function SignIn()
         const res = await dispatch(bl.login(o))
         if (res) {
             dispatch(bl.initPushing())
-            dispatch(bl.getUsers())
             history.push('/patients')
         }
     }

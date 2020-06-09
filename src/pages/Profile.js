@@ -126,7 +126,7 @@ export default function Profile()
     {
         e.stopPropagation()
         e.preventDefault()
-        history.goBack() //('/patients')
+        history.goBack() 
     }
     const acceptChanges = async (e) =>
     {
@@ -145,6 +145,7 @@ export default function Profile()
             console.log('updated User: ', selUser)
             dispatch(ui.showMessage({msg: 'Usuario guardado', type: 'success'}))
             setFileInfo(undefined)
+            history.goBack() 
         } else {
             dispatch(ui.showMessage({msg: 'No se ha podido guardar los datos del paciente', type: 'error'}))
         }
