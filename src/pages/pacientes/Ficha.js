@@ -1,8 +1,8 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import styled from 'styled-components'
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
-import {bl, ui} from '../../redux'
+import {bl, fb, ui} from '../../redux'
 import anonymous from '../../assets/images/anonymous.png'
 
 import moment from 'moment'
@@ -12,8 +12,6 @@ import {registerLocale, setDefaultLocale} from "react-datepicker";
 import es from 'date-fns/locale/es';
 
 import GlassButton from '../../common/GlassButton'
-// import imageThumbnail from 'image-thumbnail'
-// const imageThumbnail = require('image-thumbnail');
 
 export default function Ficha()
 {

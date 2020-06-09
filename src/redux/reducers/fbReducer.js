@@ -52,7 +52,7 @@ export default handleActions(
         },
         [fb.setPatient]: (state, action) =>
         {
-            return {...state, selPatient: {...state.selPatient, ...action.payload}}
+            return {...state, selPatient: action.payload}
         },
         [fb.setFacturas]: (state, action) =>
         {

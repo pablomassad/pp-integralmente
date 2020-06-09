@@ -138,7 +138,7 @@ export default function Profile()
                     //    await dispatch(bl.deleteFileStorage('pacientes', selPatient.foto))
                     console.log('nombre existente: ', selUser.photoURL)
                 }
-                const url = await dispatch(bl.uploadFileStorage('avatars', fileInfo)) // res.id
+                const url = await dispatch(bl.uploadPhotoStorage('avatars', fileInfo, selUser.id)) // res.id
                 selUser.photoURL = url
                 await dispatch(bl.updateUser(selUser))
             }

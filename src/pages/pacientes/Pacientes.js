@@ -84,10 +84,11 @@ export default function Pacientes()
             ]
         })
     }
-    const gotoPatient = (p) =>
+    const gotoPatient = (patient) =>
     {
-        dispatch(fb.setPatient(p))
-        history.push(`/patient/${p.id}`)
+        dispatch(fb.setPatient(patient))
+        history.push(`/patient`)
+        // history.push(`/patient/${patient.id}`)
     }
 
     useEffect(() =>
@@ -98,10 +99,6 @@ export default function Pacientes()
             dispatch(bl.getPatients())
         }
         else history.replace('/')
-        return () =>
-        {
-            dispatch(fb.setPatient(null))
-        }
     }, [])
 
 

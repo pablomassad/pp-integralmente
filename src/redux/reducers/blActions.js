@@ -242,7 +242,13 @@ const getAllPatients = () => async (dispatch, getState) =>
         dispatch(ui.showLoader(true))
         //const dsn = await fbFs.collection('pacientes').get()
         const dsn = await fbFs.collection('pacientes').get()
-        const patients = dsn.docs.map(x => x.data())
+        const patients = dsn.docs.map(x =>
+        {
+            return {
+                ...x.data(),
+                ...{id: x.id}
+            }
+        })
         dispatch(
             fb.setPatients({
                 patients
@@ -261,7 +267,13 @@ const getPatients = () => async (dispatch, getState) =>
         dispatch(ui.showLoader(true))
         const userInfo = getState().fb.userInfo
         const dsn = await fbFs.collection('pacientes').where('uid', '==', userInfo.id).get()
-        const patients = dsn.docs.map(x => x.data())
+        const patients = dsn.docs.map(x =>
+        {
+            return {
+                ...x.data(),
+                ...{id: x.id}
+            }
+        })
         dispatch(fb.setPatients({patients}))
     } catch (error) {
         dispatch(ui.showMessage({msg: 'No se pudo obtener los pacientes, intente nuevamente.', type: 'error'}))
