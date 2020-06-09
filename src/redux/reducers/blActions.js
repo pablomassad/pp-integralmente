@@ -500,27 +500,65 @@ const uploadFileStorage = (path, file) => async dispatch =>
     dispatch(ui.showLoader(true))
     return new Promise((resolve, reject) =>
     {
-        const uploadTask = fbSto.ref(path + '/' + file.name).put(file)
-        uploadTask.on(
-            'state_changed',
-            snapshot =>
-            {
-                console.log('progress', snapshot)
-            },
-            error =>
-            {
-                console.log(error)
-                dispatch(ui.showLoader(false))
-                reject()
-            },
-            async () =>
-            {
-                const url = await fbSto.ref(path).child(file.name).getDownloadURL()
-                console.log('url file: ', url)
-                dispatch(ui.showLoader(false))
-                resolve(url)
-            }
-        )
+        try {
+            const uploadTask = fbSto.ref(path + '/' + file.name).put(file)
+            uploadTask.on(
+                'state_changed',
+                snapshot =>
+                {
+                    console.log('progress', snapshot)
+                },
+                error =>
+                {
+                    console.log(error)
+                    dispatch(ui.showLoader(false))
+                    reject()
+                },
+                async () =>
+                {
+                    const url = await fbSto.ref(path).child(file.name).getDownloadURL()
+                    console.log('url file: ', url)
+                    dispatch(ui.showLoader(false))
+                    resolve(url)
+                }
+            )
+        } catch (error) {
+            dispatch(ui.showLoader(false))
+            reject()
+        }
+    })
+}
+const uploadPhotoStorage = (path, file, name) => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    return new Promise((resolve, reject) =>
+    {
+        try {
+            const uploadTask = fbSto.ref(path + '/' + name).putString(file, 'data_url')
+            uploadTask.on(
+                'state_changed',
+                snapshot =>
+                {
+                    console.log('progress', snapshot)
+                },
+                error =>
+                {
+                    console.log(error)
+                    dispatch(ui.showLoader(false))
+                    reject()
+                },
+                async () =>
+                {
+                    const url = await fbSto.ref(path).child(name).getDownloadURL()
+                    console.log('url file: ', url)
+                    dispatch(ui.showLoader(false))
+                    resolve(url)
+                }
+            )
+        } catch (error) {
+            dispatch(ui.showLoader(false))
+            reject()
+        }
     })
 }
 const requestPermission = () => async dispatch =>
@@ -691,6 +729,7 @@ export const bl = {
     removeAttachment,
     deleteFileStorage,
     uploadFileStorage,
+    uploadPhotoStorage,
     requestPermission,
     updateNewsRead,
     updateUser,

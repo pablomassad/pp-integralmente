@@ -98,6 +98,10 @@ export default function Pacientes()
             dispatch(bl.getPatients())
         }
         else history.replace('/')
+        return () =>
+        {
+            dispatch(fb.setPatient(null))
+        }
     }, [])
 
 
@@ -139,7 +143,7 @@ export default function Pacientes()
                 radius={50}
                 onClick={() => gotoPatient({id: 0})}>
                 <IconAdd>+</IconAdd>
-            </GlassButton>}
+            </GlassButton>
         </PatientsFrame>
     )
 }

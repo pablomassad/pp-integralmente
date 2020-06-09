@@ -12,7 +12,8 @@ import {registerLocale, setDefaultLocale} from "react-datepicker";
 import es from 'date-fns/locale/es';
 
 import GlassButton from '../../common/GlassButton'
-
+// import imageThumbnail from 'image-thumbnail'
+// const imageThumbnail = require('image-thumbnail');
 
 export default function Ficha()
 {
@@ -50,13 +51,66 @@ export default function Ficha()
         e.stopPropagation()
         e.preventDefault()
 
-        setFileInfo(e.target.files[0])
+        var bigFile = e.target.files[0]
         var reader = new FileReader();
-        reader.onload = (e) => {
-            setTmpFoto(e.target.result)
+        reader.onload = async (e) =>
+        {
+            const big = e.target.result
+            console.log('size Image before:', getImageSize(big))
+            generateFromImage(big, 200, 200, 1, data =>
+            {
+                console.log('size Image after:', getImageSize(data))
+                setTmpFoto(data)
+                setFileInfo(data)
+
+            })
         }
-        reader.readAsDataURL(e.target.files[0])
+        reader.readAsDataURL(bigFile)
         inputFile.current.id = new Date().getTime()
+    }
+    const generateFromImage = (img, MAX_WIDTH = 700, MAX_HEIGHT = 700, quality = .8, callback) =>
+    {
+        var canvas = document.createElement("canvas");
+        var image = new Image()
+
+        image.onerror = (err) =>
+        {
+            console.log('Error', err)
+        }
+        image.onload = () =>
+        {
+            var width = image.width;
+            var height = image.height;
+
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext("2d");
+
+            ctx.drawImage(image, 0, 0, width, height);
+
+            // IMPORTANT: 'jpeg' NOT 'jpg'
+            var dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+            callback(dataUrl)
+        }
+        image.src = img;
+    }
+    const getImageSize = (data) =>
+    {
+        var head = 'data:image/jpeg;base64'
+        var size = data.length - head.length * 3 / 4 / (1024 * 1024).toFixed(4)
+        return size
     }
     const cancelChanges = (e) =>
     {
@@ -74,7 +128,7 @@ export default function Ficha()
                     console.log('nombre existente: ', selPatient.foto)
                     //await dispatch(bl.deleteFileStorage(selPatient.id, selPatient.foto))
                 }
-                const url = await dispatch(bl.uploadFileStorage(pat.id, fileInfo)) // res.id
+                const url = await dispatch(bl.uploadPhotoStorage(pat.id, fileInfo, selPatient.id)) // res.id
                 selPatient.foto = url
                 await dispatch(bl.updatePatient(selPatient))
             }
@@ -90,7 +144,7 @@ export default function Ficha()
 
     return (
         <Form>
-            <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onChangePic} />
+            <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onChangePic} accept="image/gif, image/jpeg, image/jpg, image/png" />
             <Main>
                 <Avatar src={tmpFoto || selPatient.foto || anonymous} onClick={choosePic}>
                 </Avatar>

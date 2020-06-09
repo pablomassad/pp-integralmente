@@ -63,9 +63,8 @@ export default function Feedback()
             <Comentario
                 type="text"
                 placeholder="Ingrese comentarios, criticas o mejoras...."
-                value={feedback.observacion || ''}
                 name="observacion"
-                onChange={e => updateFeedback(e.target.value)}
+                onChange={e => updateFeedback(e)}
             />
             <Options>
                 <GlassButton onClick={cancelChanges}>Cancelar</GlassButton>

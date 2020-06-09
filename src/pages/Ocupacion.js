@@ -135,8 +135,8 @@ export default function Ocupacion()
             }
             {showSelector ?
                 <div>
-                    <DisabledPanel />
-                    <Selector popAnim={anim}>
+                    <DisabledPanel />{anim}
+                    <Selector animation={anim}>
                         <GlassButton onClick={(e) => selectUserHandle()}>
                             Disponible
                         </GlassButton>
@@ -219,11 +219,22 @@ const popout = keyframes`
         transform: scale(0);
     }
 `
-// animation: //${props => props.popAnim? props.popAnim : 'none'} .6s linear;
-    
+const zoomINOUT = (props) =>
+{
+    console.log('props-', props)
+    return keyframes`
+    from {
+        transform: scale(props); 
+    }
+    to {
+        transform: scale(props*100);
+    }
+    `
+}
 const Selector = styled.div`
     --id:Selector;
-    animation:  ${popin} .6s linear;
+    /* animation:  ${props => (props.animation)}  .6s linear; */
+    animation:  ${zoomINOUT}  .6s linear;
     overflow:hidden;
     overflow-y:auto;
     position:absolute;
@@ -256,8 +267,12 @@ const ProfFrame = styled.div`
     align-items:center;
 `
 const Name = styled.div`
-    font-size:14px;
+    --id:Name;
+    font-size:2.3vw;
     text-align:center;
+    @media screen and (min-width: 550px) {
+        font-size:.8rem;
+    } 
 `
 const Avatar = styled.img`
 	overflow: hidden;

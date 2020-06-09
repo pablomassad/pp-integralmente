@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react"
+import React, {useState} from "react"
 import styled from "styled-components"
 
 import {PersonPin} from "@styled-icons/material-outlined/PersonPin"
@@ -9,10 +9,8 @@ import Ficha from "./Ficha"
 import Historia from "./Historia"
 import Documentacion from "./Documentacion"
 
-import {useSelector} from 'react-redux'
 
-
-export default function Paciente(props)
+export default function Paciente()
 {
     const [selTool, setSelTool] = useState("ficha")
 
@@ -78,7 +76,6 @@ const Tool = styled.div`
 	box-shadow: ${props => (props.active ? "inset 2px 2px 3px #444" : "none")};
 	transform: scale(.9) translateY(1px) translateX(1px);
 `
-
 const IconFicha = styled(PersonPin)`
     color: ${props => (props.active ? "#1c88e6" : "gray")};
     width: ${props => (props.active ? "38px" : "40px")};
