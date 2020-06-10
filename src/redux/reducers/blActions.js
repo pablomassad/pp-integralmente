@@ -4,11 +4,8 @@ import moment from 'moment'
 import {Plugins, PushNotification, PushNotificationToken, PushNotificationActionPerformed} from '@capacitor/core'
 import {FCM} from "capacitor-fcm";
 
-const {PushNotifications} = Plugins;
-const fcm = new FCM();
-// alternatively - without types
-const {FCMPlugin} = Plugins;
 
+// SECURITY
 const getUsers = payload => async dispatch =>
 {
     try {
@@ -17,6 +14,19 @@ const getUsers = payload => async dispatch =>
         dispatch(fb.setUsers({users}))
     } catch (error) {
         dispatch(ui.showMessage({msg: 'No se pudo obtener usuarios.', type: 'error'}))
+    }
+}
+const updateUser = usr => async dispatch =>
+{
+    try {
+        dispatch(ui.showLoader(true))
+        await fbFs.doc(`users/${usr.id}`).set(usr, {merge: true})
+        return usr
+    } catch (error) {
+        return false
+    }
+    finally {
+        dispatch(ui.showLoader(false))
     }
 }
 const login = payload => async dispatch =>
@@ -84,6 +94,13 @@ const sendResetEmail = email => async dispatch =>
             return false
         })
 }
+
+
+// NOTIFICATIONS
+const {PushNotifications} = Plugins;
+const fcm = new FCM();
+// alternatively - without types
+const {FCMPlugin} = Plugins;
 const initPushing = payload => async dispatch =>
 {
     setTimeout(() =>
@@ -236,24 +253,27 @@ const initMobileNotifications = () => (dispatch, getState) =>
         console.log('NO WEB implementation of PushNotification (only mobile)')
     }
 }
+const requestPermission = () => async dispatch =>
+{
+    //firebase.getToken()
+    // firebase.requestPermission()
+}
+
+
+// PATIENTS
 const getAllPatients = () => async (dispatch, getState) =>
 {
     try {
         dispatch(ui.showLoader(true))
-        //const dsn = await fbFs.collection('pacientes').get()
         const dsn = await fbFs.collection('pacientes').get()
-        const patients = dsn.docs.map(x =>
+        const allPatients = dsn.docs.map(x =>
         {
             return {
                 ...x.data(),
                 ...{id: x.id}
             }
         })
-        dispatch(
-            fb.setPatients({
-                patients
-            })
-        )
+        dispatch(fb.setAllPatients(allPatients))
     } catch (error) {
         dispatch(ui.showMessage({msg: 'No se pudo obtener pacientes de la agenda, intente nuevamente.', type: 'error'}))
     }
@@ -310,6 +330,110 @@ const removePatient = patientId => async dispatch =>
     dispatch(fb.setPatient(null))
     await dispatch(getPatients())
 }
+const clonePatient = patient => async (dispatch, getState) =>
+{
+    try {
+        const userInfo = getState().fb.userInfo
+        const userPatients = getState().fb.patients
+
+        dispatch(ui.showLoader(true))
+        patient.uid = userInfo.id
+        delete patient.id
+        delete patient.atencion
+        delete patient.diagnostico
+
+        const pat = await fbFs.collection('pacientes').add(patient)
+        patient.id = pat.id
+        await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
+        dispatch(getPatients())
+        dispatch(ui.showMessage({msg: 'Paciente agregado.', type: 'success'}))
+        return true
+    } catch (error) {
+        dispatch(ui.showMessage({msg: 'No se pudo agregar el paciente.', type: 'error'}))
+        return false
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+    }
+}
+const getAttachmentsByPatient = (patientId) => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    const dsn = await fbFs.collection('pacientes').doc(patientId).collection('adjuntos').get()
+    const attachments = dsn.docs.map(x =>
+    {
+        return {
+            ...x.data(),
+            ...{
+                id: x.id
+            }
+        }
+    })
+    dispatch(fb.setAttachments({attachments}))
+    dispatch(ui.showLoader(false))
+    return true
+}
+const addAttachmentByPatient = (patientId, attachment) => (dispatch) =>
+{
+
+}
+const removeAttachment = (attachmentId) => (dispatch) =>
+{
+
+}
+
+
+// SESSIONS
+const getSessionsByPatient = (patientId) => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    const dsn = await fbFs.collection('pacientes').doc(patientId).collection('sesiones').get()
+    const sessions = dsn.docs.map(x =>
+    {
+        return {
+            ...x.data(),
+            ...{
+                id: x.id
+            }
+        }
+    })
+    dispatch(fb.setSessions({sessions}))
+    dispatch(ui.showLoader(false))
+    return true
+}
+const updateSession = (patientId, session) => async (dispatch) =>
+{
+    dispatch(ui.showLoader(true))
+    try {
+        if (session.id === 0) delete session.id
+
+        delete session.dirty
+        session.estado = session.fechaPago ? 'Cobrada' : 'Pendiente'
+
+        if (!session.id) {
+            const s = await fbFs.collection('pacientes').doc(patientId).collection('sesiones').add(session)
+            session.id = s.id
+        }
+        await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(session.id).set(session, {merge: true})
+        await dispatch(getSessionsByPatient(patientId))
+        return true
+    } catch (error) {
+        return false
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+    }
+}
+const removeSession = (patientId, sessionId) => async (dispatch) =>
+{
+    // if (session.nombre)
+    //     await dispatch(deleteFileStorage('sessions', session))
+    await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(sessionId).delete()
+    await dispatch(getSessionsByPatient(patientId))
+}
+
+
+// FACTURAS
 const getFacturas = () => async (dispatch, getState) =>
 {
     dispatch(ui.showLoader(true))
@@ -359,53 +483,26 @@ const removeFactura = facturaId => async dispatch =>
     await fbFs.collection('facturas').doc(facturaId).delete()
     await dispatch(getFacturas())
 }
-const getSessionsByPatient = (patientId) => async (dispatch) =>
+const getStatistics = () => async (dispatch) =>
 {
     dispatch(ui.showLoader(true))
-    const dsn = await fbFs.collection('pacientes').doc(patientId).collection('sesiones').get()
-    const sessions = dsn.docs.map(x =>
+    const dsn = await fbFs.collection('facturacion').get()
+    const stats = dsn.docs.map(x =>
     {
         return {
             ...x.data(),
             ...{
-                id: x.id
+                id: convertToDate(x.id) //moment(x.id, "YYMM").toDate() //x.id
             }
         }
     })
-    dispatch(fb.setSessions({sessions}))
+    dispatch(fb.setStats({stats}))
     dispatch(ui.showLoader(false))
     return true
 }
-const updateSession = (patientId, session) => async (dispatch) =>
-{
-    dispatch(ui.showLoader(true))
-    try {
-        if (session.id === 0) delete session.id
 
-        delete session.dirty
-        session.estado = session.fechaPago ? 'Cobrada' : 'Pendiente'
 
-        if (!session.id) {
-            const s = await fbFs.collection('pacientes').doc(patientId).collection('sesiones').add(session)
-            session.id = s.id
-        }
-        await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(session.id).set(session, {merge: true})
-        await dispatch(getSessionsByPatient(patientId))
-        return true
-    } catch (error) {
-        return false
-    }
-    finally {
-        dispatch(ui.showLoader(false))
-    }
-}
-const removeSession = (patientId, sessionId) => async (dispatch) =>
-{
-    // if (session.nombre)
-    //     await dispatch(deleteFileStorage('sessions', session))
-    await fbFs.collection('pacientes').doc(patientId).collection('sesiones').doc(sessionId).delete()
-    await dispatch(getSessionsByPatient(patientId))
-}
+// COMUNICATIONS NEWS
 const getAllNews = () => (dispatch) =>
 {
     fbFs.collection('news').onSnapshot(qsn =>
@@ -466,31 +563,60 @@ const updateNewsRead = () => async (dispatch, getState) =>
     user.lastNewsRead = new Date().getTime()
     await fbFs.collection('users').doc(user.id).set(user, {merge: true})
 }
-const getAttachmentsByPatient = (patientId) => async (dispatch) =>
+
+
+// OCCUPATION
+const getDistribution = () => async (dispatch) =>
 {
     dispatch(ui.showLoader(true))
-    const dsn = await fbFs.collection('pacientes').doc(patientId).collection('adjuntos').get()
-    const attachments = dsn.docs.map(x =>
-    {
-        return {
-            ...x.data(),
-            ...{
-                id: x.id
-            }
-        }
-    })
-    dispatch(fb.setAttachments({attachments}))
+    const dd = await fbFs.collection('config').doc('modules').get()
+    const distribution = dd.data().distribution
+    dispatch(fb.setDistribution({distribution}))
     dispatch(ui.showLoader(false))
     return true
 }
-const addAttachmentByPatient = (patientId, attachment) => (dispatch) =>
+const updateDistribution = (payload) => async (dispatch) =>
 {
-
+    try {
+        dispatch(ui.showLoader(true))
+        const o = {distribution: payload}
+        await fbFs.collection('config').doc('modules').set(o, {merge: true})
+        //await dispatch(getDistribution())
+        return true
+    } catch (error) {
+        return false
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+    }
 }
-const removeAttachment = (attachmentId) => (dispatch) =>
+
+
+// FEEDBACK
+const addFeedback = (feedback) => async (dispatch) =>
 {
+    try {
+        dispatch(ui.showLoader(true))
+        if (feedback.id === 0) delete feedback.id
 
+        delete feedback.dirty
+
+        if (!feedback.id) {
+            const fback = await fbFs.collection('feedback').add(feedback)
+            feedback.id = fback.id
+        }
+        await fbFs.collection('feedback').doc(feedback.id).set(feedback, {merge: true})
+        return true
+    } catch (error) {
+        return false
+    }
+    finally {
+        dispatch(ui.showLoader(false))
+    }
 }
+
+
+// FIREBASE STORAGE
 const deleteFileStorage = (path, url) => async dispatch =>
 {
     //const file = fbSto.getReferenceFromUrl(url)
@@ -574,90 +700,10 @@ const uploadPhotoStorage = (path, file, name) => async (dispatch) =>
         }
     })
 }
-const requestPermission = () => async dispatch =>
-{
-    //firebase.getToken()
-    // firebase.requestPermission()
-}
-const updateUser = usr => async dispatch =>
-{
-    try {
-        dispatch(ui.showLoader(true))
-        await fbFs.doc(`users/${usr.id}`).set(usr, {merge: true})
-        return usr
-    } catch (error) {
-        return false
-    }
-    finally {
-        dispatch(ui.showLoader(false))
-    }
-}
-const getStatistics = () => async (dispatch) =>
-{
-    dispatch(ui.showLoader(true))
-    const dsn = await fbFs.collection('facturacion').get()
-    const stats = dsn.docs.map(x =>
-    {
-        return {
-            ...x.data(),
-            ...{
-                id: convertToDate(x.id) //moment(x.id, "YYMM").toDate() //x.id
-            }
-        }
-    })
-    dispatch(fb.setStats({stats}))
-    dispatch(ui.showLoader(false))
-    return true
-}
-const getDistribution = () => async (dispatch) =>
-{
-    dispatch(ui.showLoader(true))
-    const dd = await fbFs.collection('config').doc('modules').get()
-    const distribution = dd.data().distribution
-    dispatch(fb.setDistribution({distribution}))
-    dispatch(ui.showLoader(false))
-    return true
-}
-const updateDistribution = (payload) => async (dispatch) =>
-{
-    try {
-        dispatch(ui.showLoader(true))
-        const o = {distribution: payload}
-        await fbFs.collection('config').doc('modules').set(o, {merge: true})
-        //await dispatch(getDistribution())
-        return true
-    } catch (error) {
-        return false
-    }
-    finally {
-        dispatch(ui.showLoader(false))
-    }
-}
-const addFeedback = (feedback) => async (dispatch) =>
-{
-    try {
-        dispatch(ui.showLoader(true))
-        if (feedback.id === 0) delete feedback.id
-
-        delete feedback.dirty
-
-        if (!feedback.id) {
-            const fback = await fbFs.collection('feedback').add(feedback)
-            feedback.id = fback.id
-        }
-        await fbFs.collection('feedback').doc(feedback.id).set(feedback, {merge: true})
-        return true
-    } catch (error) {
-        return false
-    }
-    finally {
-        dispatch(ui.showLoader(false))
-    }
-}
-
 
 
 ///////////////////////////////////////////////////////
+// PRIVATE METHODS
 const convertToDate = (yymm) =>
 {
     var year = 20 + yymm.substring(0, 2);
@@ -722,6 +768,7 @@ export const bl = {
     getPatients,
     updatePatient,
     removePatient,
+    clonePatient,
     getFacturas,
     updateFactura,
     removeFactura,

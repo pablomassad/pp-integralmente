@@ -163,10 +163,13 @@ export default function Profile()
                 <UserInput type="text" placeholder="Ingrese nombres" value={selUser.displayName || ''} name="displayName" onChange={e => updateSelUser('displayName', e.target.value)} />
             </div>
 
+            {userInfo.isAdmin ?
             <RoleFrame>
                 <IconUser on={selUser.isAdmin !== true} name="usuario" onClick={e => changeRoleHandle(false)} />
                 <IconAdmin on={selUser.isAdmin === true} name="admin" onClick={e => changeRoleHandle(true)} />
             </RoleFrame>
+            :
+            <div></div>}
 
             <BirthdayFrame>
                 <FieldDescription>

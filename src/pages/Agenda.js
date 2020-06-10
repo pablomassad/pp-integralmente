@@ -18,7 +18,21 @@ export default function Agenda()
     const dispatch = useDispatch()
     const [criteria, setCriteria] = useState('')
     const userInfo = useSelector(st => st.fb.userInfo)
-    const patients = useSelector(st => st.fb.patients)
+    const allPatients = useSelector(st => st.fb.allPatients)
+
+    const data = allPatients
+        .filter((f) => criteria.length < 2 || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase())))
+        .sort((f1, f2) =>
+        {
+            const d1 = f1['apellido']
+            const d2 = f2['apellido']
+            if (typeof d1 === 'number') {
+                return d1 - d2;
+            }
+            const s1 = `${d1}`;
+            const s2 = `${d2}`;
+            return s1.localeCompare(s2);
+        });
 
     const evalEdad = p =>
     {
@@ -28,11 +42,10 @@ export default function Agenda()
         const edad = today.diff(cumple, 'y')
         return edad + ' años'
     }
-    const changeCriteriaHandle = e =>
+    const clonePatient = pat =>
     {
-        setCriteria(e.target.value)
+        dispatch(bl.clonePatient(pat))
     }
-    const includePatient = e => {}
 
     useEffect(() =>
     {
@@ -46,14 +59,17 @@ export default function Agenda()
                 <IconPerson />
                 <Criteria
                     type="text"
-                    placeholder="Ingrese datos del paciente"
+                    placeholder="Ingrese datos paciente"
                     value={criteria}
-                    onChange={e => changeCriteriaHandle(e)}
+                    onChange={e => setCriteria(e.target.value)}
                 />
+                <Total>
+                    Total: {data.length}
+                </Total>
             </PatientFilter>
             <PatientList>
-                {patients.map((p, i) =>
-                    <PatientCard key={i} onClick={() => includePatient(p)}>
+                {data.map((p, i) =>
+                    <PatientCard key={i} onClick={() => clonePatient(p)}>
                         <PatientData>
                             <PatientPic src={p.foto === 'assets/images/anonymous.png' ? anonymous : p.foto} />
                             <PatientInfo>
@@ -77,22 +93,25 @@ const PatientsFrame = styled.div`
 	height: 100%;
 `
 const PatientFilter = styled.div`
-	--id: PatientFilter;
-	background: #ccc;
-	display: grid;
-	grid-template-columns: 50px 1fr;
-	align-items: center;
-	box-shadow: 0 1px 3px black;
+    --id:PatientFilter;
+    background:#ccc;
+    display:grid;
+    grid-template-columns:50px 1fr 75px;
+    align-items:center;
+    box-shadow: 0 1px 3px black;
 `
 const IconPerson = styled(PersonPin)`
     color: gray;
     width: 40px;
     margin: 10px;
 `
-
+const Total = styled.div`
+	font-weight: bold;
+	color: black;
+`
 const Criteria = styled.input`
 	--name: 'Criteria';
-	padding: 5px 10px;
+	padding: 0 10px;
 	font-size: 15px;
 	color: #444;
 	background: white;
@@ -101,7 +120,7 @@ const Criteria = styled.input`
 	height: 35px;
 	border: none;
 	display: block;
-	margin: 20px auto;
+	margin: 10px auto;
 	text-align: center;
 	box-shadow: inset 2px 2px 5px grey;
 

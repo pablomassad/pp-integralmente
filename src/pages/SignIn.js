@@ -7,7 +7,7 @@ import {useDispatch} from 'react-redux'
 import {bl, fb, ui} from '../redux'
 
 import GlassButton from '../common/GlassButton'
-
+import {useLongPress} from '../common/useLongPress'
 
 export default function SignIn()
 {
@@ -19,6 +19,12 @@ export default function SignIn()
 
     const refEmail = useRef(null)
     const refPassword = useRef(null)
+
+    const autoLogin = async () =>
+    {
+        loginRedirect({email: 'patriciagonzalezvillar@gmail.com', password: '123456'})
+    }
+    const pressAndHold = useLongPress(autoLogin, 1500);
 
     const onChangeHandler = async e =>
     {
@@ -50,10 +56,6 @@ export default function SignIn()
         event.preventDefault()
         loginRedirect({email, password})
     }
-    const autoLogin = async () =>
-    {
-        loginRedirect({email: 'patriciagonzalezvillar@gmail.com', password: '123456'})
-    }
     const loginRedirect = async (o) =>
     {
         const res = await dispatch(bl.login(o))
@@ -71,7 +73,7 @@ export default function SignIn()
 
     return (
         <LoginFrame>
-            <Logo src={logo} onClick={autoLogin} />
+            <Logo src={logo} />
             <FormLogin>
                 <div>
                     <UserInput
@@ -108,7 +110,7 @@ export default function SignIn()
 				    </GlassButton>
                 </RegisterReset>
             </FormLogin>
-            <Version>v2.0</Version>
+            <Version {...pressAndHold}>v2.2</Version>
         </LoginFrame>
     )
 }

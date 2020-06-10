@@ -162,6 +162,10 @@ const IconPerson = styled(PersonPin)`
     width: 35px;
     margin: 10px;
 `
+const Total = styled.div`
+	font-weight: bold;
+	color: black;
+`
 const Criteria = styled.input`
     --name: 'Criteria';
     padding: 0px 10px;
@@ -234,8 +238,4 @@ const Description = styled.div`
 const IconAdd = styled.div`
 	font-size: 24px;
 	font-weight: bold;
-`
-const Total = styled.div`
-	font-weight: bold;
-	color: black;
 `

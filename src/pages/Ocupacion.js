@@ -157,8 +157,10 @@ export default function Ocupacion()
 const WeekFrame = styled.div`
     --id: WeekFrame;
     padding: 5px;
-    max-width:500px;
-    margin:auto;
+    max-width: 500px;
+    height: 92vh;
+    margin: auto;
+    overflow-y: scroll;
 `
 const DayFrame = styled.div`
     --id:DayFrame;

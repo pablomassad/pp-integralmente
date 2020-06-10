@@ -4,12 +4,13 @@ import {fb} from './fbActions'
 const initialState = {
     users: [],
     userInfo: null,
-    facturas: [],
-    selFactura: undefined,
+    allPatients:[],
     patients: [],
     selPatient: undefined,
     sessions: [],
     selSession: undefined,
+    facturas: [],
+    selFactura: undefined,
     allNews: [],
     selNews: undefined,
     notifications: [],
@@ -45,6 +46,10 @@ export default handleActions(
         [fb.setUser]: (state, action) =>
         {
             return {...state, userInfo: action.payload.userInfo}
+        },
+        [fb.setAllPatients]: (state, action) =>
+        {
+            return {...state, allPatients: action.payload}
         },
         [fb.setPatients]: (state, action) =>
         {

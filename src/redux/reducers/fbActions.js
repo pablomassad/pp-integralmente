@@ -4,6 +4,7 @@ const addNotification = createAction('fb.addNotification')
 const setToken = createAction('fb.setToken')
 const setWebToken = createAction('fb.setWebToken')
 const setUser = createAction('fb.setUser')
+const setAllPatients = createAction('fb.setAllPatients')
 const setPatients = createAction('fb.setPatients')
 const setPatient = createAction('fb.setPatient')
 const setFacturas = createAction('fb.setFacturas')
@@ -41,6 +42,7 @@ export const fb = {
     setToken,
     setWebToken,
 	setUser,
+    setAllPatients,
 	setPatients,
 	setPatient,
 	setFacturas,
