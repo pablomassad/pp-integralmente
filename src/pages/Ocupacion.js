@@ -80,6 +80,7 @@ export default function Ocupacion()
     {
         console.log('call getOcuppation')
         dispatch(bl.getDistribution())
+        dispatch(ui.setTitle('Ocupación'))
     }, [])
 
     return (

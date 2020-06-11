@@ -148,39 +148,6 @@ export default function Facturas()
         setSelFactura(newFactura)
         factList.current.scrollTo(0, 0) //factList.current.scrollHeight+1000)
     }
-    const cancelChanges = e =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-        setSelFactura(null)
-    }
-    const acceptChanges = async () =>
-    {
-        const found = dataAndNew.filter(x => x.nro === selFactura.nro)
-        if (found.length > 1)
-            dispatch(ui.showMessage({msg: 'El nro.de factura ya existe!', type: 'warning'}))
-        else {
-            if (fileInfo) {
-                if (selFactura.nombre) {
-                    //    await dispatch(bl.deleteFileStorage('facturas', selFactura.nombre))
-                    console.log('nombre existente: ', selFactura.nombre)
-                }
-
-                const url = await dispatch(bl.uploadFileStorage('facturas', fileInfo))
-                selFactura.url = url
-                selFactura.nombre = fileInfo.name
-            }
-            console.log('updated Factura: ', selFactura)
-            const res = await dispatch(bl.updateFactura(selFactura))
-            if (res) {
-                dispatch(ui.showMessage({msg: 'Factura guardada', type: 'success'}))
-                setFileInfo(undefined)
-                setSelFactura(null)
-            } else {
-                dispatch(ui.showMessage({msg: 'No se ha podido guardar la factura', type: 'error'}))
-            }
-        }
-    }
     const choosePDF = e =>
     {
         e.stopPropagation()
@@ -226,9 +193,43 @@ export default function Facturas()
         element.click();
         document.body.removeChild(element);
     }
+    const cancelChanges = e =>
+    {
+        e.stopPropagation()
+        e.preventDefault()
+        setSelFactura(null)
+    }
+    const acceptChanges = async () =>
+    {
+        const found = dataAndNew.filter(x => x.nro === selFactura.nro)
+        if (found.length > 1)
+            dispatch(ui.showMessage({msg: 'El nro.de factura ya existe!', type: 'warning'}))
+        else {
+            if (fileInfo) {
+                if (selFactura.nombre) {
+                    //    await dispatch(bl.deleteFileStorage('facturas', selFactura.nombre))
+                    console.log('nombre existente: ', selFactura.nombre)
+                }
+
+                const url = await dispatch(bl.uploadFileStorage('facturas', fileInfo))
+                selFactura.url = url
+                selFactura.nombre = fileInfo.name
+            }
+            console.log('updated Factura: ', selFactura)
+            const res = await dispatch(bl.updateFactura(selFactura))
+            if (res) {
+                dispatch(ui.showMessage({msg: 'Factura guardada', type: 'success'}))
+                setFileInfo(undefined)
+                setSelFactura(null)
+            } else {
+                dispatch(ui.showMessage({msg: 'No se ha podido guardar la factura', type: 'error'}))
+            }
+        }
+    }
 
     useEffect(() =>
     {
+        dispatch(ui.setTitle('Facturas'))
         if (userInfo)
             dispatch(bl.getFacturas())
         else history.replace('/')
@@ -298,7 +299,7 @@ export default function Facturas()
             </FacturasFilter>
             <FacturasLayout>
                 <FactHeader>
-                    <div style={{fontSize:'18px', paddingTop:'1px'}}>
+                    <div style={{fontSize: '18px', paddingTop: '1px'}}>
                         Total:({data.length}) $
 					</div>
                     <Total>

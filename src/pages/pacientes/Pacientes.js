@@ -8,7 +8,7 @@ import {useHistory} from 'react-router-dom'
 
 import anonymous from '../../assets/images/anonymous.png'
 import {useDispatch, useSelector} from 'react-redux'
-import {bl, fb} from '../../redux'
+import {bl,ui, fb} from '../../redux'
 import moment from 'moment'
 
 import {confirmAlert} from 'react-confirm-alert'; // Import
@@ -93,6 +93,7 @@ export default function Pacientes()
 
     useEffect(() =>
     {
+        dispatch(ui.setTitle('Pacientes'))
         if (userInfo) {
             console.log('Filling Patients...................')
             dispatch(fb.setPatient(null))

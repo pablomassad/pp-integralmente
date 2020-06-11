@@ -111,7 +111,7 @@ export default function Comunicados()
 
     useEffect(() =>
     {
-        console.log('')
+        dispatch(ui.setTitle('Comunicados'))
         dispatch(bl.updateNewsRead())
     }, [])
 

@@ -34,6 +34,7 @@ export default function App()
     const history = useHistory()
     const dispatch = useDispatch()
     const msgInfo = useSelector(st => st.ui.msgInfo)
+    const currentTitle = useSelector(st => st.ui.currentTitle)
     const userInfo = useSelector(st => st.fb.userInfo)
     const allNews = useSelector(st => st.fb.allNews, shallowEqual)
     const [newsCounter, setNewsCounter] = useState(0)
@@ -70,7 +71,7 @@ export default function App()
                 ? <Navbar>
                     <Menu />
                     <Logo src={logo} />
-                    <div />
+                    <Title>{currentTitle}</Title>
                     <Avatar src={userInfo.photoURL} onClick={newsHandle}/>
                     <NewsAlert alert={newsCounter}>
                         <AlertCounter>{newsCounter}</AlertCounter>
@@ -106,7 +107,7 @@ export default function App()
 const Navbar = styled.div`
 	--id: NavBar;
 	display: grid;
-	grid-template-columns: 50px 100px 1fr 53px;
+	grid-template-columns: 40px 130px 1fr 53px;
 	align-items: start;
 	background: white;
 	box-shadow: 0px 1px 5px black;
@@ -122,6 +123,12 @@ const Avatar = styled.img`
 	height: 50px;
     object-fit: cover;
 	box-shadow: 2px 2px 6px black;
+`
+const Title = styled.div`
+    font-size:25px;
+    color:black;
+    text-shadow:1px 1px 1px lightgray;
+    padding:10px;
 `
 const NewsAlert = styled.div`
     --id: NewsAlert;

@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import styled from 'styled-components'
 import {User} from '@styled-icons/fa-solid/User'
 import {UserGraduate} from '@styled-icons/fa-solid/UserGraduate'
@@ -150,6 +150,10 @@ export default function Profile()
             dispatch(ui.showMessage({msg: 'No se ha podido guardar los datos del paciente', type: 'error'}))
         }
     }
+
+    useEffect(() => {
+        dispatch(ui.setTitle('Perfil'))
+    }, [])
 
     return (
         <UserFrame>

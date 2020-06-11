@@ -1,21 +1,12 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 
 import {BackInTime} from '@styled-icons/entypo/BackInTime'
-import {File} from '@styled-icons/boxicons-regular/File'
-import {Trash} from '@styled-icons/heroicons-outline/Trash'
 
 import GlassButton from '../common/GlassButton'
 import {useDispatch, useSelector, shallowEqual} from 'react-redux'
 import {bl, ui} from '../redux'
 
-import moment from 'moment'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import {registerLocale, setDefaultLocale} from 'react-datepicker'
-import es from 'date-fns/locale/es'
-
-import {confirmAlert} from 'react-confirm-alert' // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
 
 
@@ -57,6 +48,10 @@ export default function Feedback()
         }
     }
 
+    useEffect(() =>
+    {
+        dispatch(ui.setTitle('Mejoras'))
+    }, [])
 
     return (
         <FBFrame>

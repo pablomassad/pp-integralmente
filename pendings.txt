@@ -1,13 +1,12 @@
 ⏰ Spinner progress bar para uploads binarios
-⏰ Profile: No guarda imagen de perfil
 ⏰ Agenda de pacientes global para campos comunes
-        .Seleccion de pacientes desde la agenda global para incluirlo en listado particular
         .Mostrar en la tarjeta datos de contacto 
-
 ⏰ error boundary redirection to login
 ⏰ Auditoria de utilizacion (stats)
-⏰ Facturas: No permitir carga de factura con mismo numero
 
+
+👍 Profile: No guarda imagen de perfil
+👍 Agenda:Seleccion de pacientes desde la agenda global para incluirlo en listado particular
 👍 Comunicados: Verificar realtime de mensajeria
 👍 Comunicados: No carga uid (author)
 👍 Profile: persistencia y cambio de foto
@@ -21,6 +20,7 @@
 👍 Boton de acceso a Stats graphics desde Facturas
 👍 Agregar contador de pacientes dinamico
 👍 Titulo de campos en contacto de paciente
+👍 Facturas: No permitir carga de factura con mismo numero
 👍 Factuas invertido de campos primeras dos filas
 👍 Agregado de Observaciones en edicion de Facturas
 👍 Opciones/configuracion del perfil y preferencias

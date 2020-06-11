@@ -6,7 +6,7 @@ import {useHistory} from 'react-router-dom'
 
 import anonymous from '../assets/images/anonymous.png'
 import {useDispatch, useSelector} from 'react-redux'
-import {bl, fb} from '../redux'
+import {bl, ui, fb} from '../redux'
 import moment from 'moment'
 
 import {confirmAlert} from 'react-confirm-alert' // Import
@@ -33,14 +33,13 @@ export default function Agenda()
             const s2 = `${d2}`;
             return s1.localeCompare(s2);
         });
-
-    const evalEdad = p =>
+    const evalEdad = (nac) =>
     {
         const today = moment()
-        if (!p) return '0 años'
-        const cumple = moment(p.nacimiento)
+        if (!nac) return '0 años'
+        const cumple = moment(nac)
         const edad = today.diff(cumple, 'y')
-        return edad + ' años'
+        return edad + " años"
     }
     const clonePatient = pat =>
     {
@@ -49,6 +48,7 @@ export default function Agenda()
 
     useEffect(() =>
     {
+        dispatch(ui.setTitle('Agenda'))
         if (userInfo) dispatch(bl.getAllPatients())
         else history.replace('/')
     }, [])
@@ -79,6 +79,11 @@ export default function Agenda()
                                 <Description>
                                     {evalEdad(p.nacimiento)}, {p.obrasocial}
                                 </Description>
+                                <ProfGrid>
+                                    {p.uPhotos.map((photo, i) =>
+                                        <Professional key={i} src={photo} />
+                                    )}
+                                </ProfGrid>
                             </PatientInfo>
                         </PatientData>
                     </PatientCard>
@@ -159,6 +164,18 @@ const PatientPic = styled.img`
     object-fit: cover;
 	box-shadow: 1px 1px 3px black;
 `
+const ProfGrid = styled.div`
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+	align-items: center;
+`
+const Professional = styled.img`
+	border-radius: 50%;
+	width: 30px;
+	height: 30px;
+    object-fit: cover;
+	box-shadow: 1px 1px 3px black;
+`
 const PatientInfo = styled.div`
 	--id: PatientInfo;
 	padding-left: 10px;
@@ -166,7 +183,7 @@ const PatientInfo = styled.div`
 const PatientList = styled.div`
 	--id: PatientList;
 	overflow: auto;
-	height: calc(100vh - 140px);
+	height: calc(100vh - 114px);
 	margin-top: 3px;
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));

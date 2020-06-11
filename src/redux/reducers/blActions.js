@@ -265,13 +265,38 @@ const getAllPatients = () => async (dispatch, getState) =>
 {
     try {
         dispatch(ui.showLoader(true))
+        const users = getState().fb.users
         const dsn = await fbFs.collection('pacientes').get()
-        const allPatients = dsn.docs.map(x =>
+        const res = dsn.docs.map(x =>
         {
             return {
                 ...x.data(),
                 ...{id: x.id}
             }
+        })
+        const allPatients = []
+        const replicates = []
+        res.forEach(p =>
+        {
+            if (p.idOrig)
+                replicates.push(p)
+            else
+                allPatients.push(p)
+        })
+
+        // Fill professionals array
+        allPatients.forEach(p =>
+        {
+            const reps = replicates.filter(r => r.idOrig === p.id)
+            reps.push(p)
+            p.uPhotos = []
+            reps.forEach(r =>
+            {
+                const usr = users.find(u => u.id === r.uid)
+                if (usr) {
+                    p.uPhotos.push(usr.photoURL)
+                }
+            })
         })
         dispatch(fb.setAllPatients(allPatients))
     } catch (error) {
@@ -309,6 +334,7 @@ const updatePatient = patient => async (dispatch, getState) =>
         if (patient.id === 0) delete patient.id
 
         delete patient.dirty
+        delete patient.uPhotos
         patient.uid = getState().fb.userInfo.id
 
         if (!patient.id) {
@@ -334,13 +360,14 @@ const clonePatient = patient => async (dispatch, getState) =>
 {
     try {
         const userInfo = getState().fb.userInfo
-        const userPatients = getState().fb.patients
 
         dispatch(ui.showLoader(true))
         patient.uid = userInfo.id
+        patient.idOrig = patient.id
         delete patient.id
         delete patient.atencion
         delete patient.diagnostico
+        delete patient.uPhotos
 
         const pat = await fbFs.collection('pacientes').add(patient)
         patient.id = pat.id

@@ -1,10 +1,9 @@
-import React, {useEffect, useState, useRef} from "react"
+import React, {useEffect, useRef} from "react"
 import {useResizeObserver} from "use-events"
 import styled from "styled-components"
 import * as d3 from "d3"
 import {useDispatch, useSelector} from "react-redux"
-import {bl, fb} from "../redux"
-import moment from 'moment'
+import {bl, ui, fb} from "../redux"
 
 
 export default function Estadisticas()
@@ -222,13 +221,12 @@ export default function Estadisticas()
 
     useEffect(() =>
     {
+        dispatch(ui.setTitle('Estadísticas'))
         dispatch(bl.getStatistics())
     }, [])
 
-    useEffect(
-        () =>
-        {
-            if (stats && dimensions.width > 0) {
+    useEffect(() => {
+        if (stats && dimensions.width > 0) {
                 genChart()
             }
         },
