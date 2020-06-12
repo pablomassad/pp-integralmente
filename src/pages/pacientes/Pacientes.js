@@ -33,7 +33,6 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
 export default function Pacientes()
 {
-    console.log('....[Pacientes]')
     const history = useHistory()
     const dispatch = useDispatch()
 
@@ -95,7 +94,6 @@ export default function Pacientes()
     {
         dispatch(ui.setTitle('Pacientes'))
         if (userInfo) {
-            console.log('Filling Patients...................')
             dispatch(fb.setPatient(null))
             dispatch(bl.getPatients())
         }

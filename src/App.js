@@ -5,7 +5,7 @@ import logo from './assets/images/integralmenteET.png'
 import {useHistory} from 'react-router-dom'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import {useToasts} from 'react-toast-notifications'
-import {useDispatch,useSelector, shallowEqual} from 'react-redux'
+import {useDispatch, useSelector, shallowEqual} from 'react-redux'
 import {bl} from './redux'
 
 import SignUp from './pages/SignUp'
@@ -40,13 +40,14 @@ export default function App()
     const [newsCounter, setNewsCounter] = useState(0)
 
 
-    const newsHandle = (e)=>{
+    const newsHandle = (e) =>
+    {
         history.push('/news')
     }
 
     useEffect(() =>
     {
-        if (userInfo!=null && userInfo){
+        if (userInfo != null && userInfo) {
             const cnt = allNews.filter(a => a.fecha > userInfo.lastNewsRead).length
             setNewsCounter(cnt)
         }
@@ -60,14 +61,21 @@ export default function App()
         [msgInfo]
     )
 
-    useEffect(() => {
+    useEffect(() =>
+    {
         dispatch(bl.getUsers())
         dispatch(bl.getAllNews())
     }, [])
 
-    useEffect(()=>{
-        dispatch(bl.logEnterApp(userInfo))
-    },[userInfo.id])
+    useEffect(() =>
+    {
+        if (userInfo) {
+            if (userInfo.id) {
+                console.log('LOG..........................................')
+                dispatch(bl.logEnterApp(userInfo))
+            }
+        }
+    }, [userInfo])
 
     return (
         <>
@@ -76,7 +84,7 @@ export default function App()
                     <Menu />
                     <Logo src={logo} />
                     <Title>{currentTitle}</Title>
-                    <Avatar src={userInfo.photoURL} onClick={newsHandle}/>
+                    <Avatar src={userInfo.photoURL} onClick={newsHandle} />
                     <NewsAlert alert={newsCounter}>
                         <AlertCounter>{newsCounter}</AlertCounter>
                     </NewsAlert>
@@ -144,9 +152,9 @@ const NewsAlert = styled.div`
     box-shadow: 1px 1px 4px black;
     width: 18px;
     height: 18px;
-    opacity: ${props => ((props.alert>0) ? 1 : 0)};
+    opacity: ${props => ((props.alert > 0) ? 1 : 0)};
 `
-const AlertCounter =styled.div`
+const AlertCounter = styled.div`
     color: white;
     font-size:12px;
     text-align:center;

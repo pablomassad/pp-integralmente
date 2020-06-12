@@ -9,26 +9,20 @@ import {FCM} from "capacitor-fcm";
 const logEnterApp = userInfo => async dispatch =>
 {
     try {
-        const day = moment().formar('YYMMDD')
-        const dsn = await fbFs.doc(`logger/${day}`).get()
-        const res = dsn.docs.map(x =>
-        {
-            return {
-                ...x.data(),
-                ...{id: x.id}
-            }
-        })
-        let pl = {
-            id: day
-        }
-        if (res){
-            if (!res[userInfo.id])
-                pl[userInfo.id] = 0
-            pl[userInfo.id]++
-        }
+        const day = moment().format('YYMMDD')
+        const dd = await fbFs.doc(`logger/${day}`).get()
+        const pl = dd.data()
+
+        if (!pl)
+            pl = {id: day}
+
+        if (!pl[userInfo.id])
+            pl[userInfo.id] = 0
+        pl[userInfo.id]++
         await fbFs.doc(`logger/${day}`).set(pl, {merge: true})
-        return usr
+        return true
     } catch (error) {
+        dispatch(ui.showMessage({msg: 'No se pudo conectar con la DB.', type: 'error'}))
         return false
     }
 }
@@ -810,6 +804,7 @@ const getUserDocument = async uid =>
 
 
 export const bl = {
+    logEnterApp,
     getUsers,
     login,
     register,
