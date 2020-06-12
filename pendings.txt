@@ -1,10 +1,13 @@
 ⏰ Spinner progress bar para uploads binarios
-⏰ Agenda de pacientes global para campos comunes
-        .Mostrar en la tarjeta datos de contacto 
 ⏰ error boundary redirection to login
-⏰ Auditoria de utilizacion (stats)
+⏰ 
 
 
+
+
+
+👍 Auditoria de utilizacion (stats)
+👍 Agenda de pacientes global para campos comunes
 👍 Profile: No guarda imagen de perfil
 👍 Agenda:Seleccion de pacientes desde la agenda global para incluirlo en listado particular
 👍 Comunicados: Verificar realtime de mensajeria

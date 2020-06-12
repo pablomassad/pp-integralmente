@@ -6,6 +6,32 @@ import {FCM} from "capacitor-fcm";
 
 
 // SECURITY
+const logEnterApp = userInfo => async dispatch =>
+{
+    try {
+        const day = moment().formar('YYMMDD')
+        const dsn = await fbFs.doc(`logger/${day}`).get()
+        const res = dsn.docs.map(x =>
+        {
+            return {
+                ...x.data(),
+                ...{id: x.id}
+            }
+        })
+        let pl = {
+            id: day
+        }
+        if (res){
+            if (!res[userInfo.id])
+                pl[userInfo.id] = 0
+            pl[userInfo.id]++
+        }
+        await fbFs.doc(`logger/${day}`).set(pl, {merge: true})
+        return usr
+    } catch (error) {
+        return false
+    }
+}
 const getUsers = payload => async dispatch =>
 {
     try {

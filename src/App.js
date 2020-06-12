@@ -65,6 +65,10 @@ export default function App()
         dispatch(bl.getAllNews())
     }, [])
 
+    useEffect(()=>{
+        dispatch(bl.logEnterApp(userInfo))
+    },[userInfo.id])
+
     return (
         <>
             {userInfo
