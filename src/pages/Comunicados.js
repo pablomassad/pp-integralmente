@@ -24,6 +24,7 @@ export default function Comunicados()
     console.log('......[Comunicados]')
     const dispatch = useDispatch()
     const history = useHistory()
+    const dirty = useSelector(st=>st.ui.dirty)
     const news = useSelector(st => st.fb.allNews)
     const userInfo = useSelector(st => st.fb.userInfo)
     const users = useSelector(st => st.fb.users)
@@ -70,7 +71,7 @@ export default function Comunicados()
     {
         if (s.uid === userInfo.id) {
             e.preventDefault()
-            if (selNews?.dirty) return // Comunicado en edicion
+            if (dirty) return // Comunicado en edicion
 
             const news = {...s}
             console.log('onSelNews', news)
@@ -82,12 +83,14 @@ export default function Comunicados()
     }
     const updateNews = (field, value) =>
     {
-        const news = {...selNews, [field]: value, dirty: true}
+        dispatch(ui.setDirty(true))
+        const news = {...selNews, [field]: value}
         setSelNews(news)
     }
     const addNewsHandle = () =>
     {
-        const news = {id: 0, uid: userInfo.id, displayName: userInfo.displayName, photo: userInfo.photoURL, dirty: true}
+        dispatch(ui.setDirty(true))
+        const news = {id: 0, uid: userInfo.id, displayName: userInfo.displayName, photo: userInfo.photoURL}
         setSelNews(news)
         newsList.current.scrollTo(0, 0) //newsList.current.scrollHeight+1000)
     }
@@ -173,7 +176,7 @@ export default function Comunicados()
                     </div>
                 )}
             </NewsList>
-            {selNews?.dirty
+            {dirty
                 ? null
                 : <GlassButton
                     absolute

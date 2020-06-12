@@ -14,6 +14,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
 
 export default function Agenda()
 {
+    console.log('render AGENDA...................................................')
     const history = useHistory()
     const dispatch = useDispatch()
     const [criteria, setCriteria] = useState('')
@@ -41,10 +42,6 @@ export default function Agenda()
         const edad = today.diff(cumple, 'y')
         return edad + " años"
     }
-    const clonePatient = pat =>
-    {
-        dispatch(bl.clonePatient(pat))
-    }
 
     useEffect(() =>
     {
@@ -69,7 +66,7 @@ export default function Agenda()
             </PatientFilter>
             <PatientList>
                 {data.map((p, i) =>
-                    <PatientCard key={i} onClick={() => clonePatient(p)}>
+                    <PatientCard key={i} onClick={() => dispatch(bl.clonePatient(p))}>
                         <PatientData>
                             <PatientPic src={p.foto === 'assets/images/anonymous.png' ? anonymous : p.foto} />
                             <PatientInfo>

@@ -35,7 +35,8 @@ export default function Ficha()
     }
     const updateSelPatient = (field, value) =>
     {
-        const newPat = {...selPatient, [field]: value, dirty: true}
+        dispatch(ui.setDirty(true))
+        const newPat = {...selPatient, [field]: value}
         setSelPatient(newPat)
     }
     const choosePic = e =>
@@ -194,7 +195,6 @@ export default function Ficha()
             </Actions>
         </Form>
     )
-
 }
 
 const Form = styled.form`

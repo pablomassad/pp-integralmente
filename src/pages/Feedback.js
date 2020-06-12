@@ -14,6 +14,7 @@ export default function Feedback()
 {
     console.log('......[Feedback]')
     const dispatch = useDispatch()
+
     const userInfo = useSelector(st => st.fb.userInfo)
     const initialFeedback = {
         fecha: new Date().getTime(),
@@ -24,25 +25,22 @@ export default function Feedback()
 
     const updateFeedback = (e) =>
     {
-        setFeedback({...feedback, observacion: e.target.value, dirty: true})
-    }
-    const addFeedbacHandle = () =>
-    {
-        const fBack = {id: 0, dirty: true}
-        //setSelNews(news)
+        dispatch(ui.setDirty(true))
+        setFeedback({...feedback, observacion: e.target.value})
     }
     const cancelChanges = e =>
     {
         e.stopPropagation()
         e.preventDefault()
-        setFeedback(initialFeedback)
+        dispatch(ui.setDirty(true))
+        setFeedback({...feedback, observacion: ''})
     }
     const acceptChanges = async () =>
     {
         const res = await dispatch(bl.addFeedback(feedback))
         if (res) {
             dispatch(ui.showMessage({msg: 'Mejora guardada', type: 'success'}))
-            setFeedback(initialFeedback)
+            setFeedback({...feedback, observacion: ''})
         } else {
             dispatch(ui.showMessage({msg: 'No se ha podido guardar la mejora', type: 'error'}))
         }
@@ -57,6 +55,7 @@ export default function Feedback()
         <FBFrame>
             <Comentario
                 type="text"
+                value={feedback.observacion}
                 placeholder="Ingrese comentarios, criticas o mejoras...."
                 name="observacion"
                 onChange={e => updateFeedback(e)}
@@ -64,7 +63,7 @@ export default function Feedback()
             <Options>
                 <GlassButton onClick={cancelChanges}>Cancelar</GlassButton>
                 <div></div>
-                <GlassButton onClick={acceptChanges}>Aceptar</GlassButton>
+                <GlassButton disabled={!feedback.observacion} onClick={acceptChanges}>Aceptar</GlassButton>
             </Options>
         </FBFrame>
     )
@@ -85,7 +84,7 @@ const Comentario = styled.textarea`
     border-radius: 5px;
     width: 90%;
     height: 200px;
-    margin: 20px;
+    margin: 10px;
     box-shadow: inset 2px 2px 5px grey;
 
 	&:hover {

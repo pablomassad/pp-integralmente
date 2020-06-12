@@ -26,6 +26,7 @@ export default function Historia()
     const history = useHistory()
     const dispatch = useDispatch()
 
+    const dirty = useSelector(st=>st.ui.dirty)
     const sessions = useSelector(st => st.fb.sessions, shallowEqual)
     const selPatient = useSelector(st => st.fb.selPatient, shallowEqual)
 
@@ -96,7 +97,7 @@ export default function Historia()
     const onSelSession = (e, s) =>
     {
         e.preventDefault()
-        if (selSession?.dirty) return // Factura en edicion
+        if (dirty) return // Factura en edicion
 
         const newSession = {...s}
         console.log('onSelSession', newSession)
@@ -104,12 +105,14 @@ export default function Historia()
     }
     const updateSelSession = (field, value) =>
     {
-        const newSession = {...selSession, [field]: value, dirty: true}
+        dispatch(ui.setDirty(true))
+        const newSession = {...selSession, [field]: value}
         setSelSession(newSession)
     }
     const addSessionHandle = () =>
     {
-        const newSession = {id: 0, dirty: true}
+        dispatch(ui.setDirty(true))
+        const newSession = {id: 0}
         setSelSession(newSession)
         sessionList.current.scrollTo(0, 0) //sessionList.current.scrollHeight+1000)
     }
@@ -207,7 +210,7 @@ export default function Historia()
                     </div>
                 )}
             </SessionList>
-            {selSession?.dirty
+            {dirty
                 ? null
                 : <GlassButton
                     absolute

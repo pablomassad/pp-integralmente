@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import logo from '../assets/images/integralmenteET.png'
 
 import {useHistory} from 'react-router-dom'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {bl, fb, ui} from '../redux'
 
 import GlassButton from '../common/GlassButton'
@@ -19,6 +19,8 @@ export default function SignIn()
 
     const refEmail = useRef(null)
     const refPassword = useRef(null)
+
+    const users = useSelector(st=>st.fb.users)
 
     const autoLogin = async () =>
     {
@@ -98,7 +100,7 @@ export default function SignIn()
                     placeholder="Contraseña"
                     required
                 />
-                <GlassButton type="submit" height="40" onClick={loginHandle}>
+                <GlassButton disabled={!users} type="submit" height="40" onClick={loginHandle}>
                     Ingresar
 				</GlassButton>
                 <RegisterReset>

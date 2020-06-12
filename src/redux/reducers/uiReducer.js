@@ -5,6 +5,7 @@ console.log('uiReducer....')
 
 const initialState = {
     sidebarFlag: false,
+    dirty:false,
     loading: false,
     msgInfo: undefined,
     currentTitle:''
@@ -26,5 +27,9 @@ export default handleActions({
     [ui.setTitle]: (state, action) =>
     {
         return {...state, currentTitle: action.payload}
-    }
+    },
+    [ui.setDirty]: (state, action) =>
+    {
+        return {...state, dirty: action.payload}
+    }    
 }, initialState)

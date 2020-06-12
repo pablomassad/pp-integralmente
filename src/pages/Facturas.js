@@ -32,6 +32,7 @@ export default function Facturas()
     const history = useHistory()
     const dispatch = useDispatch()
 
+    const dirty = useSelector(st=>st.ui.dirty)
     const facturas = useSelector(st => st.fb.facturas, shallowEqual)
     const userInfo = useSelector(st => st.fb.userInfo)
 
@@ -131,7 +132,7 @@ export default function Facturas()
     }
     const onSelFactura = f =>
     {
-        if (selFactura?.dirty) return // Factura en edicion
+        if (dirty) return // Factura en edicion
 
         const newBill = {...f}
         console.log('onSelFactura', newBill)
@@ -139,12 +140,14 @@ export default function Facturas()
     }
     const updateSelFactura = (field, value) =>
     {
-        const newBill = {...selFactura, [field]: value, dirty: true}
+        dispatch(ui.setDirty(true))
+        const newBill = {...selFactura, [field]: value}
         setSelFactura(newBill)
     }
     const addFacturaHandle = () =>
     {
-        const newFactura = {id: 0, dirty: true}
+        dispatch(ui.setDirty(true))
+        const newFactura = {id: 0}
         setSelFactura(newFactura)
         factList.current.scrollTo(0, 0) //factList.current.scrollHeight+1000)
     }
@@ -409,7 +412,7 @@ export default function Facturas()
                     )}
                 </FacturasList>
             </FacturasLayout>
-            {selFactura?.dirty
+            {dirty
                 ? null
                 : <GlassButton
                     absolute

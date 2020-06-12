@@ -353,7 +353,6 @@ const updatePatient = patient => async (dispatch, getState) =>
         dispatch(ui.showLoader(true))
         if (patient.id === 0) delete patient.id
 
-        delete patient.dirty
         delete patient.uPhotos
         patient.uid = getState().fb.userInfo.id
 
@@ -368,6 +367,7 @@ const updatePatient = patient => async (dispatch, getState) =>
     }
     finally {
         dispatch(ui.showLoader(false))
+        dispatch(ui.setDirty(false))
     }
 }
 const removePatient = patientId => async dispatch =>
@@ -379,21 +379,29 @@ const removePatient = patientId => async dispatch =>
 const clonePatient = patient => async (dispatch, getState) =>
 {
     try {
-        const userInfo = getState().fb.userInfo
-
         dispatch(ui.showLoader(true))
-        patient.uid = userInfo.id
-        patient.idOrig = patient.id
-        delete patient.id
-        delete patient.atencion
-        delete patient.diagnostico
-        delete patient.uPhotos
+        const userInfo = getState().fb.userInfo
+        const patients = getState().fb.patients
 
-        const pat = await fbFs.collection('pacientes').add(patient)
-        patient.id = pat.id
-        await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
-        dispatch(getPatients())
-        dispatch(ui.showMessage({msg: 'Paciente agregado.', type: 'success'}))
+        const found = patients.find(x => x.id === patient.id)
+        if (found)
+            dispatch(ui.showMessage({msg: 'El paciente ya se encuentra agendado en su lista de pacientes!', type: 'warning'}))
+        else {
+            const newPatient = {...patient}
+            patient.uid = userInfo.id
+            patient.idOrig = patient.id
+            delete patient.id
+            delete patient.atencion
+            delete patient.diagnostico
+            delete patient.uPhotos
+
+            const pat = await fbFs.collection('pacientes').add(newPatient)
+            newPatient.id = pat.id
+            debugger
+            await fbFs.collection('pacientes').doc(newPatient.id).set(newPatient, {merge: true})
+            // dispatch(getPatients())
+            dispatch(ui.showMessage({msg: 'Paciente agregado.', type: 'success'}))
+        }
         return true
     } catch (error) {
         dispatch(ui.showMessage({msg: 'No se pudo agregar el paciente.', type: 'error'}))
@@ -453,8 +461,6 @@ const updateSession = (patientId, session) => async (dispatch) =>
     dispatch(ui.showLoader(true))
     try {
         if (session.id === 0) delete session.id
-
-        delete session.dirty
         session.estado = session.fechaPago ? 'Cobrada' : 'Pendiente'
 
         if (!session.id) {
@@ -469,6 +475,7 @@ const updateSession = (patientId, session) => async (dispatch) =>
     }
     finally {
         dispatch(ui.showLoader(false))
+        dispatch(ui.setDirty(false))
     }
 }
 const removeSession = (patientId, sessionId) => async (dispatch) =>
@@ -505,7 +512,6 @@ const updateFactura = factura => async (dispatch, getState) =>
     try {
         if (factura.id === 0) delete factura.id
 
-        delete factura.dirty
         factura.estado = factura.fechaPago ? 'Cobrada' : 'Pendiente'
         factura.uid = getState().fb.userInfo.id
 
@@ -521,6 +527,7 @@ const updateFactura = factura => async (dispatch, getState) =>
     }
     finally {
         dispatch(ui.showLoader(false))
+        dispatch(ui.setDirty(false))
     }
 }
 const removeFactura = facturaId => async dispatch =>
@@ -583,7 +590,6 @@ const updateNews = news => async (dispatch) =>
     dispatch(ui.showLoader(true))
     try {
         if (news.id === 0) delete news.id
-        delete news.dirty
 
         if (!news.id) {
             const tmp = await fbFs.collection('news').add(news)
@@ -597,6 +603,7 @@ const updateNews = news => async (dispatch) =>
     }
     finally {
         dispatch(ui.showLoader(false))
+        dispatch(ui.setDirty(false))
     }
 }
 const removeNews = newsId => async dispatch =>
@@ -646,8 +653,6 @@ const addFeedback = (feedback) => async (dispatch) =>
         dispatch(ui.showLoader(true))
         if (feedback.id === 0) delete feedback.id
 
-        delete feedback.dirty
-
         if (!feedback.id) {
             const fback = await fbFs.collection('feedback').add(feedback)
             feedback.id = fback.id
@@ -659,6 +664,7 @@ const addFeedback = (feedback) => async (dispatch) =>
     }
     finally {
         dispatch(ui.showLoader(false))
+        dispatch(ui.setDirty(false))
     }
 }
 

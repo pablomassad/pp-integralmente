@@ -9,28 +9,39 @@ import Ficha from "./Ficha"
 import Historia from "./Historia"
 import Documentacion from "./Documentacion"
 
+import {useDispatch, useSelector} from 'react-redux'
+import {bl, ui, fb} from '../../redux'
+
 
 export default function Paciente()
 {
+    const dispatch = useDispatch()
+    const dirty = useSelector(st=>st.ui.dirty)
     const [selTool, setSelTool] = useState("ficha")
 
+    const validateTarget = (tab)=>{
+        if (!dirty)
+            setSelTool(tab)
+        else
+            dispatch(ui.showMessage({msg: 'No es posible en estado edición (Cancele o grabe los cambios)', type: 'warning'}))
+    }
     return (
         <PatientFrame>
             <Toolbar>
                 <Tool
-                    onClick={() => setSelTool("ficha")}
+                    onClick={() => validateTarget("ficha")}
                     active={selTool === "ficha"}>
                     <IconFicha active={selTool === "ficha"} />
 					Ficha
 				</Tool>
                 <Tool
-                    onClick={() => setSelTool("historia")}
+                    onClick={() => validateTarget("historia")}
                     active={selTool === "historia"}>
                     <IconHistoria active={selTool === "historia"} />
 					Historia
 				</Tool>
                 <Tool
-                    onClick={() => setSelTool("documentacion")}
+                    onClick={() => validateTarget("documentacion")}
                     active={selTool === "documentacion"}>
                     <IconDocumentacion active={selTool === "documentacion"} />
 					Documentación
