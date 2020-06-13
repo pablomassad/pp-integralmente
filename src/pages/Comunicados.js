@@ -5,6 +5,8 @@ import {BackInTime} from '@styled-icons/entypo/BackInTime'
 import {Trash} from '@styled-icons/heroicons-outline/Trash'
 
 import GlassButton from '../common/GlassButton'
+import anonymous from '../assets/images/anonymous.png'
+
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector, shallowEqual} from 'react-redux'
 import {bl, ui} from '../redux'
@@ -147,7 +149,7 @@ export default function Comunicados()
                                 <Observaciones>
                                     {s.description}
                                 </Observaciones>
-                                <Avatar src={s.photo} />
+                                <Avatar src={s.photo || anonymous} />
                             </NewsCard>
                             : <NewsForm>
                                 <DatePicker

@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import styled, {keyframes} from 'styled-components'
 
 import GlassButton from '../common/GlassButton'
+import anonymous from '../assets/images/anonymous.png'
 
 import {useDispatch, useSelector, shallowEqual} from 'react-redux'
 import {bl, ui} from '../redux'
@@ -105,7 +106,7 @@ export default function Ocupacion()
                                     {mod ?
                                         <GlassButton height={50} margin={5} background={'#0688de'} onClick={(e) => openSelector(e, id, 'M', i)}>
                                             <ProfFrame>
-                                                <ProfPhoto src={mod.photo} />
+                                                <ProfPhoto src={mod.photo || anonymous} />
                                                 <Name>{mod.name}</Name>
                                             </ProfFrame>
                                         </GlassButton>
@@ -120,7 +121,7 @@ export default function Ocupacion()
                                     {mod ?
                                         <GlassButton height={50} margin={5} background={'#2da91f'} onClick={(e) => openSelector(e, id, 'T', i)}>
                                             <ProfFrame>
-                                                <ProfPhoto src={mod.photo} />
+                                                <ProfPhoto src={mod.photo || anonymous} />
                                                 <Name>{mod.name}</Name>
                                             </ProfFrame>
                                         </GlassButton>
@@ -143,7 +144,7 @@ export default function Ocupacion()
                         </GlassButton>
                         {users.map((u, i) =>
                             <User key={i} onClick={(e) => selectUserHandle(u)}>
-                                <Avatar src={u.photoURL} />
+                                <Avatar src={u.photoURL || anonymous} />
                                 <Name>{u.displayName}</Name>
                             </User>
                         )}

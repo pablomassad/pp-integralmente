@@ -53,9 +53,10 @@ export default function Agenda()
             buttons: [
                 {
                     label: 'Si',
-                    onClick: () => {
-                        dispatch(bl.clonePatient(p))
-                        history.push('/patients')
+                    onClick: async () => {
+                        const res = await dispatch(bl.clonePatient(p))
+                        if (res)
+                            history.push('/patients')
                     }
                 },
                 {
@@ -91,7 +92,7 @@ export default function Agenda()
                 {data.map((p, i) =>
                     <PatientCard key={i} onClick={(e) => clonePatient(e,p)}>
                         <PatientData>
-                            <PatientPic src={p.foto === 'assets/images/anonymous.png' ? anonymous : p.foto} />
+                            <PatientPic src={p.foto || anonymous} />
                             <PatientInfo>
                                 <Title>
                                     {p.apellido}, {p.nombres}
@@ -101,7 +102,7 @@ export default function Agenda()
                                 </Description>
                                 <ProfGrid>
                                     {p.uPhotos.map((photo, i) =>
-                                        <Professional key={i} src={photo} />
+                                        <Professional key={i} src={photo || anonymous} />
                                     )}
                                 </ProfGrid>
                             </PatientInfo>

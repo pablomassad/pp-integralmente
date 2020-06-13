@@ -10,6 +10,8 @@ import {Calendar} from '@styled-icons/evil/Calendar'
 import {Feedback} from '@styled-icons/material/Feedback'
 import {Exit} from '@styled-icons/icomoon/Exit'
 
+import anonymous from '../assets/images/anonymous.png'
+
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {ui} from '../redux'
@@ -38,7 +40,7 @@ export default function Menu()
             </ToggleButton>
             <MenuItems className={(sidebarFlag) ? "sidebar sbOpen" : "sidebar sbClose"}>
                 <MenuItem onClick={() => goto('/profile')}>
-                    <Avatar src={userInfo.photoURL} />
+                    <Avatar src={userInfo.photoURL || anonymous} />
                         {userInfo.displayName}
                 </MenuItem>
                 <hr />

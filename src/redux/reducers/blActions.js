@@ -11,7 +11,7 @@ const logEnterApp = userInfo => async dispatch =>
     try {
         const day = moment().format('YYMMDD')
         const dd = await fbFs.doc(`logger/${day}`).get()
-        const pl = dd.data()
+        let pl = dd.data()
 
         if (!pl)
             pl = {id: day}
@@ -23,6 +23,7 @@ const logEnterApp = userInfo => async dispatch =>
         return true
     } catch (error) {
         dispatch(ui.showMessage({msg: 'No se pudo conectar con la DB.', type: 'error'}))
+        console.log('Logger error:', error)
         return false
     }
 }
@@ -379,20 +380,22 @@ const removePatient = patientId => async dispatch =>
     dispatch(fb.setPatient(null))
     await dispatch(getPatients())
 }
-const clonePatient = patient => async (dispatch, getState) =>
+const clonePatient = patAgenda => async (dispatch, getState) =>
 {
     try {
         dispatch(ui.showLoader(true))
         const userInfo = getState().fb.userInfo
         const patients = getState().fb.patients
 
-        const found = patients.find(x => x.id === patient.id)
-        if (found)
+        const found = patients.find(x => x.idOrig === patAgenda.id)
+        if (found) {
             dispatch(ui.showMessage({msg: 'El paciente ya se encuentra agendado en su lista de pacientes!', type: 'warning'}))
+            return false
+        }
         else {
-            const newPatient = {...patient}
+            const newPatient = {...patAgenda}
             newPatient.uid = userInfo.id
-            newPatient.idOrig = patient.id
+            newPatient.idOrig = patAgenda.id
             delete newPatient.id
             delete newPatient.atencion
             delete newPatient.diagnostico
@@ -402,8 +405,8 @@ const clonePatient = patient => async (dispatch, getState) =>
             newPatient.id = pat.id
             await fbFs.collection('pacientes').doc(newPatient.id).set(newPatient, {merge: true})
             dispatch(ui.showMessage({msg: 'Paciente agregado.', type: 'success'}))
+            return true
         }
-        return true
     } catch (error) {
         dispatch(ui.showMessage({msg: 'No se pudo agregar el paciente.', type: 'error'}))
         return false
@@ -542,7 +545,7 @@ const getStatistics = () => async (dispatch, getState) =>
 {
     dispatch(ui.showLoader(true))
     const userInfo = getState().fb.userInfo
-    updateStatistics(userInfo.id)
+    await updateStatistics(userInfo.id)
     const dsn = await fbFs.collection('historial').doc(userInfo.id).collection('facturacion').get()
     const stats = dsn.docs.map(x =>
     {
@@ -762,10 +765,11 @@ const uploadPhotoStorage = (path, file, name) => async (dispatch) =>
 // PRIVATE METHODS
 const convertToDate = (yymm) =>
 {
-    var year = 20 + yymm.substring(0, 2);
-    var month = yymm.substring(2, 4);
+    // var year = 20 + yymm.substring(0, 2)
+    // var month = yymm.substring(2, 4)
+    // var date = new Date(year, month - 1)
 
-    var date = new Date(year, month - 1);
+    var date = moment(yymm, 'YYMM').format('MM/YY')
     console.log('date: ', date)
     return date
 }

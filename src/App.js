@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 import logo from './assets/images/integralmenteET.png'
+import anonymous from './assets/images/anonymous.png'
 
 import {useHistory} from 'react-router-dom'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
@@ -69,12 +70,16 @@ export default function App()
 
     useEffect(() =>
     {
-        if (userInfo) {
-            if (userInfo.id) {
-                console.log('LOG..........................................')
-                dispatch(bl.logEnterApp(userInfo))
+        const logger = async (uInfo) =>
+        {
+            if (uInfo) {
+                if (uInfo.id) {
+                    console.log('LOG ENTER..........................................')
+                    await dispatch(bl.logEnterApp(uInfo))
+                }
             }
         }
+        logger(userInfo)
     }, [userInfo])
 
     return (
@@ -84,7 +89,7 @@ export default function App()
                     <Menu />
                     <Logo src={logo} />
                     <Title>{currentTitle}</Title>
-                    <Avatar src={userInfo.photoURL} onClick={newsHandle} />
+                    <Avatar src={userInfo.photoURL || anonymous} onClick={newsHandle} />
                     <NewsAlert alert={newsCounter}>
                         <AlertCounter>{newsCounter}</AlertCounter>
                     </NewsAlert>
