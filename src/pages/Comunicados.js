@@ -97,6 +97,7 @@ export default function Comunicados()
     const cancelChanges = e =>
     {
         setSelNews(null)
+        dispatch(ui.setDirty(false))
         history.goBack()
     }
     const acceptChanges = async () =>

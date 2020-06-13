@@ -42,6 +42,29 @@ export default function Agenda()
         const edad = today.diff(cumple, 'y')
         return edad + " años"
     }
+    const clonePatient = (e,p) =>
+    {
+        e.stopPropagation()
+        e.preventDefault()
+
+        confirmAlert({
+            title: 'Replicar paciente',
+            message: 'Esta seguro?',
+            buttons: [
+                {
+                    label: 'Si',
+                    onClick: () => {
+                        dispatch(bl.clonePatient(p))
+                        history.push('/patients')
+                    }
+                },
+                {
+                    label: 'No',
+                    onClick: () => console.log('cancel')
+                }
+            ]
+        })
+    }
 
     useEffect(() =>
     {
@@ -66,7 +89,7 @@ export default function Agenda()
             </PatientFilter>
             <PatientList>
                 {data.map((p, i) =>
-                    <PatientCard key={i} onClick={() => dispatch(bl.clonePatient(p))}>
+                    <PatientCard key={i} onClick={(e) => clonePatient(e,p)}>
                         <PatientData>
                             <PatientPic src={p.foto === 'assets/images/anonymous.png' ? anonymous : p.foto} />
                             <PatientInfo>

@@ -201,6 +201,7 @@ export default function Facturas()
         e.stopPropagation()
         e.preventDefault()
         setSelFactura(null)
+        dispatch(ui.setDirty(false))
     }
     const acceptChanges = async () =>
     {

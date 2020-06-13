@@ -115,6 +115,8 @@ export default function Ficha()
     {
         e.stopPropagation()
         e.preventDefault()
+        dispatch(ui.setDirty(false))
+        setSelPatient(null)
         history.push('/patients')
     }
     const acceptChanges = async (e) =>

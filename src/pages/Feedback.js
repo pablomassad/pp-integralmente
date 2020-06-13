@@ -32,7 +32,7 @@ export default function Feedback()
     {
         e.stopPropagation()
         e.preventDefault()
-        dispatch(ui.setDirty(true))
+        dispatch(ui.setDirty(false))
         setFeedback({...feedback, observacion: ''})
     }
     const acceptChanges = async () =>

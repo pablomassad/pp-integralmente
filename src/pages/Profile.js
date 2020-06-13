@@ -126,6 +126,7 @@ export default function Profile()
     {
         e.stopPropagation()
         e.preventDefault()
+        dispatch(ui.setDirty(false))
         history.goBack() 
     }
     const acceptChanges = async (e) =>

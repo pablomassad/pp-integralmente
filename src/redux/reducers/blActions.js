@@ -65,6 +65,9 @@ const login = payload => async dispatch =>
 
         await dispatch(updateUser(userInfo))
         dispatch(fb.setUser({userInfo}))
+
+        localStorage.setItem('credentials', JSON.stringify(payload))
+        dispatch(initPushing())
         res = true
     } catch (error) {
         dispatch(
@@ -388,18 +391,16 @@ const clonePatient = patient => async (dispatch, getState) =>
             dispatch(ui.showMessage({msg: 'El paciente ya se encuentra agendado en su lista de pacientes!', type: 'warning'}))
         else {
             const newPatient = {...patient}
-            patient.uid = userInfo.id
-            patient.idOrig = patient.id
-            delete patient.id
-            delete patient.atencion
-            delete patient.diagnostico
-            delete patient.uPhotos
+            newPatient.uid = userInfo.id
+            newPatient.idOrig = patient.id
+            delete newPatient.id
+            delete newPatient.atencion
+            delete newPatient.diagnostico
+            delete newPatient.uPhotos
 
             const pat = await fbFs.collection('pacientes').add(newPatient)
             newPatient.id = pat.id
-            debugger
             await fbFs.collection('pacientes').doc(newPatient.id).set(newPatient, {merge: true})
-            // dispatch(getPatients())
             dispatch(ui.showMessage({msg: 'Paciente agregado.', type: 'success'}))
         }
         return true

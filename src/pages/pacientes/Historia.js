@@ -120,6 +120,7 @@ export default function Historia()
     {
         e.stopPropagation()
         e.preventDefault()
+        dispatch(ui.setDirty(false))
         setSelSession(null)
     }
     const acceptChanges = async () =>

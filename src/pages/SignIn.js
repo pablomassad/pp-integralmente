@@ -20,7 +20,7 @@ export default function SignIn()
     const refEmail = useRef(null)
     const refPassword = useRef(null)
 
-    const users = useSelector(st=>st.fb.users)
+    const users = useSelector(st => st.fb.users)
 
     const autoLogin = async () =>
     {
@@ -61,15 +61,19 @@ export default function SignIn()
     const loginRedirect = async (o) =>
     {
         const res = await dispatch(bl.login(o))
-        if (res) {
-            dispatch(bl.initPushing())
+        if (res)
             history.push('/patients')
-        }
     }
 
     useEffect(() =>
     {
-        dispatch(fb.setUser({userInfo:null}))
+        const str = localStorage.getItem('credentials')
+        if (str) {
+            const credentials = JSON.parse(str)
+            setEmail(credentials.email)
+            setPassword(credentials.password)
+        }
+        dispatch(fb.setUser({userInfo: null}))
         refEmail.current.focus()
     }, [])
 
@@ -112,7 +116,7 @@ export default function SignIn()
 				    </GlassButton>
                 </RegisterReset>
             </FormLogin>
-            <Version {...pressAndHold}>v2.4</Version>
+            <Version {...pressAndHold}>v2.5</Version>
         </LoginFrame>
     )
 }
