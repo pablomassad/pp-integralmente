@@ -1,0 +1,117 @@
+[debug] [2020-06-13T02:13:54.718Z] ----------------------------------------------------------------------
+[debug] [2020-06-13T02:13:54.720Z] Command:       /Users/pablomassad/.nvm/versions/node/v12.13.0/bin/node /Users/pablomassad/.nvm/versions/node/v12.13.0/bin/firebase deploy
+[debug] [2020-06-13T02:13:54.720Z] CLI Version:   7.14.0
+[debug] [2020-06-13T02:13:54.720Z] Platform:      darwin
+[debug] [2020-06-13T02:13:54.720Z] Node Version:  v12.13.0
+[debug] [2020-06-13T02:13:54.722Z] Time:          Fri Jun 12 2020 23:13:54 GMT-0300 (Argentina Standard Time)
+[debug] [2020-06-13T02:13:54.722Z] ----------------------------------------------------------------------
+[debug] [2020-06-13T02:13:54.722Z] 
+[debug] [2020-06-13T02:13:54.738Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-06-13T02:13:54.738Z] > authorizing via signed-in user
+[debug] [2020-06-13T02:13:54.738Z] [iam] checking project pp-integralmente for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-06-13T02:13:54.739Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2020-06-13T02:13:54.739Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2020-06-13T02:13:55.077Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:13:55.100Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/pp-integralmente:testIamPermissions  
+
+[debug] [2020-06-13T02:13:56.392Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:13:56.393Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/pp-integralmente  
+ 
+[debug] [2020-06-13T02:13:57.039Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'pp-integralmente'...
+[info] 
+[info] i  deploying functions, hosting
+[debug] [2020-06-13T02:13:58.752Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "8"
+  },
+  "dependencies": {
+    "firebase-admin": "^8.6.0",
+    "firebase-functions": "^3.3.0",
+    "moment": "^2.26.0"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^0.1.6"
+  },
+  "private": true
+}
+[info] i  functions: ensuring necessary APIs are enabled...
+[debug] [2020-06-13T02:13:58.753Z] >>> HTTP REQUEST GET https://serviceusage.googleapis.com/v1/projects/pp-integralmente/services/cloudfunctions.googleapis.com  
+ 
+[debug] [2020-06-13T02:13:58.754Z] >>> HTTP REQUEST GET https://serviceusage.googleapis.com/v1/projects/pp-integralmente/services/runtimeconfig.googleapis.com  
+ 
+[debug] [2020-06-13T02:14:00.002Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:14:00.090Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: all necessary APIs are enabled
+[debug] [2020-06-13T02:14:00.091Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/pp-integralmente/adminSdkConfig  
+ 
+[debug] [2020-06-13T02:14:00.667Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:14:00.668Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/pp-integralmente/versions  
+
+[debug] [2020-06-13T02:14:02.793Z] <<< HTTP RESPONSE 200
+[info] i  functions: preparing functions directory for uploading...
+[debug] [2020-06-13T02:14:02.795Z] >>> HTTP REQUEST GET https://runtimeconfig.googleapis.com/v1beta1/projects/pp-integralmente/configs  
+ 
+[debug] [2020-06-13T02:14:04.224Z] <<< HTTP RESPONSE 200
+[info] i  functions: packaged functions (33.81 KB) for uploading
+[debug] [2020-06-13T02:14:04.989Z] >>> HTTP REQUEST POST https://cloudfunctions.googleapis.com/v1/projects/pp-integralmente/locations/us-central1/functions:generateUploadUrl  
+ 
+[debug] [2020-06-13T02:14:06.710Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:14:06.711Z] >>> HTTP REQUEST PUT https://storage.googleapis.com/gcf-upload-us-central1-574d7476-6f7c-4b6b-9e60-a5f57b0383d7/a9911baa-635c-48cc-ad27-e6bff0acb1d5.zip?GoogleAccessId=service-857389537904@gcf-admin-robot.iam.gserviceaccount.com&Expires=1592016246&Signature=MOTV00P1kDukd86R%2F1D9Urt%2FKTuoCmoX02icrijawOxN%2FBfZvHh%2BGck1%2F8s0lyPwofs0ue0nHC84FYqpGapWxeP6%2BK2bIXW0RYdrkNeAO%2BSQzaAPkxVjGlOMsJJoLWFqBToUqnRJYBmRhhrYARy%2F6VkZgEO3rNStIPAiNl9F76bHzzb6ddlDnFoQx%2FwVHVALsz4xDxsJFZyS0MyK4tkh3rUY3Iiy8qF8MHkYXH6W5ykJJ2ou4c3%2BWe1TI6vW%2FvHkfxSlwKrhTsT78wdF4pbosyDcFQPnBULCNOuib7IKRx%2BT6u%2BCoNOyCCPPRVS1whUzymSc2XobeZ9HJ%2FNrKziCDA%3D%3D  
+ <request body omitted>
+[debug] [2020-06-13T02:14:07.341Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: functions folder uploaded successfully
+[info] i  hosting[pp-integralmente]: beginning deploy...
+[info] i  hosting[pp-integralmente]: found 22 files in build
+[debug] [2020-06-13T02:14:08.181Z] [hosting] hash cache [YnVpbGQ] stored for 22 files
+[debug] [2020-06-13T02:14:08.181Z] [hosting][hash queue][FINAL]
+[debug] [2020-06-13T02:14:08.181Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/pp-integralmente/versions/9d455a956ceb5730:populateFiles  
+ <request body omitted>
+[debug] [2020-06-13T02:14:09.856Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:14:09.860Z] [hosting][populate queue][FINAL]
+[debug] [2020-06-13T02:14:09.860Z] [hosting] uploads queued: 8
+[debug] [2020-06-13T02:14:19.780Z] [hosting][upload queue][FINAL]
+[info] ✔  hosting[pp-integralmente]: file upload complete
+[debug] [2020-06-13T02:14:19.785Z] [hosting] deploy completed after 12443ms
+[debug] [2020-06-13T02:14:20.021Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/projects/pp-integralmente/locations/-/functions  
+ 
+[debug] [2020-06-13T02:14:21.259Z] <<< HTTP RESPONSE 200
+[info] i  functions: updating Node.js 8 function happyBirthday(us-central1)...
+[debug] [2020-06-13T02:14:21.261Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function evalCumples(us-central1)...
+[debug] [2020-06-13T02:14:21.261Z] Trigger is:  {"httpsTrigger":{}}
+[debug] [2020-06-13T02:14:21.262Z] >>> HTTP REQUEST GET https://serviceusage.googleapis.com/v1/projects/pp-integralmente/services/cloudscheduler.googleapis.com  
+ 
+[debug] [2020-06-13T02:14:22.563Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:14:22.564Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/pp-integralmente/locations/us-central1/functions/happyBirthday {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2020-06-13T02:14:22.565Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/pp-integralmente/locations/us-central1/functions/evalCumples {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2020-06-13T02:14:24.485Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:14:24.588Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:14:24.589Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/projects/pp-integralmente/locations/-/functions  
+ 
+[debug] [2020-06-13T02:14:26.061Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:14:26.062Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/cHAtaW50ZWdyYWxtZW50ZS91cy1jZW50cmFsMS9oYXBweUJpcnRoZGF5L1VhRjVSRm9keVc4  
+ 
+[debug] [2020-06-13T02:14:26.062Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/cHAtaW50ZWdyYWxtZW50ZS91cy1jZW50cmFsMS9ldmFsQ3VtcGxlcy9MZHJiV3Rqb1RBTQ  
+ 
+[debug] [2020-06-13T02:14:27.176Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:14:27.208Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:14:29.177Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/cHAtaW50ZWdyYWxtZW50ZS91cy1jZW50cmFsMS9oYXBweUJpcnRoZGF5L1VhRjVSRm9keVc4  
+ 
+[debug] [2020-06-13T02:14:29.210Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/cHAtaW50ZWdyYWxtZW50ZS91cy1jZW50cmFsMS9ldmFsQ3VtcGxlcy9MZHJiV3Rqb1RBTQ  
+ 
+[debug] [2020-06-13T02:14:30.427Z] <<< HTTP RESPONSE 200
+[debug] [2020-06-13T02:14:30.441Z] <<< HTTP RESPONSE 200

@@ -1,11 +1,14 @@
 ⏰ Spinner progress bar para uploads binarios
 ⏰ error boundary redirection to login
-⏰ 
 
 
 
 
-
+👍 Eliminacion de usuarios que no van
+👍 Historial de facturacion segun usuario
+👍 Historial recalculo para fin de mes y no al principio
+👍 Historial automatico luego de editar factura
+👍 Cancelacion con panel disabled en popups
 👍 Auditoria de utilizacion (stats)
 👍 Agenda de pacientes global para campos comunes
 👍 Profile: No guarda imagen de perfil

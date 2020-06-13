@@ -56,7 +56,7 @@ afs.collection('facturas').where('uid', '==', uid).get()
             console.log("yymm", id);
             console.log('fac', fac[id])
             
-            await afs.collection("facturacion").doc(id).set(fac[id], {merge: true})
+            await afs.collection("historial").doc(uid).collection("facturacion").doc(id).set(fac[id], {merge: true})
         })
     }
     )

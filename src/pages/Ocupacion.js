@@ -136,7 +136,7 @@ export default function Ocupacion()
             }
             {showSelector ?
                 <div>
-                    <DisabledPanel />{anim}
+                    <DisabledPanel onClick={()=>setShowSelector(false)}/>{anim}
                     <Selector animation={anim}>
                         <GlassButton onClick={(e) => selectUserHandle()}>
                             Disponible
