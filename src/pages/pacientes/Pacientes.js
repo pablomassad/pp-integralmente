@@ -74,7 +74,7 @@ export default function Pacientes()
             buttons: [
                 {
                     label: 'Si',
-                    onClick: () => dispatch(bl.removePatient(p.id))
+                    onClick: () => dispatch(bl.removePatient(p, userInfo.id))
                 },
                 {
                     label: 'No',

@@ -51,6 +51,7 @@ export default function App()
         console.log('setNewsCounter......')
         if (userInfo != null && userInfo) {
             const cnt = allNews.filter(a => a.fecha > userInfo.lastNewsRead).length
+            console.log('COUNTER: ', cnt)
             setNewsCounter(cnt)
         }
     }, [allNews, userInfo])

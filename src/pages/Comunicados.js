@@ -26,10 +26,9 @@ export default function Comunicados()
     console.log('......[Comunicados]')
     const dispatch = useDispatch()
     const history = useHistory()
-    const dirty = useSelector(st=>st.ui.dirty)
+    const dirty = useSelector(st => st.ui.dirty)
     const news = useSelector(st => st.fb.allNews)
     const userInfo = useSelector(st => st.fb.userInfo)
-    const users = useSelector(st => st.fb.users)
 
     const newsList = useRef()
 
@@ -38,12 +37,6 @@ export default function Comunicados()
 
 
     const data = news
-        // .map(s=>{
-        //     const usr = users.find(u=>u.id === s.uid)
-        //     console.log('usuario:', usr)
-        //     const o = {...s, displayName:usr.displayName, photo:usr.photoURL}
-        //     return o
-        // })
         .filter((s) => criteria.length < 3 || Object.keys(s).some((k) => `${s[k]}`.toLowerCase().includes(criteria.toLowerCase())))
         .map((s) => selNews?.id === s.id ? selNews : s);
 

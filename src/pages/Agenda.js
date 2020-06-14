@@ -42,7 +42,7 @@ export default function Agenda()
         const edad = today.diff(cumple, 'y')
         return edad + " años"
     }
-    const clonePatient = (e,p) =>
+    const clonePatientHandle = (e,p) =>
     {
         e.stopPropagation()
         e.preventDefault()
@@ -70,8 +70,6 @@ export default function Agenda()
     useEffect(() =>
     {
         dispatch(ui.setTitle('Agenda'))
-        if (userInfo) dispatch(bl.getAllPatients())
-        else history.replace('/')
     }, [])
 
     return (
@@ -90,7 +88,7 @@ export default function Agenda()
             </PatientFilter>
             <PatientList>
                 {data.map((p, i) =>
-                    <PatientCard key={i} onClick={(e) => clonePatient(e,p)}>
+                    <PatientCard key={i} onClick={(e) => clonePatientHandle(e,p)}>
                         <PatientData>
                             <PatientPic src={p.foto || anonymous} />
                             <PatientInfo>
@@ -101,8 +99,8 @@ export default function Agenda()
                                     {evalEdad(p.nacimiento)}, {p.obrasocial}
                                 </Description>
                                 <ProfGrid>
-                                    {p.uids.map((uid, i) =>
-                                        <Professional key={i} src={uid.photoURL || anonymous} />
+                                    {Object.keys(p.uids).map((uid, i) =>
+                                        <Professional key={i} src={p.uids[uid].photoURL || anonymous} />
                                     )}
                                 </ProfGrid>
                             </PatientInfo>

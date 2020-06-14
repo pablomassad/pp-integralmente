@@ -21,6 +21,7 @@ export default function SignIn()
     const refPassword = useRef(null)
 
     const users = useSelector(st => st.fb.users)
+    const allPatients = useSelector(st => st.fb.allPatients)
 
     const autoLogin = async () =>
     {
@@ -104,7 +105,7 @@ export default function SignIn()
                     placeholder="Contraseña"
                     required
                 />
-                <GlassButton disabled={!users} type="submit" height="40" onClick={loginHandle}>
+                <GlassButton disabled={!users || !allPatients} type="submit" height="40" onClick={loginHandle}>
                     Ingresar
 				</GlassButton>
                 <RegisterReset>
@@ -116,7 +117,7 @@ export default function SignIn()
 				    </GlassButton>
                 </RegisterReset>
             </FormLogin>
-            <Version {...pressAndHold}>v2.6</Version>
+            <Version {...pressAndHold}>v3.1</Version>
         </LoginFrame>
     )
 }

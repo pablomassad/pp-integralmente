@@ -1,12 +1,15 @@
 ⏰ Spinner progress bar para uploads binarios
 ⏰ error boundary redirection to login
-⏰ Eliminar paciente que ya se encuentra replicado .....side effects....
 ⏰ Estadisticas mostrar meses y no numeros
-⏰ Comunicados actualizacion automatica de counter
+⏰ Implementar adjuntos en sesion y documentacion
+⏰ Cloud Functions de borrado automatico
 
 
 
 
+
+👍 Comunicados actualizacion automatica de counter
+👍 Eliminar paciente que ya se encuentra replicado .....side effects....
 👍 Eliminacion de usuarios que no van
 👍 Historial recalculo para fin de mes y no al principio
 👍 Historial de facturacion segun usuario
