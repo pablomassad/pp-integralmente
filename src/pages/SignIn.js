@@ -116,7 +116,7 @@ export default function SignIn()
 				    </GlassButton>
                 </RegisterReset>
             </FormLogin>
-            <Version {...pressAndHold}>v2.5</Version>
+            <Version {...pressAndHold}>v2.6</Version>
         </LoginFrame>
     )
 }

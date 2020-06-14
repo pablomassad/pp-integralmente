@@ -1,6 +1,9 @@
 ⏰ Spinner progress bar para uploads binarios
 ⏰ error boundary redirection to login
 ⏰ Eliminar paciente que ya se encuentra replicado .....side effects....
+⏰ Estadisticas mostrar meses y no numeros
+⏰ Comunicados actualizacion automatica de counter
+
 
 
 

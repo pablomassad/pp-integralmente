@@ -48,6 +48,7 @@ export default function App()
 
     useEffect(() =>
     {
+        console.log('setNewsCounter......')
         if (userInfo != null && userInfo) {
             const cnt = allNews.filter(a => a.fecha > userInfo.lastNewsRead).length
             setNewsCounter(cnt)
@@ -66,6 +67,7 @@ export default function App()
     {
         dispatch(bl.getUsers())
         dispatch(bl.getAllNews())
+        dispatch(bl.getAllPatients())
     }, [])
 
     useEffect(() =>
@@ -142,9 +144,10 @@ const Avatar = styled.img`
 	box-shadow: 2px 2px 6px black;
 `
 const Title = styled.div`
+    --id:Title;
     font-size:25px;
-    color:black;
-    text-shadow:1px 1px 1px lightgray;
+    color:#777;
+    text-shadow:1px 1px 1px #ddd;
     padding:10px;
 `
 const NewsAlert = styled.div`

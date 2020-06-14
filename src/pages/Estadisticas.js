@@ -62,9 +62,15 @@ export default function Estadisticas()
             x2 = d3.scaleTime().range([0, width]),
             y2 = d3.scaleLinear().range([height2, 0])
 
-        let xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat('%d-%m-%y'))
 
-        let xAxis2 = d3.axisBottom(x2).tickFormat(d3.timeFormat('%d-%m-%y')).ticks(5)
+        // let x = d3.scaleLinear().range([0, width]),
+        //     y = d3.scaleLinear().range([height, 0]),
+        //     x2 = d3.scaleLinear().range([0, width]),
+        //     y2 = d3.scaleLinear().range([height2, 0])
+
+        let xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat('%m-%y'))
+
+        let xAxis2 = d3.axisBottom(x2).tickFormat(d3.timeFormat('%m-%y')).ticks(5)
 
         let yAxis = d3.axisLeft(y).tickSize(-width).tickPadding(10)
         let line = d3.line().x(d => x(d[domAxisField])).y(d => y(d[valAxisField])).curve(d3.curveMonotoneX)

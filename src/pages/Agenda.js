@@ -101,8 +101,8 @@ export default function Agenda()
                                     {evalEdad(p.nacimiento)}, {p.obrasocial}
                                 </Description>
                                 <ProfGrid>
-                                    {p.uPhotos.map((photo, i) =>
-                                        <Professional key={i} src={photo || anonymous} />
+                                    {p.uids.map((uid, i) =>
+                                        <Professional key={i} src={uid.photoURL || anonymous} />
                                     )}
                                 </ProfGrid>
                             </PatientInfo>

@@ -18,6 +18,7 @@ export default function Ficha()
     const dispatch = useDispatch()
     const history = useHistory()
 
+    const userInfo = useSelector(st => st.fb.userInfo)
     const origPatient = useSelector(st => st.fb.selPatient)
     const [fileInfo, setFileInfo] = useState()
     const inputFile = useRef()
@@ -36,9 +37,19 @@ export default function Ficha()
     const updateSelPatient = (field, value) =>
     {
         dispatch(ui.setDirty(true))
-        const newPat = {...selPatient, [field]: value}
+        //const newPat = {...selPatient, [field]: value}
+        const newPat = {...selPatient}
+        newPat[field]= value
         setSelPatient(newPat)
     }
+    const updateUserSelPatient = (field, value) =>
+    {
+        dispatch(ui.setDirty(true))
+        // const newPat = {...selPatient, uids: {...selPatient.uids, [userInfo.id]:{...selPatient.uids[userInfo.id], [field]:value}}}
+        const newPat = {...selPatient}
+        newPat.uids[userInfo.id][field]= value
+        setSelPatient(newPat)
+    }    
     const choosePic = e =>
     {
         e.stopPropagation()
@@ -177,9 +188,8 @@ export default function Ficha()
                 <UserInput type="number" placeholder="DNI" value={selPatient.dni || ''} name="dni" onChange={e => updateSelPatient('dni', e.target.value)} />
                 <UserInput type="text" placeholder="Obra social" value={selPatient.obrasocial || ''} name="obrasocial" onChange={e => updateSelPatient('obrasocial', e.target.value)} />
                 <UserInput type="number" placeholder="Nro.Afiliado" value={selPatient.afiliado || ''} name="afiliado" onChange={e => updateSelPatient('afiliado', e.target.value)} />
-                <UserInput type="text" placeholder="Diagnóstico" value={selPatient.diagnostico || ''} name="diagnostico" onChange={e => updateSelPatient('diagnostico', e.target.value)} />
-                <UserInput type="text" placeholder="Días de atención" value={selPatient.atencion || ''} name="atencion" onChange={e => updateSelPatient('atencion', e.target.value)} />
-
+                <UserInput type="text" placeholder="Diagnóstico" value={selPatient.uids[userInfo.id].diagnostico || ''} name="diagnostico" onChange={e => updateUserSelPatient(`diagnostico`, e.target.value)} />
+                <UserInput type="text" placeholder="Días de atención" value={selPatient.uids[userInfo.id].atencion || ''} name="atencion" onChange={e => updateUserSelPatient(`atencion`, e.target.value)} />
             </Row>
             <Contacto>
                 <Field>Madre</Field><UserInput type="text" placeholder="Nombre madre" value={selPatient.madre || ''} name="madre" onChange={e => updateSelPatient('madre', e.target.value)} />

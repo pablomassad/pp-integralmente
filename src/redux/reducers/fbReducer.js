@@ -2,7 +2,7 @@ import {handleActions} from 'redux-actions'
 import {fb} from './fbActions'
 
 const initialState = {
-    users: [],
+    users: undefined,
     userInfo: null,
     allPatients:[],
     patients: [],

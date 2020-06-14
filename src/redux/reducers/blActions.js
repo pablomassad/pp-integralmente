@@ -285,44 +285,20 @@ const requestPermission = () => async dispatch =>
 
 
 // PATIENTS
-const getAllPatients = () => async (dispatch, getState) =>
+const getAllPatients = () => async (dispatch) =>
 {
     try {
         dispatch(ui.showLoader(true))
-        const users = getState().fb.users
         const dsn = await fbFs.collection('pacientes').get()
-        const res = dsn.docs.map(x =>
+        const allPatients = dsn.docs.map(x =>
         {
             return {
                 ...x.data(),
                 ...{id: x.id}
             }
         })
-        const allPatients = []
-        const replicates = []
-        res.forEach(p =>
-        {
-            if (p.idOrig)
-                replicates.push(p)
-            else
-                allPatients.push(p)
-        })
-
-        // Fill professionals array
-        allPatients.forEach(p =>
-        {
-            const reps = replicates.filter(r => r.idOrig === p.id)
-            reps.push(p)
-            p.uPhotos = []
-            reps.forEach(r =>
-            {
-                const usr = users.find(u => u.id === r.uid)
-                if (usr) {
-                    p.uPhotos.push(usr.photoURL)
-                }
-            })
-        })
         dispatch(fb.setAllPatients(allPatients))
+        return allPatients
     } catch (error) {
         dispatch(ui.showMessage({msg: 'No se pudo obtener pacientes de la agenda, intente nuevamente.', type: 'error'}))
     }
@@ -355,16 +331,15 @@ const updatePatient = patient => async (dispatch, getState) =>
 {
     try {
         dispatch(ui.showLoader(true))
-        if (patient.id === 0) delete patient.id
+        const userInfo = getState().fb.userInfo
 
-        delete patient.uPhotos
-        patient.uid = getState().fb.userInfo.id
+        if (patient.id === 0) delete patient.id
 
         if (!patient.id) {
             const pat = await fbFs.collection('pacientes').add(patient)
             patient.id = pat.id
         }
-        await fbFs.collection('pacientes').doc(patient.id).set(patient, {merge: true})
+        await fbFs.collection('pacientes').doc(patient.id).set(patient)
         return patient
     } catch (error) {
         return false
@@ -374,8 +349,30 @@ const updatePatient = patient => async (dispatch, getState) =>
         dispatch(ui.setDirty(false))
     }
 }
-const removePatient = patientId => async dispatch =>
+const removePatient = patientId => async (dispatch) =>
 {
+    // Recarga todos los pacientes de agenda
+    // Busca replicas idOrig === patientId
+    // Si hay replicas => guarda idR de la primera de las replicas
+    // Elimina campo idOrig de dicho idR
+    // Guarda en DB el paciente modificado
+    // Asigna a todas las demas replicas idOrig = idR
+
+    // Si no hay replicas => elimina paciente DB
+    // return
+
+    const allPatients = await dispatch(getAllPatients())
+    const reps = allPatients.filter(x => x.idOrig === patientId)
+    if (reps.length > 0) {
+        const newPatientRef = reps.shift() //Obtiene la primer replica luego de remover del array
+        delete newPatientRef.idOrig
+        await dispatch(updatePatient(newPatientRef))
+        for (let rep of reps) {
+            rep.idOrig = newPatientRef.id
+            await dispatch(updatePatient(newPatientRef))
+        }
+    }
+
     await fbFs.collection('pacientes').doc(patientId).delete()
     dispatch(fb.setPatient(null))
     await dispatch(getPatients())
@@ -387,7 +384,7 @@ const clonePatient = patAgenda => async (dispatch, getState) =>
         const userInfo = getState().fb.userInfo
         const patients = getState().fb.patients
 
-        const found = patients.find(x => x.idOrig === patAgenda.id)
+        const found = patients.find(x => ((x.idOrig === patAgenda.id) || (x.id === patAgenda.id)))
         if (found) {
             dispatch(ui.showMessage({msg: 'El paciente ya se encuentra agendado en su lista de pacientes!', type: 'warning'}))
             return false
@@ -399,7 +396,6 @@ const clonePatient = patAgenda => async (dispatch, getState) =>
             delete newPatient.id
             delete newPatient.atencion
             delete newPatient.diagnostico
-            delete newPatient.uPhotos
 
             const pat = await fbFs.collection('pacientes').add(newPatient)
             newPatient.id = pat.id
@@ -619,9 +615,10 @@ const removeNews = newsId => async dispatch =>
 }
 const updateNewsRead = () => async (dispatch, getState) =>
 {
-    const user = getState().fb.userInfo
-    user.lastNewsRead = new Date().getTime()
-    await fbFs.collection('users').doc(user.id).set(user, {merge: true})
+    const userInfo = getState().fb.userInfo
+    userInfo.lastNewsRead = new Date().getTime()
+    dispatch(fb.setUser({userInfo}))
+    dispatch(updateUser(userInfo))
 }
 
 
@@ -765,11 +762,11 @@ const uploadPhotoStorage = (path, file, name) => async (dispatch) =>
 // PRIVATE METHODS
 const convertToDate = (yymm) =>
 {
-    // var year = 20 + yymm.substring(0, 2)
-    // var month = yymm.substring(2, 4)
-    // var date = new Date(year, month - 1)
+    var year = 20 + yymm.substring(0, 2)
+    var month = yymm.substring(2, 4)
+    var date = new Date(year, month - 1)
 
-    var date = moment(yymm, 'YYMM').format('MM/YY')
+    // var date = moment(yymm, 'YYMM').format('MM/YY')
     console.log('date: ', date)
     return date
 }

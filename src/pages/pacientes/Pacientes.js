@@ -37,7 +37,7 @@ export default function Pacientes()
     const dispatch = useDispatch()
 
     const userInfo = useSelector(st => st.fb.userInfo)
-    const patients = useSelector(st => st.fb.patients)
+    const patients = useSelector(st => st.fb.allPatients.filter(x=>x.uids[userInfo.id]))
 
     const [criteria, setCriteria] = useState('')
 
@@ -95,7 +95,6 @@ export default function Pacientes()
         dispatch(ui.setTitle('Pacientes'))
         if (userInfo) {
             dispatch(fb.setPatient(null))
-            dispatch(bl.getPatients())
         }
         else history.replace('/')
     }, [])
@@ -123,7 +122,7 @@ export default function Pacientes()
                             <PatientInfo>
                                 <Title>{p.apellido}, {p.nombres}</Title>
                                 <Description>{evalEdad(p.nacimiento)}, {p.obrasocial}</Description>
-                                <p>{p.atencion}</p>
+                                <p>{p.uids[userInfo.id].atencion}</p>
                             </PatientInfo>
                         </PatientData>
                         <IconRemove onClick={(e) => removePatient(e, p)} />

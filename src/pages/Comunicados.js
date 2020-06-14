@@ -87,6 +87,7 @@ export default function Comunicados()
     {
         dispatch(ui.setDirty(true))
         const news = {...selNews, [field]: value}
+        console.log('news:', news)
         setSelNews(news)
     }
     const addNewsHandle = () =>
