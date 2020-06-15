@@ -76,7 +76,7 @@ export default function SignIn()
         }
         dispatch(fb.setUser({userInfo: null}))
         refEmail.current.focus()
-    }, [])
+    }, [dispatch])
 
     return (
         <LoginFrame>
@@ -117,7 +117,7 @@ export default function SignIn()
 				    </GlassButton>
                 </RegisterReset>
             </FormLogin>
-            <Version {...pressAndHold}>v3.1</Version>
+            <Version {...pressAndHold}>v3.2</Version>
         </LoginFrame>
     )
 }

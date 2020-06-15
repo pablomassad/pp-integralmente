@@ -18,24 +18,6 @@ const setStats = createAction('fb.setStats')
 const setUsers = createAction('fb.setUsers')
 const setDistribution = createAction('fb.setDistribution')
 
-const fetchUserRequest = createAction('fetchUserRequest')
-const fetchUserSuccess = createAction('fetchUserSuccess')
-const fetchUserFailure = createAction('fetchUserFailure')
-const fetchUsers = () => {
-	return dispatch => {
-		dispatch(fetchUserRequest())
-		// axios.get('https://jsonplaceholder.typicode.com/users')
-		//     .then(res =>
-		//     {
-		//         const users = res.data.map(usr=>usr.id)
-		//         dispatch(fetchUserSuccess(users))
-		//     })
-		//     .catch(err =>
-		//     {
-		//         dispatch(fetchUserFailure(err.message))
-		//     })
-	}
-}
 
 export const fb = {
     addNotification,
@@ -56,3 +38,22 @@ export const fb = {
     setUsers,
     setDistribution
 }
+
+// const fetchUserRequest = createAction('fetchUserRequest')
+// const fetchUserSuccess = createAction('fetchUserSuccess')
+// const fetchUserFailure = createAction('fetchUserFailure')
+// const fetchUsers = () => {
+// 	return dispatch => {
+// 		dispatch(fetchUserRequest())
+// 		// axios.get('https://jsonplaceholder.typicode.com/users')
+// 		//     .then(res =>
+// 		//     {
+// 		//         const users = res.data.map(usr=>usr.id)
+// 		//         dispatch(fetchUserSuccess(users))
+// 		//     })
+// 		//     .catch(err =>
+// 		//     {
+// 		//         dispatch(fetchUserFailure(err.message))
+// 		//     })
+// 	}
+// }

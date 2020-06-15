@@ -8,14 +8,12 @@ import GlassButton from '../common/GlassButton'
 import anonymous from '../assets/images/anonymous.png'
 
 import {useHistory} from 'react-router-dom'
-import {useDispatch, useSelector, shallowEqual} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {bl, ui} from '../redux'
 
 import moment from 'moment'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import {registerLocale, setDefaultLocale} from 'react-datepicker'
-import es from 'date-fns/locale/es'
 
 import {confirmAlert} from 'react-confirm-alert' // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
@@ -113,7 +111,7 @@ export default function Comunicados()
     {
         dispatch(ui.setTitle('Comunicados'))
         dispatch(bl.updateNewsRead())
-    }, [])
+    }, [dispatch])
 
     return (
         <NewsFrame>
@@ -321,16 +319,6 @@ const ObsArea = styled.textarea`
 		outline: none;
 		/* box-shadow: 0px 0px 3px 0px rgb(111, 168, 201); */
 	}
-`
-const Alert = styled.div`
-    --id: Alert;
-    background: gray;
-    box-shadow: inset 1px 1px;
-    border-radius: 5px;
-    width: 30px;
-    height: 30px;
-    justify-self: end;
-    margin-top: -18px;
 `
 const IconAdd = styled.div`
 	font-size: 24px;

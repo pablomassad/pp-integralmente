@@ -1,6 +1,6 @@
 {
    "appId": "com.pp.integralmente",
-   "appName": "integralmente",
+   "appName": "IntegralMente",
    "bundledWebRuntime": false,
    "npmClient": "yarn",
    "webDir": "build",

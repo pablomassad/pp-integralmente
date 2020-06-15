@@ -97,7 +97,7 @@ export default function Pacientes()
             dispatch(fb.setPatient(null))
         }
         else history.replace('/')
-    }, [])
+    }, [userInfo, dispatch, history])
 
 
     return (

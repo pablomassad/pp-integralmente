@@ -2,7 +2,6 @@ import React, {useEffect, useState, useRef} from 'react'
 import styled from 'styled-components'
 
 import {BackInTime} from '@styled-icons/entypo/BackInTime'
-import {File} from '@styled-icons/boxicons-regular/File'
 import {Trash} from '@styled-icons/heroicons-outline/Trash'
 
 import GlassButton from '../../common/GlassButton'
@@ -13,8 +12,6 @@ import {bl, ui} from '../../redux'
 import moment from 'moment'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import {registerLocale, setDefaultLocale} from 'react-datepicker'
-import es from 'date-fns/locale/es'
 
 import {confirmAlert} from 'react-confirm-alert' // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
@@ -152,7 +149,7 @@ export default function Historia()
         if (selPatient)
             dispatch(bl.getSessionsByPatient(selPatient.id))
         else history.replace('/')
-    }, [])
+    }, [dispatch, history, selPatient])
 
     return (
         <SessionsFrame>
@@ -344,16 +341,6 @@ const ObsArea = styled.textarea`
 		/* box-shadow: 0px 0px 3px 0px rgb(111, 168, 201); */
 	}
 `
-const Alert = styled.div`
-    --id: Alert;
-    background: gray;
-    box-shadow: inset 1px 1px;
-    border-radius: 5px;
-    width: 30px;
-    height: 30px;
-    justify-self: end;
-    margin-top: -18px;
-`
 const IconAdd = styled.div`
 	font-size: 24px;
 	font-weight: bold;
@@ -363,10 +350,6 @@ const IconSessions = styled(BackInTime)`
     color: ${props => (props.active ? '#1c88e6' : 'gray')};
     width: ${props => (props.active ? '38px' : '40px')};
     margin: 10px;
-`
-const IconView = styled(File)`
-    width: 25px;
-    color: white;
 `
 const IconDelete = styled(Trash)`
     width:25px;

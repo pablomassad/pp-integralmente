@@ -1,9 +1,8 @@
 import {fb, ui} from '../'
-import {fbAuth, fbMsg, fbSto, fbFs} from '../../fb.service'
+import {fbAuth, fbSto, fbFs} from '../../fb.service'
 import moment from 'moment'
-import {Plugins, PushNotification, PushNotificationToken, PushNotificationActionPerformed} from '@capacitor/core'
-import {FCM} from "capacitor-fcm";
-import {useReducer} from 'react';
+import {Plugins} from '@capacitor/core'
+// import {FCM} from "capacitor-fcm";
 
 
 // SECURITY
@@ -123,7 +122,7 @@ const sendResetEmail = email => async dispatch =>
 
 // NOTIFICATIONS
 const {PushNotifications} = Plugins;
-const fcm = new FCM();
+//const fcm = new FCM();
 // alternatively - without types
 const {FCMPlugin} = Plugins;
 const initPushing = payload => async dispatch =>
@@ -141,25 +140,25 @@ const initWebNotifications = () => dispatch =>
     }))
     console.log('Init WebNotifications....')
 
-    const messaging = messaging()
-    messaging.requestPermission()
-        .then(() =>
-        {
-            return messaging.getToken()
-        })
-        .then(token =>
-        {
-            console.log('token:', token)
-            dispatch(ui.showMessage({
-                msg: 'Registered Token: ' + token,
-                type: 'success'
-            }))
-            dispatch(fb.setWebToken({token}))
-        })
-        .catch(err =>
-        {
-            console.log('Error getting web token: ', err)
-        })
+    // const m = messaging()
+    // m.requestPermission()
+    //     .then(() =>
+    //     {
+    //         return m.getToken()
+    //     })
+    //     .then(token =>
+    //     {
+    //         console.log('token:', token)
+    //         dispatch(ui.showMessage({
+    //             msg: 'Registered Token: ' + token,
+    //             type: 'success'
+    //         }))
+    //         dispatch(fb.setWebToken({token}))
+    //     })
+    //     .catch(err =>
+    //     {
+    //         console.log('Error getting web token: ', err)
+    //     })
 }
 const initMobileNotifications = () => (dispatch, getState) =>
 {
@@ -307,7 +306,6 @@ const updatePatient = patient => async (dispatch, getState) =>
 {
     try {
         dispatch(ui.showLoader(true))
-        const userInfo = getState().fb.userInfo
 
         if (patient.id === 0) delete patient.id
 

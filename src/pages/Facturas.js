@@ -16,8 +16,6 @@ import Switch from 'react-switch'
 import moment from 'moment'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import {registerLocale, setDefaultLocale} from 'react-datepicker'
-import es from 'date-fns/locale/es'
 
 import Dropdown from 'react-dropdown'
 import 'react-dropdown/style.css'
@@ -180,7 +178,7 @@ export default function Facturas()
                 const s2 = `${d2}`
                 return s2.localeCompare(s1)
             })
-        let result = "Nro, ObraSocial, Monto, Fecha" + '\n'
+        let result = "Nro, ObraSocial, Monto, Fecha \n" 
         for (let fact of info) {
             result += fact.nro + ',' + fact.obrasocial + ',' + fact.monto + ',' + moment(fact.fecha).format('DD-MM-YYYY') + '\n'
         }
@@ -237,7 +235,7 @@ export default function Facturas()
         if (userInfo)
             dispatch(bl.getFacturas())
         else history.replace('/')
-    }, [])
+    }, [dispatch, history, userInfo])
 
     return (
         <FacturasFrame>
@@ -291,8 +289,6 @@ export default function Facturas()
                             C
 						</div>
                     }
-                    className="react-switch"
-                    id="icon-switch"
                 />
                 <GlassButton width={40} onClick={downloadCSVHandle}>
                     <IconDownload />
@@ -319,7 +315,7 @@ export default function Facturas()
                         placeholder="Orden por"
                     />
                     <div onClick={onSelDirectionHandle} style={{textAlign: 'center'}}>
-                        {selDirection === 'asc' ? <div>🔼</div> : <div>🔽</div>}
+                        {selDirection === 'asc' ? <span role="img" aria-label="up">🔼</span> : <span role="img" aria-label="down">🔽</span>}
                     </div>
                 </FactHeader>
                 <FacturasList ref={factList}>

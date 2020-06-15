@@ -1,10 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 
-import {BackInTime} from '@styled-icons/entypo/BackInTime'
-
 import GlassButton from '../common/GlassButton'
-import {useDispatch, useSelector, shallowEqual} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {bl, ui} from '../redux'
 
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
@@ -49,7 +47,7 @@ export default function Feedback()
     useEffect(() =>
     {
         dispatch(ui.setTitle('Mejoras'))
-    }, [])
+    }, [dispatch])
 
     return (
         <FBFrame>
@@ -101,14 +99,4 @@ const Options = styled.div`
     display:grid;
     grid-template-columns:200px 1fr 200px;
     align-items:center;
-`
-const IconAdd = styled.div`
-	font-size: 24px;
-	font-weight: bold;
-`
-
-const IconNews = styled(BackInTime)`
-    color: ${props => (props.active ? '#1c88e6' : 'gray')};
-    width: ${props => (props.active ? '38px' : '40px')};
-    margin: 10px;
 `

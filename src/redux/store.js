@@ -1,4 +1,4 @@
-import {createStore, applyMiddleware, combineReducers, compose} from 'redux'
+import {createStore, applyMiddleware, combineReducers} from 'redux'
 
 import fb from './reducers/fbReducer'
 import ui from './reducers/uiReducer'
@@ -9,8 +9,8 @@ import thunk from 'redux-thunk'
 
 // import {reduxFirestore, getFirestore} from 'redux-firestore'
 // import {reactReduxFirebase, getFirebase} from 'react-redux-firebase'
-import {fbConfig} from '../fb.service'
-import firebase from 'firebase/app'
+// import {fbConfig} from '../fb.service'
+// import firebase from 'firebase/app'
 
 console.log('store and reducers....')
 const rootReducer = combineReducers({fb, ui})

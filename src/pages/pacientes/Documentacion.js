@@ -2,13 +2,12 @@ import React, {useEffect, useState, useRef} from 'react'
 import styled from 'styled-components'
 
 import {Trash} from '@styled-icons/heroicons-outline/Trash'
-import {AttachOutline} from '@styled-icons/evaicons-outline/AttachOutline'
 import {FileUpload} from '@styled-icons/fa-solid/FileUpload'
 
 import GlassButton from '../../common/GlassButton'
 import {useHistory} from 'react-router-dom'
-import {useDispatch, useSelector, shallowEqual} from 'react-redux'
-import {bl, ui} from '../../redux'
+import {useDispatch, useSelector} from 'react-redux'
+import {bl} from '../../redux'
 
 import {confirmAlert} from 'react-confirm-alert' // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
@@ -23,9 +22,9 @@ export default function Documentacion()
 
     const data = useSelector(st => st.fb.attachments)
     const selPatient = useSelector(st => st.fb.selPatient)
-    const [selAttachment, setSelAttachment] = useState(null)
+    const [selAttachment] = useState(null)
 
-    const [fileInfo, setFileInfo] = useState()
+    const [setFileInfo] = useState()
 
     const inputFile = useRef()
 
@@ -69,7 +68,7 @@ export default function Documentacion()
         if (selPatient)
             dispatch(bl.getAttachmentsByPatient(selPatient.id))
         else history.replace('/')
-    }, [])
+    }, [dispatch, history, selPatient])
 
     return (
         <Frame>
@@ -86,10 +85,10 @@ export default function Documentacion()
                             <IconUpload />
                         </GlassButton>
                         {/* <GlassButton
-                        background={(selSession.url || fileInfo) ? 'green' : 'gray'}
-                        onClick={e => viewFactura(e)}>
-                        <IconView />
-                    </GlassButton> */}
+                            background={(selSession.url || fileInfo) ? 'green' : 'gray'}
+                            onClick={e => viewFactura(e)}>
+                            <IconView />
+                         </GlassButton> */}
                         <GlassButton height={40} onClick={e => removeAttachmentHandle(e, a)}>
                             <IconDelete />
                         </GlassButton>
@@ -118,12 +117,6 @@ const Attachments = styled.div`
     grid-template-columns: 1fr 60px;
     grid-column-gap: 10px;
     align-items: center;
-`
-
-const IconAttachment = styled(AttachOutline)`
-    color:white;
-    width:25px;
-    padding:2px;
 `
 const IconUpload = styled(FileUpload)`
     width: 14px;

@@ -1,15 +1,13 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useRef} from 'react'
 import styled from 'styled-components'
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
-import {bl, fb, ui} from '../../redux'
+import {bl, ui} from '../../redux'
 import anonymous from '../../assets/images/anonymous.png'
 
 import moment from 'moment'
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import {registerLocale, setDefaultLocale} from "react-datepicker";
-import es from 'date-fns/locale/es';
 
 import GlassButton from '../../common/GlassButton'
 

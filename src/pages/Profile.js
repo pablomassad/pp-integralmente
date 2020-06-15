@@ -10,8 +10,8 @@ import {ui, bl} from '../redux'
 import moment from 'moment'
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import {registerLocale, setDefaultLocale} from "react-datepicker";
-import es from 'date-fns/locale/es';
+// import {registerLocale, setDefaultLocale} from "react-datepicker";
+// import es from 'date-fns/locale/es';
 
 import {anonymous} from '../assets/images/anonymous.png'
 import GlassButton from '../common/GlassButton'
@@ -154,7 +154,7 @@ export default function Profile()
 
     useEffect(() => {
         dispatch(ui.setTitle('Perfil'))
-    }, [])
+    }, [dispatch])
 
     return (
         <UserFrame>

@@ -4,7 +4,7 @@ import styled, {keyframes} from 'styled-components'
 import GlassButton from '../common/GlassButton'
 import anonymous from '../assets/images/anonymous.png'
 
-import {useDispatch, useSelector, shallowEqual} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {bl, ui} from '../redux'
 
 
@@ -82,7 +82,7 @@ export default function Ocupacion()
         console.log('call getOcuppation')
         dispatch(bl.getDistribution())
         dispatch(ui.setTitle('Ocupación'))
-    }, [])
+    }, [dispatch])
 
     return (
         <WeekFrame>
@@ -207,22 +207,22 @@ const DisabledPanel = styled.div`
     opacity:.4;
 `
 
-const popin = keyframes`
-    from {
-        transform: scale(.1); 
-    }
-    to {
-        transform: scale(1);
-    }
-`
-const popout = keyframes`
-    from {
-        transform: scale(1);
-    }
-    to {
-        transform: scale(0);
-    }
-`
+// const popin = keyframes`
+//     from {
+//         transform: scale(.1); 
+//     }
+//     to {
+//         transform: scale(1);
+//     }
+// `
+// const popout = keyframes`
+//     from {
+//         transform: scale(1);
+//     }
+//     to {
+//         transform: scale(0);
+//     }
+// `
 const zoomINOUT = (props) =>
 {
     console.log('props-', props)

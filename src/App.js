@@ -4,7 +4,7 @@ import logo from './assets/images/integralmenteET.png'
 import anonymous from './assets/images/anonymous.png'
 
 import {useHistory} from 'react-router-dom'
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
+import {Switch, Route} from 'react-router-dom'
 import {useToasts} from 'react-toast-notifications'
 import {useDispatch, useSelector, shallowEqual} from 'react-redux'
 import {bl} from './redux'
@@ -61,7 +61,7 @@ export default function App()
         {
             if (msgInfo) addToast(msgInfo.msg, {appearance: msgInfo.type, autoDismiss: true})
         },
-        [msgInfo]
+        [msgInfo, addToast]
     )
 
     useEffect(() =>
@@ -69,7 +69,7 @@ export default function App()
         dispatch(bl.getUsers())
         dispatch(bl.getAllNews())
         dispatch(bl.getAllPatients())
-    }, [])
+    }, [dispatch])
 
     useEffect(() =>
     {
@@ -83,7 +83,7 @@ export default function App()
             }
         }
         logger(userInfo)
-    }, [userInfo])
+    }, [userInfo, dispatch])
 
     return (
         <>
@@ -99,7 +99,7 @@ export default function App()
                 </Navbar>
                 : null}
             <Switch>
-                <Route exact path="/" exact component={SignIn} />
+                <Route exact path="/" component={SignIn} />
                 <Route exact path="/signin" component={SignIn} />
                 <Route exact path="/signup" component={SignUp} />
                 <Route exact path="/pwdreset" component={PasswordReset} />

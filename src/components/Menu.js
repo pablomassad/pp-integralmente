@@ -3,7 +3,6 @@ import styled from 'styled-components'
 
 import {PersonPin} from '@styled-icons/material-rounded/PersonPin'
 import {AttachMoney} from '@styled-icons/material-rounded/AttachMoney'
-import {Gear} from '@styled-icons/octicons/Gear'
 import {PersonAdd} from '@styled-icons/material/PersonAdd'
 import {Chat} from '@styled-icons/material/Chat'
 import {Calendar} from '@styled-icons/evil/Calendar'
@@ -107,11 +106,6 @@ const IconPatients = styled(PersonPin)`
 `
 const IconBills = styled(AttachMoney)`
     width:35px;
-    color:gray;
-    justify-self:center;
-`
-const IconOptions = styled(Gear)`
-    width:25px;
     color:gray;
     justify-self:center;
 `

@@ -28,15 +28,14 @@ export default function Loader()
     )
 }
 
-const rotate = keyframes`
-    from {
-        transform: rotateY(0deg);
-    }
-
-    to {
-        transform: rotateY(360deg);
-    }
-`
+// const rotate = keyframes`
+//     from {
+//         transform: rotateY(0deg);
+//     }
+//     to {
+//         transform: rotateY(360deg);
+//     }
+// `
 
 const heart = keyframes`
     from {

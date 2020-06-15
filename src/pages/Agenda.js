@@ -6,7 +6,7 @@ import {useHistory} from 'react-router-dom'
 
 import anonymous from '../assets/images/anonymous.png'
 import {useDispatch, useSelector} from 'react-redux'
-import {bl, ui, fb} from '../redux'
+import {bl, ui} from '../redux'
 import moment from 'moment'
 
 import {confirmAlert} from 'react-confirm-alert' // Import
@@ -18,7 +18,6 @@ export default function Agenda()
     const history = useHistory()
     const dispatch = useDispatch()
     const [criteria, setCriteria] = useState('')
-    const userInfo = useSelector(st => st.fb.userInfo)
     const allPatients = useSelector(st => st.fb.allPatients)
 
     const data = allPatients
@@ -70,7 +69,7 @@ export default function Agenda()
     useEffect(() =>
     {
         dispatch(ui.setTitle('Agenda'))
-    }, [])
+    }, [dispatch])
 
     return (
         <PatientsFrame>

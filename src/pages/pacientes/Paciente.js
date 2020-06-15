@@ -10,7 +10,7 @@ import Historia from "./Historia"
 import Documentacion from "./Documentacion"
 
 import {useDispatch, useSelector} from 'react-redux'
-import {bl, ui, fb} from '../../redux'
+import {ui} from '../../redux'
 
 
 export default function Paciente()
