@@ -12,3 +12,6 @@ npx cap open android
 ionic cap run android --livereload
 
 npx cap sync 
+
+=> Cambiar nombre de la app => <string name="app_name">MyApp</string> dentro de strings.xml
+path: android/app/src/main/res/values

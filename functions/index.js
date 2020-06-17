@@ -36,13 +36,13 @@ exports.evalCumples = functions.https.onRequest(async (request, response) =>
     const qsn = await afs.collection('pacientes').get()
     const docs = qsn.docs.map(x => x.data())
 
-    const today = moment().format('YYMMDD')
+    const today = moment().format('MMDD')
     let birthdaysErrors = 0
     let birthdaysToday = 0
     docs.forEach(pac =>
     {
         try {
-            if (today === moment(pac.nacimiento).format('YYMMDD')) {
+            if (today === moment(pac.nacimiento).format('MMDD')) {
                 fcmPush(pac.uid, pac.apellido + ', ' + pac.nombres)
                 birthdaysToday++
             }

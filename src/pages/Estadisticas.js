@@ -199,11 +199,17 @@ export default function Estadisticas()
 
                 let s = d3.event.selection || x2.range()
                 x.domain(s.map(x2.invert, x2))
+
+                var s_orig = x2.domain();
+                var newS = (s_orig[1] - s_orig[0]) / (s[1] - s[0]);
+                var t = (s[0] - s_orig[0]) / (s_orig[1] - s_orig[0]);
+                var trans = width * newS * t;
+
                 clipLineas.selectAll('.lineVersion').attr('d', line)
                 axisXY.select('.axis--x').call(xAxis)
                 clipLineas.selectAll('circle').attr('cx', d => x(domValue(d)))
                 clipLineas.select('.axis--x').call(xAxis)
-                svg.select('.zoom').call(zoom.transform, d3.zoomIdentity.scale(width / (s[1] - s[0])).translate(-s[0], 0))
+                svg.select('.zoom').call(zoom.transform, d3.zoomIdentity.scale(newS).translate([-trans, 0]))
             }
             let brush = d3.brushX().extent([[0, 0], [width, height2]]).on('brush', brushed)
 
@@ -236,9 +242,7 @@ export default function Estadisticas()
         if (stats && dimensions.width > 0) {
             genChart()
         }
-    },
-        [stats, dimensions.width]
-    )
+    }, [stats, dimensions.width])
 
 
     return (
