@@ -33,49 +33,85 @@ exports.happyBirthday = functions.https.onRequest((request, response) =>
 
 exports.evalCumples = functions.https.onRequest(async (request, response) =>
 {
-    const qsn = await afs.collection('pacientes').get()
-    const docs = qsn.docs.map(x => x.data())
-
     const today = moment().format('MMDD')
     let birthdaysErrors = 0
     let birthdaysToday = 0
-    docs.forEach(pac =>
-    {
+
+    const qsn = await afs.collection('pacientes').get()
+    const docsPac = qsn.docs.map(x => x.data())
+
+    for (let pac of docsPac) {
         try {
-            if (today === moment(pac.nacimiento).format('MMDD')) {
-                fcmPush(pac.uid, pac.apellido + ', ' + pac.nombres)
-                birthdaysToday++
+            const kid = pac.apellido + ', ' + pac.nombres
+
+            if (!pac.nacimiento) {
+                console.log('Falta cargar nacimiento: ', kid)
+            }
+            else {
+                const cumple = moment(pac.nacimiento).format('MMDD')
+                if (today === cumple) {
+                    const noti = {
+                        title: 'Cumples INTEGRALMENTE',
+                        body: 'Feliz cumple ' + kid + `🎂🎈`
+                    }
+                    console.log('today:' + today + ' --> ' + cumple + ' Ap: ' + kid)
+                    const uids = Object.keys(pac.uids)
+                    console.log('uids: ' + uids)
+                    for (let k of uids) {
+                        await fcmPush(k, noti)
+                    }
+                    birthdaysToday++
+                }
             }
         } catch (error) {
             birthdaysErrors++
         }
-    })
+    }
 
-    const rta = 'response: patients total: ' + docs.length
+    const qsu = await afs.collection('users').get()
+    const docsUsr = qsu.docs.map(x => x.data())
+
+    for (let usr of docsUsr) {
+        try {
+            if (!usr.birthday) {
+                console.log('Falta cargar nacimiento: ', usr.displayName)
+            }
+            else {
+                const cumple = moment(usr.birthday).format('MMDD')
+                if (today === cumple) {
+                    const noti = {
+                        title: 'INTEGRALMENTE: Cumple profesional!!',
+                        body: 'Feliz cumpleaños ' + usr.displayName + `😃`
+                    }
+                    console.log('today:' + today + ' --> ' + cumple + ' Ap: ' + usr.displayName)
+                    await fcmPush('global', noti)
+                    birthdaysToday++
+                }
+            }
+        } catch (error) {
+            birthdaysErrors++
+        }
+    }
+
+    const rta = 'patients: ' + docsPac.length + ' / prof.total: '+ docsUsr.length
     console.log(rta)
-    response.send('total pacientes: ' + rta + ' fecha:' + today + ' cumples hoy: ' + birthdaysToday + ' errors: ' + birthdaysErrors)
+    response.send('total: ' + rta  + ' ==> fecha:' + today + ' cumples hoy: ' + birthdaysToday + ' errors: ' + birthdaysErrors)
 })
 
 
 
-function fcmPush(target, kid)
+async function fcmPush(target, noti)
 {
-    const payload = {
-        notification: {
-            title: 'Cumples INTEGRALMENTE',
-            body: 'Feliz cumple ' + kid
-        },
-        data: {
-        }
-    };
-    //admin.messaging().sendToDevice('cLedIiDzTKe_GUvCbn0_qN:APA91bGkEmS0zYUqUrTCN_1ZSkb2L5AIkhIFgKnuxCcSz54fy8KbLfSa57Cjfhw5kiEGbOR97GTA2QtOBCbW4jlV6ZAZ', payload)
-    admin.messaging().sendToTopic(target, payload)
-        .then(x =>
-        {
-            console.log('Msg sent ok to ' + target)
-        })
-        .catch(err =>
-        {
-            console.log('Error sending msg')
-        })
+    try {
+        const payload = {
+            notification: noti,
+            data: {}
+        };
+        //admin.messaging().sendToDevice('cLedIiDzTKe_GUvCbn0_qN:APA91bGkEmS0zYUqUrTCN_1ZSkb2L5AIkhIFgKnuxCcSz54fy8KbLfSa57Cjfhw5kiEGbOR97GTA2QtOBCbW4jlV6ZAZ', payload)
+        await admin.messaging().sendToTopic(target, payload)
+        console.log('Msg sent ok to ' + target + ' => pl:' + JSON.stringify(payload))
+    }
+    catch (err) {
+        console.log('Error sending msg:', err)
+    }
 }

@@ -168,28 +168,31 @@ const initMobileNotifications = () => (dispatch, getState) =>
         PushNotifications.register()
             .then(() =>
             {
-                // Subscribe to a specific topic
-                // you can use `FCMPlugin` or just `fcm`
-
-                dispatch(ui.showMessage({
-                    msg: 'Registrando en Firebase',
-                    type: 'info'
-                }))
                 FCMPlugin.subscribeTo({topic: userInfo.id})
                     .then(r =>
                     {
                         dispatch(ui.showMessage({
-                            msg: 'Subscribed to topic: ' + userInfo.id,
+                            msg: 'Suscripto a Cumples IntegralMente!'+ `🎈`,
                             type: 'success'
                         }))
                     })
                     .catch(err =>
                     {
                         dispatch(ui.showMessage({
-                            msg: 'Error subscribing topic: ' + err,
+                            msg: 'Error en suscripcion: ' + err,
                             type: 'error'
                         }))
                         console.log(err);
+                    })
+
+                FCMPlugin.subscribeTo({topic: 'global'})
+                    .then(r =>
+                    {
+                       console.log('subcribed to GLOBAL ok')
+                    })
+                    .catch(err =>
+                    {
+                        console.log('Error subscribing topic: ' + err)
                     })
             })
             .catch(err =>
