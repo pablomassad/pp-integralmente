@@ -72,14 +72,7 @@ export default function Estadisticas()
                 x2 = d3.scaleTime().range([0, width]),
                 y2 = d3.scaleLinear().range([height2, 0])
 
-
-            // let x = d3.scaleLinear().range([0, width]),
-            //     y = d3.scaleLinear().range([height, 0]),
-            //     x2 = d3.scaleLinear().range([0, width]),
-            //     y2 = d3.scaleLinear().range([height2, 0])
-
             let xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat('%m-%y'))
-
             let xAxis2 = d3.axisBottom(x2).tickFormat(d3.timeFormat('%m-%y')).ticks(5)
 
             let yAxis = d3.axisLeft(y).tickSize(-width).tickPadding(10)
@@ -92,8 +85,6 @@ export default function Estadisticas()
                 .append('rect')
                 .attr('width', width)
                 .attr('height', height)
-                .attr('x', 0)
-                .attr('y', 0)
 
             let clipLineas = svg
                 .append('g')
@@ -120,11 +111,14 @@ export default function Estadisticas()
 
             axisXY.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0,' + height + ')').call(xAxis)
             axisXY.append('g').attr('class', 'axis axis--y').call(yAxis)
-            //var points = clipLineas.append('g').attr('clip-path', 'url(#clip)')
 
             factTypes.forEach((ft, i) =>
             {
-                clipLineas.append('path')
+                clipLineas
+                    .append('path')
+                    .attr("fill", "none")
+                    .attr("stroke", ft.color) // set color
+                    .attr("stroke-width", 2)
                     .datum(stats.map(o =>
                     {
                         const item = {
@@ -134,11 +128,8 @@ export default function Estadisticas()
                         return item
                     }))
                     .attr('clip-path', 'url(#clip)')
-                    .attr('d', line)
-                    .attr("stroke", ft.color) // set color
-                    .attr("stroke-width", 2)
-                    .attr("fill", "none")
                     .attr('class', 'lineVersion')
+                    .attr('d', line)
 
                 const dat = stats.map(o =>
                 {
@@ -188,7 +179,11 @@ export default function Estadisticas()
                     .attr("fill", "none")
                     .attr('class', 'lineVersion')
             })
-            miniMap.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0,' + height2 + ')').call(xAxis2)
+            miniMap
+                .append('g')
+                .attr('class', 'axis axis--x')
+                .attr('transform', 'translate(0,' + height2 + ')')
+                .call(xAxis2)
 
             ////////////////////////////////////////////////////////////////////
             //ZOOM
@@ -199,33 +194,28 @@ export default function Estadisticas()
 
                 let s = d3.event.selection || x2.range()
                 x.domain(s.map(x2.invert, x2))
-
-                var s_orig = x2.domain();
-                var newS = (s_orig[1] - s_orig[0]) / (s[1] - s[0]);
-                var t = (s[0] - s_orig[0]) / (s_orig[1] - s_orig[0]);
-                var trans = width * newS * t;
-
+                
                 clipLineas.selectAll('.lineVersion').attr('d', line)
                 axisXY.select('.axis--x').call(xAxis)
                 clipLineas.selectAll('circle').attr('cx', d => x(domValue(d)))
                 clipLineas.select('.axis--x').call(xAxis)
-                svg.select('.zoom').call(zoom.transform, d3.zoomIdentity.scale(newS).translate([-trans, 0]))
+                svg.select('.zoom').call(zoom.transform, d3.zoomIdentity
+                    .scale(width / (s[1] - s[0]))
+                    .translate(-s[0], 0))
             }
-            let brush = d3.brushX().extent([[0, 0], [width, height2]]).on('brush', brushed)
+            let brush = d3.brushX()
+                .extent([[0, 0], [width, height2]])
+                .on('brush', brushed)
 
             const zommed = () =>
             {
-                if (d3.event.sourceEvent && d3.event.sourceEvent.type === 'brush') return
-                var evtTrans = d3.event.transform
-
+                if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+                var t = d3.event.transform;
+                x.domain(t.rescaleX(x2).domain());
                 clipLineas.selectAll('.lineVersion').attr('d', line)
-                x.domain(evtTrans.rescaleX(x2).domain())
-
-                axisXY.select('.axis--x').call(xAxis)
-
+                axisXY.select(".axis--x").call(xAxis);
                 clipLineas.selectAll('circle').attr('cx', d => x(domValue(d)))
-
-                miniMap.select('.brush').call(brush.move, x.range().map(evtTrans.invertX, evtTrans))
+                miniMap.select(".brush").call(brush.move, x.range().map(t.invertX, t));
             }
             let zoom = d3
                 .zoom()
@@ -234,10 +224,21 @@ export default function Estadisticas()
                 .extent([[0, 0], [width, height]])
                 .on('zoom', zommed)
 
-            miniMap.append('g').attr('class', 'brush').call(brush).call(brush.move, [200, x.range()[1]])
+            miniMap
+                .append('g')
+                .attr('class', 'brush')
+                .call(brush)
+                .call(brush.move, [1, x.range()[1]])
 
-            clipLineas.append('rect').attr('class', 'zoom').attr('width', width).attr('height', height).lower()
-            clipLineas.call(zoom)
+            clipLineas
+                .append('rect')
+                .attr('class', 'zoom')
+                .attr('width', width)
+                .attr('height', height)
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                .attr('fill', 'none')
+                .lower()
+                .call(zoom)
         }
         if (stats && dimensions.width > 0) {
             genChart()
