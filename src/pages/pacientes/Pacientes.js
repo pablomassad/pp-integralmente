@@ -221,11 +221,11 @@ const PatientInfo = styled.div`
 const PatientList = styled.div`
     --id:PatientList;
     overflow:auto;
-    height: calc(100vh - 110px);
     margin-top: 3px;
     display: grid;
     grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));
     align-items:center;
+    /* height: calc(100vh - 110px); */
 `
 const Title = styled.div`
     font-size:20px;

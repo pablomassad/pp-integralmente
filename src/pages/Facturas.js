@@ -476,11 +476,12 @@ const Total = styled.div`
 `
 const FacturasLayout = styled.div`--id: FacturasLayout;`
 const FacturasList = styled.div`
+    --id:FacturasList;
 	overflow: auto;
-	height: calc(100vh - 155px);
     display: grid;
     grid-template-columns:repeat(auto-fill, minmax(340px, 1fr));
     align-items:center;
+    /* height: calc(100vh - 155px); */
 `
 const FactItem = styled.div`
 	--id: FactItem;
