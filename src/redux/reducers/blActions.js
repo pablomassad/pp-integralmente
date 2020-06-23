@@ -172,7 +172,7 @@ const initMobileNotifications = () => (dispatch, getState) =>
                     .then(r =>
                     {
                         dispatch(ui.showMessage({
-                            msg: 'Suscripto a Cumples IntegralMente!'+ `🎈`,
+                            msg: `Suscripto a Cumples IntegralMente! 🎈`,
                             type: 'success'
                         }))
                     })

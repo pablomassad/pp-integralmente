@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 
 import {Trash} from '@styled-icons/heroicons-outline/Trash'
@@ -11,6 +11,7 @@ import {bl} from '../../redux'
 
 import {confirmAlert} from 'react-confirm-alert' // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
+import FileUploader from '../../components/FileUploader'
 
 
 export default function Documentacion()
@@ -26,22 +27,6 @@ export default function Documentacion()
 
     const [setFileInfo] = useState()
 
-    const inputFile = useRef()
-
-    const chooseAttachment = e =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-        inputFile.current.click()
-    }
-    const onAttachment = e =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-
-        console.log('file: ', e.target.files[0])
-        setFileInfo(e.target.files[0])
-    }
     const removeAttachmentHandle = e =>
     {
         e.stopPropagation()
@@ -72,7 +57,6 @@ export default function Documentacion()
 
     return (
         <Frame>
-            <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onAttachment} />
             <SessionHeader>
                 <div>{selPatient.apellido}, {selPatient.nombres}</div>
                 <div>Adjuntos:{data.length}</div>
@@ -80,10 +64,12 @@ export default function Documentacion()
             <Attachments>
                 {data.map((a, i) =>
                     <div>
+                        <FileUploader onFileSelected={(data)=>setFileInfo(data)}>
+                            <GlassButton height={40}>
+                                <IconUpload />
+                            </GlassButton>
+                        </FileUploader>
 
-                        <GlassButton height={40} onClick={chooseAttachment}>
-                            <IconUpload />
-                        </GlassButton>
                         {/* <GlassButton
                             background={(selSession.url || fileInfo) ? 'green' : 'gray'}
                             onClick={e => viewFactura(e)}>

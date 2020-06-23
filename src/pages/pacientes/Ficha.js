@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components'
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
@@ -10,6 +10,8 @@ import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 
 import GlassButton from '../../common/GlassButton'
+import FileUploader from '../../components/FileUploader'
+
 
 export default function Ficha()
 {
@@ -19,7 +21,6 @@ export default function Ficha()
     const userInfo = useSelector(st => st.fb.userInfo)
     const origPatient = useSelector(st => st.fb.selPatient)
     const [fileInfo, setFileInfo] = useState()
-    const inputFile = useRef()
 
     const [selPatient, setSelPatient] = useState(origPatient)
     const [tmpFoto, setTmpFoto] = useState()
@@ -37,7 +38,7 @@ export default function Ficha()
         dispatch(ui.setDirty(true))
         //const newPat = {...selPatient, [field]: value}
         const newPat = {...selPatient}
-        newPat[field]= value
+        newPat[field] = value
         setSelPatient(newPat)
     }
     const updateUserSelPatient = (field, value) =>
@@ -45,36 +46,18 @@ export default function Ficha()
         dispatch(ui.setDirty(true))
         // const newPat = {...selPatient, uids: {...selPatient.uids, [userInfo.id]:{...selPatient.uids[userInfo.id], [field]:value}}}
         const newPat = {...selPatient}
-        newPat.uids[userInfo.id][field]= value
+        newPat.uids[userInfo.id][field] = value
         setSelPatient(newPat)
-    }    
-    const choosePic = e =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-        inputFile.current.click()
     }
-    const onChangePic = e =>
+    const onFileHandle = (data) =>
     {
-        e.stopPropagation()
-        e.preventDefault()
-
-        var bigFile = e.target.files[0]
-        var reader = new FileReader();
-        reader.onload = async (e) =>
+        console.log('size Image before:', getImageSize(data))
+        generateFromImage(data, 200, 200, 1, res =>
         {
-            const big = e.target.result
-            console.log('size Image before:', getImageSize(big))
-            generateFromImage(big, 200, 200, 1, data =>
-            {
-                console.log('size Image after:', getImageSize(data))
-                setTmpFoto(data)
-                setFileInfo(data)
-
-            })
-        }
-        reader.readAsDataURL(bigFile)
-        inputFile.current.id = new Date().getTime()
+            console.log('size Image after:', getImageSize(res))
+            setTmpFoto(res)
+            setFileInfo(res)
+        })
     }
     const generateFromImage = (img, MAX_WIDTH = 700, MAX_HEIGHT = 700, quality = .8, callback) =>
     {
@@ -154,10 +137,11 @@ export default function Ficha()
 
     return (
         <Form>
-            <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onChangePic} accept="image/gif, image/jpeg, image/jpg, image/png" />
             <Main>
-                <Avatar src={tmpFoto || selPatient.foto || anonymous} onClick={choosePic}>
-                </Avatar>
+                <FileUploader onFileSelected={onFileHandle}>
+                    <Avatar src={tmpFoto || selPatient.foto || anonymous} >
+                    </Avatar>
+                </FileUploader>
                 <FullName>
                     <UserInput type="text" placeholder="Ingrese nombres" value={selPatient.nombres || ''} name="nombres" onChange={e => updateSelPatient('nombres', e.target.value)} />
                     <UserInput type="text" placeholder="Ingrese apellido" value={selPatient.apellido || ''} name="apellido" onChange={e => updateSelPatient('apellido', e.target.value)} />

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 import {User} from '@styled-icons/fa-solid/User'
 import {UserGraduate} from '@styled-icons/fa-solid/UserGraduate'
@@ -15,6 +15,8 @@ import "react-datepicker/dist/react-datepicker.css"
 
 import {anonymous} from '../assets/images/anonymous.png'
 import GlassButton from '../common/GlassButton'
+import FileUploader from '../components/FileUploader'
+
 
 
 export default function Profile()
@@ -25,8 +27,6 @@ export default function Profile()
     const [selUser, setSelUser] = useState(userInfo)
     const [fileInfo, setFileInfo] = useState()
     const [tmpFoto, setTmpFoto] = useState()
-
-    const inputFile = useRef()
 
     const evalEdad = (nac) =>
     {
@@ -46,33 +46,15 @@ export default function Profile()
         const newData = {...selUser, isAdmin: isAdmin}
         setSelUser(newData)
     }
-    const choosePic = e =>
+    const onFileHandle = (data) =>
     {
-        e.stopPropagation()
-        e.preventDefault()
-        inputFile.current.click()
-    }
-    const onChangePic = e =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-
-        var bigFile = e.target.files[0]
-        var reader = new FileReader();
-        reader.onload = async (e) =>
+        console.log('size Image before:', getImageSize(data))
+        generateFromImage(data, 300, 300, 1, res =>
         {
-            const big = e.target.result
-            console.log('size Image before:', getImageSize(big))
-            generateFromImage(big, 300, 300, 1, data =>
-            {
-                console.log('size Image after:', getImageSize(data))
-                setTmpFoto(data)
-                setFileInfo(data)
-
-            })
-        }
-        reader.readAsDataURL(bigFile)
-        inputFile.current.id = new Date().getTime()
+            console.log('size Image after:', getImageSize(res))
+            setTmpFoto(res)
+            setFileInfo(res)
+        })
     }
     const generateFromImage = (img, MAX_WIDTH = 700, MAX_HEIGHT = 700, quality = .8, callback) =>
     {
@@ -127,7 +109,7 @@ export default function Profile()
         e.stopPropagation()
         e.preventDefault()
         dispatch(ui.setDirty(false))
-        history.goBack() 
+        history.goBack()
     }
     const acceptChanges = async (e) =>
     {
@@ -146,21 +128,24 @@ export default function Profile()
             console.log('updated User: ', selUser)
             dispatch(ui.showMessage({msg: 'Usuario guardado', type: 'success'}))
             setFileInfo(undefined)
-            history.goBack() 
+            history.goBack()
         } else {
             dispatch(ui.showMessage({msg: 'No se ha podido guardar los datos del paciente', type: 'error'}))
         }
     }
 
-    useEffect(() => {
+    useEffect(() =>
+    {
         dispatch(ui.setTitle('Perfil'))
     }, [dispatch])
 
     return (
         <UserFrame>
-            <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onChangePic} />
-            <Avatar src={tmpFoto || selUser.photoURL || anonymous} onClick={choosePic}>
-            </Avatar>
+            <FileUploader onFileSelected={onFileHandle}>
+                <Avatar src={tmpFoto || selUser.photoURL || anonymous} >
+                </Avatar>
+            </FileUploader>
+
             <div>
                 <FieldDescription>
                     Nombre de usuario:
@@ -169,12 +154,12 @@ export default function Profile()
             </div>
 
             {userInfo.isAdmin ?
-            <RoleFrame>
-                <IconUser on={selUser.isAdmin !== true} name="usuario" onClick={e => changeRoleHandle(false)} />
-                <IconAdmin on={selUser.isAdmin === true} name="admin" onClick={e => changeRoleHandle(true)} />
-            </RoleFrame>
-            :
-            <div></div>}
+                <RoleFrame>
+                    <IconUser on={selUser.isAdmin !== true} name="usuario" onClick={e => changeRoleHandle(false)} />
+                    <IconAdmin on={selUser.isAdmin === true} name="admin" onClick={e => changeRoleHandle(true)} />
+                </RoleFrame>
+                :
+                <div></div>}
 
             <BirthdayFrame>
                 <FieldDescription>

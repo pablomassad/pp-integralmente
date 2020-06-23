@@ -30,12 +30,11 @@ export default function Facturas()
     const history = useHistory()
     const dispatch = useDispatch()
 
-    const dirty = useSelector(st=>st.ui.dirty)
+    const dirty = useSelector(st => st.ui.dirty)
     const facturas = useSelector(st => st.fb.facturas, shallowEqual)
     const userInfo = useSelector(st => st.fb.userInfo)
 
     const [fileInfo, setFileInfo] = useState()
-    const inputFile = useRef()
     const factList = useRef()
 
     const [criteria, setCriteria] = useState('')
@@ -149,20 +148,6 @@ export default function Facturas()
         setSelFactura(newFactura)
         factList.current.scrollTo(0, 0) //factList.current.scrollHeight+1000)
     }
-    const choosePDF = e =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-        inputFile.current.click()
-    }
-    const onChangePDF = e =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-
-        console.log('file: ', e.target.files[0])
-        setFileInfo(e.target.files[0])
-    }
     const openStatsHandle = e =>
     {
         history.push('/stats')
@@ -178,7 +163,7 @@ export default function Facturas()
                 const s2 = `${d2}`
                 return s2.localeCompare(s1)
             })
-        let result = "Nro, ObraSocial, Monto, Fecha \n" 
+        let result = "Nro, ObraSocial, Monto, Fecha \n"
         for (let fact of info) {
             result += fact.nro + ',' + fact.obrasocial + ',' + fact.monto + ',' + moment(fact.fecha).format('DD-MM-YYYY') + '\n'
         }
@@ -239,7 +224,6 @@ export default function Facturas()
 
     return (
         <FacturasFrame>
-            <input type="file" ref={inputFile} style={{display: 'none'}} onChange={onChangePDF} />
             <FacturasFilter>
                 <IconFacturas />
                 <Criteria
@@ -388,9 +372,11 @@ export default function Facturas()
                                         onChange={e => updateSelFactura('nro', e.target.value)}
                                     />
                                     <FacturaPDF>
-                                        <GlassButton onClick={choosePDF}>
-                                            <IconUpload />
-                                        </GlassButton>
+                                        <FileUpload onFileSelected={(data)=>setFileInfo(data)}> 
+                                            <GlassButton>
+                                                <IconUpload />
+                                            </GlassButton>
+                                        </FileUpload>
                                         <GlassButton
                                             background={(selFactura.url || fileInfo) ? 'green' : 'gray'}
                                             onClick={e => viewFactura(e)}>
