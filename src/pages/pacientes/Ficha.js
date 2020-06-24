@@ -137,7 +137,7 @@ export default function Ficha()
     {
         if (origPatient.id === 0)
             dispatch(ui.setDirty(true))
-    },[])
+    },[dispatch,origPatient])
 
     if (!selPatient) return null
 

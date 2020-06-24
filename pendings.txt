@@ -3,11 +3,17 @@
 ⏰ Estadisticas mostrar meses y no numeros
 ⏰ Implementar adjuntos en sesion y documentacion
 ⏰ Cloud Functions de borrado automatico
+⏰ Cambiar estilo comunicaciones
+⏰ Grafico estadistico de uso de la app Integralmente x usuario
+⏰ Boton + en facturas
+⏰ Grafico estadistico cantidad de versiones
 
 
 
 
 
+👍 Boton + en pacientes
+👍 Sesiones luego de importar de agenda (eliminar)
 👍 Comunicados actualizacion automatica de counter
 👍 Eliminar paciente que ya se encuentra replicado .....side effects....
 👍 Eliminacion de usuarios que no van

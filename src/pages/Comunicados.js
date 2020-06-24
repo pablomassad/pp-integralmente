@@ -163,7 +163,7 @@ export default function Comunicados()
                         <UpdInput type="number" value={newVersion} onChange={(e) => setNewVersion(e.target.value)} style={{width: '50px'}} />
                         <UpdInput type="text" value={url} onChange={(e) => setUrl(e.target.value)} />
                         <GlassButton
-                            onClick={addUpdateNews()}>
+                            onClick={addUpdateNews}>
                             <IconAdd>+</IconAdd>
                         </GlassButton>
                     </UpdateFrame>

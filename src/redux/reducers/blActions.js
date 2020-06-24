@@ -37,9 +37,9 @@ const getUsers = () => async dispatch =>
         dispatch(ui.showMessage({msg: 'No se pudo obtener usuarios.', type: 'error'}))
     }
 }
-const updateUser = userInfo => async dispatch =>
+const updateUser = userInfo => async (dispatch, getState) =>
 {
-    try {
+    try {        
         dispatch(ui.showLoader(true))
         await fbFs.doc(`users/${userInfo.id}`).set(userInfo, {merge: true})
         return userInfo
@@ -50,17 +50,20 @@ const updateUser = userInfo => async dispatch =>
         dispatch(ui.showLoader(false))
     }
 }
-const login = payload => async dispatch =>
+const login = payload => async (dispatch, getState) =>
 {
     let res = false
     try {
         dispatch(ui.showLoader(true))
+        const version = getState().ui.version
+
         await fbAuth.signInWithEmailAndPassword(payload.email, payload.password)
         dispatch(ui.showMessage({msg: 'Bienvenido a IntegralMente!', type: 'success'}))
         const user = await fbAuth.currentUser
         const userInfo = await getFirebaseUserInfo(user.uid)
         userInfo.lastLogin = new Date().getTime()
         userInfo.lastLoginStr = new Date()
+        userInfo.version = version
         if (!userInfo.lastNewsRead)
             userInfo.lastNewsRead = new Date(1262314800000)
 
@@ -397,10 +400,11 @@ const removeAttachment = (attachmentId) => (dispatch) =>
 
 
 // SESSIONS
-const getSessionsByPatient = (patientId) => async (dispatch) =>
+const getSessionsByPatient = (patientId) => async (dispatch, getState) =>
 {
     dispatch(ui.showLoader(true))
-    const dsn = await fbFs.collection('pacientes').doc(patientId).collection('sesiones').get()
+    const userInfo = getState().fb.userInfo
+    const dsn = await fbFs.collection('pacientes').doc(patientId).collection('sesiones').where('uid','==',userInfo.id ).get()
     const sessions = dsn.docs.map(x =>
     {
         return {

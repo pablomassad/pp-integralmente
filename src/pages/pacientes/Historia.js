@@ -211,7 +211,7 @@ export default function Historia()
             {dirty
                 ? null
                 : <GlassButton
-                    absolute
+                    fixed
                     right={5}
                     bottom={5}
                     width={50}

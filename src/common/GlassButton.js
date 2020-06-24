@@ -5,6 +5,7 @@ export default (function GlassButton({
     children, 
     onClick, 
     absolute, 
+    fixed,
     top, 
     right, 
     bottom, 
@@ -24,6 +25,7 @@ export default (function GlassButton({
             <FabBtn
                 onClick={onClick}
                 absolute={absolute}
+                fixed={fixed}
                 top={top}
                 right={right}
                 bottom={bottom}
@@ -53,7 +55,7 @@ const Container = styled.div`
 `
 
 const FabBtn = styled.button`
-    position: ${props => (props.absolute) ? 'absolute' : 'relative'};
+    position: ${props => (props.absolute) ? 'absolute' : ((props.fixed)?'fixed':'relative')};
     top: ${props => (props.top) ? props.top+'px' : 'unset'};
     right: ${props => (props.right) ? props.right+'px' : 'unset'};
     bottom: ${props => (props.bottom) ? props.bottom+'px' : 'unset'};

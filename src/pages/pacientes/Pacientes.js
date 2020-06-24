@@ -129,7 +129,7 @@ export default function Pacientes()
                     </PatientCard>
                 ))}
                 <GlassButton
-                    absolute
+                    fixed
                     right={5}
                     bottom={5}
                     width={50}
