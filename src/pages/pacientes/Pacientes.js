@@ -8,7 +8,7 @@ import {useHistory} from 'react-router-dom'
 
 import anonymous from '../../assets/images/anonymous.png'
 import {useDispatch, useSelector} from 'react-redux'
-import {bl,ui, fb} from '../../redux'
+import {bl, ui, fb} from '../../redux'
 import moment from 'moment'
 
 import {confirmAlert} from 'react-confirm-alert'; // Import
@@ -37,7 +37,7 @@ export default function Pacientes()
     const dispatch = useDispatch()
 
     const userInfo = useSelector(st => st.fb.userInfo)
-    const patients = useSelector(st => st.fb.allPatients.filter(x=>x.uids[userInfo.id]))
+    const patients = useSelector(st => st.fb.allPatients.filter(x => x.uids[userInfo.id]))
 
     const [criteria, setCriteria] = useState('')
 
@@ -128,17 +128,23 @@ export default function Pacientes()
                         <IconRemove onClick={(e) => removePatient(e, p)} />
                     </PatientCard>
                 ))}
+                <GlassButton
+                    absolute
+                    right={5}
+                    bottom={5}
+                    width={50}
+                    height={50}
+                    radius={50}
+                    onClick={() => gotoPatient(
+                        {
+                            id: 0, 
+                            uids:{
+                                [userInfo.id]:{}
+                                }
+                        })}>
+                    <IconAdd>+</IconAdd>
+                </GlassButton>
             </PatientList>
-            <GlassButton
-                absolute
-                right={5}
-                bottom={5}
-                width={50}
-                height={50}
-                radius={50}
-                onClick={() => gotoPatient({id: 0})}>
-                <IconAdd>+</IconAdd>
-            </GlassButton>
         </PatientsFrame>
     )
 }
@@ -226,6 +232,7 @@ const PatientList = styled.div`
     grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));
     align-items:center;
     /* height: calc(100vh - 110px); */
+    position:relative;
 `
 const Title = styled.div`
     font-size:20px;

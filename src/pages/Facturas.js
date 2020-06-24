@@ -6,6 +6,8 @@ import {FileUpload} from '@styled-icons/fa-solid/FileUpload'
 import {File} from '@styled-icons/boxicons-regular/File'
 import {Trash} from '@styled-icons/heroicons-outline/Trash'
 import {Download} from '@styled-icons/boxicons-regular/Download'
+
+import FileUploader from '../components/FileUploader'
 import GlassButton from '../common/GlassButton'
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector, shallowEqual} from 'react-redux'
@@ -372,11 +374,11 @@ export default function Facturas()
                                         onChange={e => updateSelFactura('nro', e.target.value)}
                                     />
                                     <FacturaPDF>
-                                        <FileUpload onFileSelected={(data)=>setFileInfo(data)}> 
+                                        <FileUploader onFileSelected={(data)=>setFileInfo(data)}> 
                                             <GlassButton>
                                                 <IconUpload />
                                             </GlassButton>
-                                        </FileUpload>
+                                        </FileUploader>
                                         <GlassButton
                                             background={(selFactura.url || fileInfo) ? 'green' : 'gray'}
                                             onClick={e => viewFactura(e)}>
@@ -512,8 +514,9 @@ const FacturaForm = styled.div`
 const FacturaPDF = styled.div`
 	--id: FacturaPDF;
 	display: grid;
-	grid-template-columns: 1fr 1fr 40px;
-	grid-column-gap: 10px;
+    grid-template-columns: 1fr 1fr 50px;
+    grid-column-gap: 5px;
+    margin: 0 10px;
 	align-items: center;
 `
 const Cell = styled.div`

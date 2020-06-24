@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
@@ -132,6 +132,12 @@ export default function Ficha()
             dispatch(ui.showMessage({msg: 'No se ha podido guardar los datos del paciente', type: 'error'}))
         }
     }
+
+    useEffect(() =>
+    {
+        if (origPatient.id === 0)
+            dispatch(ui.setDirty(true))
+    },[])
 
     if (!selPatient) return null
 

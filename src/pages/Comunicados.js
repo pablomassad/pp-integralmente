@@ -7,9 +7,9 @@ import {Trash} from '@styled-icons/heroicons-outline/Trash'
 import GlassButton from '../common/GlassButton'
 import anonymous from '../assets/images/anonymous.png'
 
-import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {bl, ui} from '../redux'
+import {useLongPress} from '../common/useLongPress'
 
 import moment from 'moment'
 import DatePicker from 'react-datepicker'
@@ -23,7 +23,6 @@ export default function Comunicados()
 {
     console.log('......[Comunicados]')
     const dispatch = useDispatch()
-    const history = useHistory()
     const dirty = useSelector(st => st.ui.dirty)
     const news = useSelector(st => st.fb.allNews)
     const userInfo = useSelector(st => st.fb.userInfo)
@@ -32,6 +31,9 @@ export default function Comunicados()
 
     const [criteria, setCriteria] = useState('')
     const [selNews, setSelNews] = useState(null)
+    const [newVersion, setNewVersion] = useState()
+    const [url, setUrl] = useState()
+    const [updateMode, setUpdateMode] = useState(false)
 
 
     const data = news
@@ -60,15 +62,14 @@ export default function Comunicados()
             ]
         })
     }
-    const onSelNews = (e, s) =>
+    const onSelNews = (e, news) =>
     {
-        if (s.uid === userInfo.id) {
-            e.preventDefault()
+        e.preventDefault()
+        if (news.uid === userInfo.id) {
             if (dirty) return // Comunicado en edicion
-
-            const news = {...s}
-            console.log('onSelNews', news)
-            setSelNews(news)
+            const newsCopy = {...news}
+            console.log('onSelNews', newsCopy)
+            setSelNews(newsCopy)
         }
         else {
             dispatch(ui.showMessage({msg: 'Unicamente el autor del comunicado puede editarlo!', type: 'info'}))
@@ -92,7 +93,6 @@ export default function Comunicados()
     {
         setSelNews(null)
         dispatch(ui.setDirty(false))
-        history.goBack()
     }
     const acceptChanges = async () =>
     {
@@ -101,11 +101,43 @@ export default function Comunicados()
         if (res) {
             dispatch(ui.showMessage({msg: 'Comunicado guardado', type: 'success'}))
             setSelNews(null)
-            history.goBack()
         } else {
             dispatch(ui.showMessage({msg: 'No se ha podido guardar el comunicado', type: 'error'}))
         }
     }
+    const onDownloadHandle = (e, link) =>
+    {
+        window.open(link)
+    }
+
+    const pressAndHold = useLongPress(() => setUpdateMode(true), 1500)
+
+    const addUpdateNews = async () =>
+    {
+        const com1 = {
+            id: 0,
+            uid: userInfo.id,
+            displayName: userInfo.displayName,
+            photo: userInfo.photoURL,
+            fecha: new Date().getTime(),
+            description: `Ha salido la nueva version v${newVersion} de IntegralMente! Para actualizar desde un navegador, presione Control-F5`
+        }
+        await dispatch(bl.updateNews(com1))
+
+        const com2 = {
+            id: 0,
+            uid: userInfo.id,
+            displayName: userInfo.displayName,
+            photo: userInfo.photoURL,
+            fecha: new Date().getTime(),
+            description: `Ha salido la nueva version v${newVersion} de IntegralMente! Para descargarla desde el celular, presione el botón de abajo.`,
+            link: url
+        }
+        await dispatch(bl.updateNews(com2))
+
+        setUpdateMode(false)
+    }
+
 
     useEffect(() =>
     {
@@ -113,10 +145,11 @@ export default function Comunicados()
         dispatch(bl.updateNewsRead())
     }, [dispatch])
 
+
     return (
         <NewsFrame>
             <NewsFilter>
-                <IconNews />
+                <IconNews {...pressAndHold} />
                 <Criteria
                     type="text"
                     placeholder="Ingrese filtro"
@@ -125,6 +158,16 @@ export default function Comunicados()
                 />
             </NewsFilter>
             <NewsHeader>
+                {updateMode && (
+                    <UpdateFrame>
+                        <UpdInput type="number" value={newVersion} onChange={(e) => setNewVersion(e.target.value)} style={{width: '50px'}} />
+                        <UpdInput type="text" value={url} onChange={(e) => setUrl(e.target.value)} />
+                        <GlassButton
+                            onClick={addUpdateNews()}>
+                            <IconAdd>+</IconAdd>
+                        </GlassButton>
+                    </UpdateFrame>
+                )}
                 <div>Total de Comunicados:{data.length}</div>
             </NewsHeader>
             <NewsList ref={newsList}>
@@ -141,6 +184,9 @@ export default function Comunicados()
                                 <Observaciones>
                                     {s.description}
                                 </Observaciones>
+                                {s.link &&
+                                    <GlassButton onClick={(e) => onDownloadHandle(e, s.link)}>Presione para bajar actualización</GlassButton>
+                                }
                                 <Avatar src={s.photo || anonymous} />
                             </NewsCard>
                             : <NewsForm>
@@ -201,6 +247,31 @@ const NewsFilter = styled.div`
 	align-items: center;
 	box-shadow: 0 1px 3px black;
 `
+const UpdateFrame = styled.div`
+    display:grid;
+    grid-template-columns:60px 1fr 40px;
+    align-items:center;
+`
+const UpdInput = styled.input`
+	--name: 'UpdInput';
+	font-size: 12px;
+	color: #444;
+	background: white;
+	border-radius: 5px;
+	width: 80%;
+	height: 25px;
+	border: none;
+	display: block;
+	margin: 5px 0;
+	text-align: center;
+	box-shadow: inset 2px 2px 5px grey;
+	&:hover {
+        background-color:rgb(220, 230, 240);
+	}
+	&:focus {
+        outline: none;
+	}
+`
 const Criteria = styled.input`
 	--name: 'Criteria';
 	font-size: 15px;
@@ -216,17 +287,12 @@ const Criteria = styled.input`
 	box-shadow: inset 2px 2px 5px grey;
 
 	&:hover {
-		background-color: rgb(220, 230, 240);
+        background-color:rgb(220, 230, 240);
 	}
 
 	&:focus {
-		outline: none;
-		/* box-shadow: 0px 0px 3px 0px rgb(111, 168, 201); */
+        outline: none;
 	}
-
-	/* @media screen and (min-width: 500px) {
-        width:400px;
-    }  */
 `
 const Label = styled.div`
 	font-weight: bold;
@@ -312,12 +378,11 @@ const ObsArea = styled.textarea`
     box-shadow: inset 2px 2px 5px grey;
 
 	&:hover {
-		background-color: rgb(220, 230, 240);
+        background-color:rgb(220, 230, 240);
 	}
-
+    
 	&:focus {
-		outline: none;
-		/* box-shadow: 0px 0px 3px 0px rgb(111, 168, 201); */
+        outline: none;
 	}
 `
 const IconAdd = styled.div`
