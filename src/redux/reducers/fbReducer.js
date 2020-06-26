@@ -51,10 +51,6 @@ export default handleActions(
         {
             return {...state, allPatients: action.payload}
         },
-        [fb.setPatients]: (state, action) =>
-        {
-            return {...state, patients: action.payload.patients}
-        },
         [fb.setPatient]: (state, action) =>
         {
             return {...state, selPatient: action.payload}

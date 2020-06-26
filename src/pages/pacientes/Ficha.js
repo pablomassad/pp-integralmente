@@ -44,7 +44,6 @@ export default function Ficha()
     const updateUserSelPatient = (field, value) =>
     {
         dispatch(ui.setDirty(true))
-        // const newPat = {...selPatient, uids: {...selPatient.uids, [userInfo.id]:{...selPatient.uids[userInfo.id], [field]:value}}}
         const newPat = {...selPatient}
         newPat.uids[userInfo.id][field] = value
         setSelPatient(newPat)
@@ -114,6 +113,9 @@ export default function Ficha()
     const acceptChanges = async (e) =>
     {
         e.preventDefault()
+        // if (selPatient.id === 0){
+        //     selPatient.uids[userInfo.id].photoURL = userInfo.photoURL
+        // }
         const pat = await dispatch(bl.updatePatient(selPatient))
         if (pat) {
             if (fileInfo) {

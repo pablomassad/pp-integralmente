@@ -137,10 +137,14 @@ export default function Pacientes()
                     radius={50}
                     onClick={() => gotoPatient(
                         {
-                            id: 0, 
-                            uids:{
-                                [userInfo.id]:{}
+                            id: 0,
+                            uids: {
+                                [userInfo.id]: {
+                                    photoURL: userInfo.photoURL,
+                                    atencion: '',
+                                    diagnostico: ''
                                 }
+                            }
                         })}>
                     <IconAdd>+</IconAdd>
                 </GlassButton>

@@ -314,13 +314,15 @@ const updatePatient = patient => async (dispatch, getState) =>
     try {
         dispatch(ui.showLoader(true))
 
-        if (patient.id === 0) delete patient.id
-
-        if (!patient.id) {
-            const pat = await fbFs.collection('pacientes').add(patient)
-            patient.id = pat.id
+        let newPat = null
+        if (patient.id === 0) {
+            delete patient.id
+            newPat = await fbFs.collection('pacientes').add(patient)
+            patient.id = newPat.id
         }
         await fbFs.collection('pacientes').doc(patient.id).set(patient)
+        if (newPat != null)
+            dispatch(getAllPatients())
         return patient
     } catch (error) {
         return false
@@ -342,6 +344,7 @@ const removePatient = (patient, uid) => async (dispatch) =>
     if (Object.keys(patient.uids).length === 0)
         await fbFs.collection('pacientes').doc(patient.id).delete()
 
+    dispatch(getAllPatients())
     dispatch(fb.setPatient(null))
 }
 const clonePatient = patAgenda => async (dispatch, getState) =>
@@ -362,6 +365,7 @@ const clonePatient = patAgenda => async (dispatch, getState) =>
             patAgenda.uids[userInfo.id] = o
 
             await fbFs.collection('pacientes').doc(patAgenda.id).set(patAgenda, {merge: true})
+            dispatch(getAllPatients())
             dispatch(ui.showMessage({msg: 'Paciente agregado.', type: 'success'}))
             return true
         }
