@@ -37,7 +37,7 @@ const getUsers = () => async dispatch =>
         dispatch(ui.showMessage({msg: 'No se pudo obtener usuarios.', type: 'error'}))
     }
 }
-const updateUser = userInfo => async (dispatch, getState) =>
+const updateUser = userInfo => async (dispatch) =>
 {
     try {        
         dispatch(ui.showLoader(true))
@@ -55,15 +55,12 @@ const login = payload => async (dispatch, getState) =>
     let res = false
     try {
         dispatch(ui.showLoader(true))
-        const version = getState().ui.version
-
         await fbAuth.signInWithEmailAndPassword(payload.email, payload.password)
         dispatch(ui.showMessage({msg: 'Bienvenido a IntegralMente!', type: 'success'}))
         const user = await fbAuth.currentUser
         const userInfo = await getFirebaseUserInfo(user.uid)
         userInfo.lastLogin = new Date().getTime()
         userInfo.lastLoginStr = new Date()
-        userInfo.version = version
         if (!userInfo.lastNewsRead)
             userInfo.lastNewsRead = new Date(1262314800000)
 
@@ -166,7 +163,11 @@ const initWebNotifications = () => dispatch =>
 const initMobileNotifications = () => (dispatch, getState) =>
 {
     const userInfo = getState().fb.userInfo
+    const version = getState().ui.version
     try {
+        userInfo.version = version
+        dispatch(updateUser(userInfo))
+
         // Register with Apple / Google to receive push via APNS/FCM
         PushNotifications.register()
             .then(() =>
