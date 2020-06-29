@@ -1,5 +1,4 @@
 const fs = require('fs')
-const {Android} = require("styled-icons/boxicons-logos")
 const execSync = require('child_process').execSync;
 //var copydir = require('copy-dir');
 

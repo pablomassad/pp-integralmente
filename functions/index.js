@@ -1,7 +1,10 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin')
-const moment = require('moment')
-
+const nodemailer = require('nodemailer');
+const smtpTransport = require('nodemailer-smtp-transport');
+const execSync = require('child_process').execSync;
+const cors = require('cors')({origin: true});
+const moment = require('moment');
 
 
 admin.initializeApp(functions.config().firebase)
@@ -93,9 +96,9 @@ exports.evalCumples = functions.https.onRequest(async (request, response) =>
         }
     }
 
-    const rta = 'patients: ' + docsPac.length + ' / prof.total: '+ docsUsr.length
+    const rta = 'patients: ' + docsPac.length + ' / prof.total: ' + docsUsr.length
     console.log(rta)
-    response.send('total: ' + rta  + ' ==> fecha:' + today + ' cumples hoy: ' + birthdaysToday + ' errors: ' + birthdaysErrors)
+    response.send('total: ' + rta + ' ==> fecha:' + today + ' cumples hoy: ' + birthdaysToday + ' errors: ' + birthdaysErrors)
 })
 
 
@@ -115,3 +118,48 @@ async function fcmPush(target, noti)
         console.log('Error sending msg:', err)
     }
 }
+
+
+exports.sendMail = functions.https.onRequest((req, res) =>
+{
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true, //true,
+        auth: {
+            user: 'integralmenteespacioterapeutic@gmail.com',
+            pass: 'IntegralMente2020'
+        }
+    });
+
+    cors(req, res, () =>
+    {
+        const mail = req.body.mail // req.query.mail;
+        const person = req.body.person //req.query.person;
+
+        console.log('mailTo: ' + mail + ' => ' + person)
+
+        const mailOptions = {
+            //from: 'IntegralMente <integralmenteespacioterapeutic@gmail.com>', // Something like: Jane Doe <janedoe@gmail.com>
+            from: 'integralmenteespacioterapeutic@gmail.com',
+            to: mail,
+            subject: 'Feliz cumpleaños!!!',
+            html: `<h2 style="font-size: 16px;">Que los cumplas muy feliz, ${person}</h2>
+                <br />
+                <h3>Te desea IntegralMente</h3>
+                <br />
+                <img src="https://firebasestorage.googleapis.com/v0/b/pp-integralmente.appspot.com/o/integralmenteET.png?alt=media&token=2fe6482e-e6ff-4197-b2cf-2642e55e72c0" />
+            `
+        };
+
+        // returning result
+        return transporter.sendMail(mailOptions, (erro, info) =>
+        {
+            if (erro) {
+                console.log('error sending email:', erro.toString())
+                return res.send(erro.toString());
+            }
+            return res.send('Sended');
+        });
+    });
+});

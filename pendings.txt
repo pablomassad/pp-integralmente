@@ -7,6 +7,14 @@
 ⏰ Grafico estadistico de uso de la app Integralmente x usuario
 ⏰ Boton + en facturas
 ⏰ Grafico estadistico cantidad de versiones
+⏰ Llamado tel y mail presionando INPUT
+⏰ Envio de aviso de turno x SMS
+⏰ Envio x mail integralmente@gmail.com x cumple a mail paciente
+⏰ Averiguar x link automatico a AFIP para facturacion
+⏰ Averiguar x medio de pago Mercado Pago
+
+
+
 
 
 

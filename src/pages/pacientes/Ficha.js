@@ -1,5 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
+import {PhoneCall} from '@styled-icons/boxicons-solid/PhoneCall'
+import {Mail} from '@styled-icons/entypo/Mail'
+
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {bl, ui} from '../../redux'
@@ -102,6 +105,14 @@ export default function Ficha()
         var size = data.length - head.length * 3 / 4 / (1024 * 1024).toFixed(4)
         return size
     }
+    const phoneTo = (field) =>
+    {
+        window.open('tel:' + field);
+    }
+    const mailTo = (field) =>
+    {
+
+    }
     const cancelChanges = (e) =>
     {
         e.stopPropagation()
@@ -139,7 +150,7 @@ export default function Ficha()
     {
         if (origPatient.id === 0)
             dispatch(ui.setDirty(true))
-    },[dispatch,origPatient])
+    }, [dispatch, origPatient])
 
     if (!selPatient) return null
 
@@ -182,13 +193,37 @@ export default function Ficha()
                 <UserInput type="text" placeholder="Días de atención" value={selPatient.uids[userInfo.id].atencion || ''} name="atencion" onChange={e => updateUserSelPatient(`atencion`, e.target.value)} />
             </Row>
             <Contacto>
-                <Field>Madre</Field><UserInput type="text" placeholder="Nombre madre" value={selPatient.madre || ''} name="madre" onChange={e => updateSelPatient('madre', e.target.value)} />
-                <Field>Tel.Madre</Field><UserInput type="text" placeholder="Tel. madre" value={selPatient.telmadre || ''} name="telmadre" onChange={e => updateSelPatient('telmadre', e.target.value)} />
-                <Field>Padre</Field><UserInput type="text" placeholder="Nombre padre" value={selPatient.padre || ''} name="padre" onChange={e => updateSelPatient('padre', e.target.value)} />
-                <Field>Tel.Padre</Field><UserInput type="number" placeholder="Tel. padre" value={selPatient.telpadre || ''} name="telpadre" onChange={e => updateSelPatient('telpadre', e.target.value)} />
-                <Field>Correo</Field><UserInput type="text" placeholder="Correo electrónico" value={selPatient.email || ''} name="email" onChange={e => updateSelPatient('email', e.target.value)} />
-                <Field>Domicilio</Field><UserInput type="text" placeholder="Domicilio" value={selPatient.domicilio || ''} name="domicilio" onChange={e => updateSelPatient('domicilio', e.target.value)} />
-                <Field>Ciudad</Field><UserInput type="text" placeholder="Ciudad" value={selPatient.ciudad || ''} name="ciudad" onChange={e => updateSelPatient('ciudad', e.target.value)} />
+                <Field>Madre</Field>
+                <UserInput type="text" placeholder="Nombre madre" value={selPatient.madre || ''} name="madre" onChange={e => updateSelPatient('madre', e.target.value)} />
+
+                <Field>Tel.Madre</Field>
+                <IconInput>
+                    <UserInput type="text" placeholder="Tel. madre" value={selPatient.telmadre || ''} name="telmadre" onChange={e => updateSelPatient('telmadre', e.target.value)} />
+                    <IconTel onClick={() => phoneTo(selPatient.telmadre)} />
+                </IconInput>
+
+                <Field>Padre</Field>
+                <UserInput type="text" placeholder="Nombre padre" value={selPatient.padre || ''} name="padre" onChange={e => updateSelPatient('padre', e.target.value)} />
+
+                <Field>Tel.Padre</Field>
+                <IconInput>
+                    <UserInput type="number" placeholder="Tel. padre" value={selPatient.telpadre || ''} name="telpadre" onChange={e => updateSelPatient('telpadre', e.target.value)} />
+                    <IconTel onClick={() => phoneTo(selPatient.telpadre)} />
+                </IconInput>
+
+                <Field>Correo</Field>
+                <IconInput>
+                    <UserInput type="text" placeholder="Correo electrónico" value={selPatient.email || ''} name="email" onChange={e => updateSelPatient('email', e.target.value)} />
+                    <a href={"mailto:" + selPatient.email}>
+                        <IconMail />
+                    </a>
+                </IconInput>
+
+                <Field>Domicilio</Field>
+                <UserInput type="text" placeholder="Domicilio" value={selPatient.domicilio || ''} name="domicilio" onChange={e => updateSelPatient('domicilio', e.target.value)} />
+
+                <Field>Ciudad</Field>
+                <UserInput type="text" placeholder="Ciudad" value={selPatient.ciudad || ''} name="ciudad" onChange={e => updateSelPatient('ciudad', e.target.value)} />
             </Contacto>
             <Actions>
                 <GlassButton onClick={cancelChanges}>Cancelar</GlassButton>
@@ -221,6 +256,23 @@ const Avatar = styled.img`
     height: 85px;
     box-shadow:1px 1px 3px black;
     object-fit: cover;
+`
+const IconInput = styled.div`
+    position:relative;
+`
+const IconTel = styled(PhoneCall)`
+    position:absolute;
+    right:10%;
+    top:18px;
+    width:30px;
+    color:#2687ce;
+`
+const IconMail = styled(Mail)`
+    position:absolute;
+    right:10%;
+    top:18px;
+    width:30px;
+    color:#2687ce;
 `
 const UserInput = styled.input`
     --name: 'UserInput';
