@@ -221,7 +221,6 @@ export default function Facturas()
         dispatch(ui.setTitle('Facturas'))
         if (userInfo)
             dispatch(bl.getFacturas())
-        else history.replace('/')
     }, [dispatch, history, userInfo])
 
     return (

@@ -6,27 +6,6 @@ import {Plugins} from '@capacitor/core'
 
 
 // SECURITY
-const logEnterApp = userInfo => async dispatch =>
-{
-    try {
-        const day = moment().format('YYMMDD')
-        const dd = await fbFs.doc(`logger/${day}`).get()
-        let pl = dd.data()
-
-        if (!pl)
-            pl = {id: day}
-
-        if (!pl[userInfo.id])
-            pl[userInfo.id] = 0
-        pl[userInfo.id]++
-        await fbFs.doc(`logger/${day}`).set(pl, {merge: true})
-        return true
-    } catch (error) {
-        dispatch(ui.showMessage({msg: 'No se pudo conectar con la DB.', type: 'error'}))
-        console.log('Logger error:', error)
-        return false
-    }
-}
 const getUsers = () => async dispatch =>
 {
     try {
@@ -66,7 +45,7 @@ const login = payload => async (dispatch, getState) =>
 
         await dispatch(updateUser(userInfo))
         dispatch(fb.setUser({userInfo}))
-
+        await dispatch(logEnterApp(userInfo))
         localStorage.setItem('credentials', JSON.stringify(payload))
         dispatch(initPushing())
         res = true
@@ -117,6 +96,27 @@ const sendResetEmail = email => async dispatch =>
         {
             return false
         })
+}
+const logEnterApp = userInfo => async dispatch =>
+{
+    try {
+        const day = moment().format('YYMMDD')
+        const dd = await fbFs.doc(`logger/${day}`).get()
+        let pl = dd.data()
+
+        if (!pl)
+            pl = {id: day}
+
+        if (!pl[userInfo.id])
+            pl[userInfo.id] = 0
+        pl[userInfo.id]++
+        await fbFs.doc(`logger/${day}`).set(pl, {merge: true})
+        return true
+    } catch (error) {
+        dispatch(ui.showMessage({msg: 'No se pudo conectar con la DB.', type: 'error'}))
+        console.log('Logger error:', error)
+        return false
+    }
 }
 
 
@@ -830,7 +830,6 @@ const updateStatistics = async (uid) =>
 
 
 export const bl = {
-    logEnterApp,
     getUsers,
     login,
     register,

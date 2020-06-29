@@ -19,8 +19,8 @@ export default function SignIn()
 
     const refEmail = useRef(null)
     const refPassword = useRef(null)
-    
-    const version = useSelector(st =>st.ui.version)
+
+    const version = useSelector(st => st.ui.version)
     const users = useSelector(st => st.fb.users)
     const allPatients = useSelector(st => st.fb.allPatients)
 

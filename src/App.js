@@ -77,26 +77,6 @@ export default function App()
         dispatch(bl.getAllPatients())
     }, [dispatch])
 
-    useEffect(() =>
-    {
-        console.log('userInfo:', userInfo)
-        if (userInfo === null) {
-            history.replace('/')
-            return
-        }
-
-        // const logger = async (uInfo) =>
-        // {
-        //     if (uInfo) {
-        //         if (uInfo.id) {
-        //             console.log('LOG ENTER..........................................')
-        //             await dispatch(bl.logEnterApp(uInfo))
-        //         }
-        //     }
-        // }
-        // logger(userInfo)
-    }, [userInfo, dispatch])
-
     return (
         <>
             {userInfo
@@ -129,7 +109,6 @@ export default function App()
                 <Route exact path="/feedback" component={Feedback} />
                 <Route >
                     {() => redirect()}
-                    {/* <h1>404</h1> */}
                 </Route>
             </Switch>
             <Loader />

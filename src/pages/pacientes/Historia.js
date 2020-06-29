@@ -148,7 +148,6 @@ export default function Historia()
     {
         if (selPatient)
             dispatch(bl.getSessionsByPatient(selPatient.id))
-        else history.replace('/')
     }, [dispatch, history, selPatient])
 
     return (

@@ -52,7 +52,6 @@ export default function Documentacion()
     {
         if (selPatient)
             dispatch(bl.getAttachmentsByPatient(selPatient.id))
-        else history.replace('/')
     }, [dispatch, history, selPatient])
 
     return (
