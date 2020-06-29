@@ -88,6 +88,9 @@ exports.evalCumples = functions.https.onRequest(async (request, response) =>
                     }
                     console.log('today:' + today + ' --> ' + cumple + ' Ap: ' + usr.displayName)
                     await fcmPush('global', noti)
+                    if (usr.mail){
+                        await sendMailTo(usr.mail, usr.nombres)
+                    }
                     birthdaysToday++
                 }
             }
@@ -119,47 +122,52 @@ async function fcmPush(target, noti)
     }
 }
 
-
-exports.sendMail = functions.https.onRequest((req, res) =>
+async function sendMailTo(mail, person)
 {
-    let transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true, //true,
-        auth: {
-            user: 'integralmenteespacioterapeutic@gmail.com',
-            pass: 'IntegralMente2020'
-        }
-    });
-
-    cors(req, res, () =>
+    return new Promise((resolve, reject) =>
     {
-        const mail = req.body.mail // req.query.mail;
-        const person = req.body.person //req.query.person;
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true, //true,
+            auth: {
+                user: 'integralmenteespacioterapeutic@gmail.com',
+                pass: 'IntegralMente2020'
+            }
+        })
 
-        console.log('mailTo: ' + mail + ' => ' + person)
-
-        const mailOptions = {
-            //from: 'IntegralMente <integralmenteespacioterapeutic@gmail.com>', // Something like: Jane Doe <janedoe@gmail.com>
-            from: 'integralmenteespacioterapeutic@gmail.com',
-            to: mail,
-            subject: 'Feliz cumpleaños!!!',
-            html: `<h2 style="font-size: 16px;">Que los cumplas muy feliz, ${person}</h2>
+        cors(req, res, () =>
+        {
+            console.log('mailTo: ' + mail + ' => ' + person)
+            const mailOptions = {
+                //from: 'IntegralMente <integralmenteespacioterapeutic@gmail.com>', 
+                from: 'integralmenteespacioterapeutic@gmail.com',
+                to: mail,
+                subject: 'Feliz cumpleaños!!!',
+                html: `<h2 style="font-size: 16px;">Que los cumplas muy feliz, ${person}</h2>
                 <br />
                 <h3>Te desea IntegralMente</h3>
                 <br />
-                <img src="https://firebasestorage.googleapis.com/v0/b/pp-integralmente.appspot.com/o/integralmenteET.png?alt=media&token=2fe6482e-e6ff-4197-b2cf-2642e55e72c0" />
-            `
-        };
-
-        // returning result
-        return transporter.sendMail(mailOptions, (erro, info) =>
-        {
-            if (erro) {
-                console.log('error sending email:', erro.toString())
-                return res.send(erro.toString());
+                <img src="https://firebasestorage.googleapis.com/v0/b/pp-integralmente.appspot.com/o/integralmenteET.png?alt=media&token=2fe6482e-e6ff-4197-b2cf-2642e55e72c0" />`
             }
-            return res.send('Sended');
-        });
-    });
-});
+            transporter.sendMail(mailOptions, (erro, info) =>
+            {
+                if (erro) {
+                    console.log('error sending email:', erro.toString())
+                    return reject(erro.toString())
+                }
+                const rta = "mail sent to: " + person + " => " + mail
+                return resolve(rta)
+            })
+        })
+    })
+}
+
+exports.sendMail = functions.https.onRequest(async (req, res) =>
+{
+    const mail = req.body.mail // req.query.mail;
+    const person = req.body.person //req.query.person;
+
+    const rta = await sendMailTo(mail, person)
+    res.send(rta)
+})

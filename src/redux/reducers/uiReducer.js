@@ -4,7 +4,7 @@ import {ui} from './uiActions'
 console.log('uiReducer....')
 
 const initialState = {
-    version: 3.9,
+    version: process.env.REACT_APP_version,
     sidebarFlag: false,
     dirty:false,
     loading: false,

@@ -109,10 +109,6 @@ export default function Ficha()
     {
         window.open('tel:' + field);
     }
-    const mailTo = (field) =>
-    {
-
-    }
     const cancelChanges = (e) =>
     {
         e.stopPropagation()

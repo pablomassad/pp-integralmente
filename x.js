@@ -1,74 +1,94 @@
 const fs = require('fs')
 const execSync = require('child_process').execSync;
-//var copydir = require('copy-dir');
+const minimist = require('minimist')
+var exec = require('child_process').exec;
 
-let version = process.argv[2]
-if (!version) {
+const args = minimist(process.argv.slice(2), {
+    default: {
+        v: '1.0',
+        b: 'true',
+        f: 'true',
+        a: 'true'
+    },
+    alias: {
+        v: 'version',
+        b: 'buildFlag',
+        f: 'cloudFunction',
+        a: 'buildApk'
+    }
+})
+
+const ver = Number(args.version)
+if (!isNaN(ver)) {
+    console.log('')
     console.log('##########################')
-    console.log('Version parameter missing!')
+    console.log('Update environment version')
     console.log('##########################')
-    process.exit();
+    let bufferConfig = fs.readFileSync(__dirname + '/src/docs/.env')
+    let strConfig = bufferConfig.toString()
+    strConfig = strConfig.replace('N.N', args.version)
+
+    fs.writeFileSync(__dirname + '/src/.env', strConfig, err =>
+    {
+        if (err == null)
+            console.log('Archivo .env actualizado OK')
+        else
+            console.log('Error saving .env: ', err)
+    })
 }
 
-console.log('')
-console.log('###################')
-console.log('Build Integralmente')
-console.log('###################')
-execSync('yarn build', {
-    stdio: 'inherit'
-});
+if (args.buildFlag === 'true') {
+    console.log('')
+    console.log('###################')
+    console.log('Build Integralmente')
+    console.log('###################')
+    execSync('yarn build', {
+        stdio: 'inherit'
+    })
+}
 
-console.log('')
-console.log('##################')
-console.log('Deploy Firebase')
-console.log('##################')
-execSync('firebase deploy', {
-    stdio: 'inherit'
-});
+if (args.cloudFunction === 'true') {
+    console.log('')
+    console.log('##################')
+    console.log('Deploy to Firebase')
+    console.log('##################')
+    execSync('firebase deploy', {
+        stdio: 'inherit'
+    })
+}
 
-console.log('')
-console.log('##################')
-console.log('Sync Capacitor')
-console.log('##################')
-execSync('npx cap sync', {
-    stdio: 'inherit'
-});
+if (args.buildApk === 'true') {
+    console.log('')
+    console.log('##################')
+    console.log('Sync Capacitor')
+    console.log('##################')
+    execSync('npx cap sync', {
+        stdio: 'inherit'
+    })
 
-// console.log('')
-// console.log('##################')
-// console.log('Open Android')
-// console.log('##################')
-// execSync('npx cap open Android', {
-//     stdio: 'inherit'
-// });
+    console.log('')
+    console.log('##################')
+    console.log('Build APK')
+    console.log('##################')
+    
+    process.chdir('./android'); 
 
-console.log('')
-console.log('##################')
-console.log('Build APK')
-console.log('##################')
+    execSync('pwd', {
+        stdio: 'inherit'
+    })
 
-execSync('cd android', {
-    stdio: 'inherit'
-});
+    execSync('gradlew assembleDebug', {
+        stdio: 'inherit'
+    })
+    process.chdir('..'); 
 
-execSync('gradlew assembleDebug', {
-    stdio: 'inherit'
-});
-
-execSync('cd ..', {
-    stdio: 'inherit'
-});
-
-
-
-
-
-console.log('')
-console.log('######################')
-console.log('Upload to Google Drive')
-console.log('######################')
-const dest = '/Users/pablomassad/Google Drive/PP/P♡P/P&P Soft/Integralmente/' + 'IntegralMente.v' + version + '.apk'
-fs.copyFileSync('android/app/build/outputs/apk/debug/app-debug.apk', dest)
+    console.log('')
+    console.log('######################')
+    console.log('Upload to Google Drive')
+    console.log('######################')
+    const dest = '/Users/pablomassad/Google Drive/PP/P♡P/P&P Soft/Integralmente/' + 'IntegralMente.v' + args.version + '.apk'
+    fs.copyFileSync('android/app/build/outputs/apk/debug/app-debug.apk', dest)
+}
 
 
 console.log('')
