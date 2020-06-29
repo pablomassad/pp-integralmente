@@ -46,6 +46,12 @@ export default function App()
         history.push('/news')
     }
 
+    const redirect = () =>
+    {
+        console.log('redirect........')
+        history.replace('/')
+    }
+
     useEffect(() =>
     {
         console.log('setNewsCounter......')
@@ -73,16 +79,22 @@ export default function App()
 
     useEffect(() =>
     {
-        const logger = async (uInfo) =>
-        {
-            if (uInfo) {
-                if (uInfo.id) {
-                    console.log('LOG ENTER..........................................')
-                    await dispatch(bl.logEnterApp(uInfo))
-                }
-            }
+        console.log('userInfo:', userInfo)
+        if (userInfo === null) {
+            history.replace('/')
+            return
         }
-        logger(userInfo)
+
+        // const logger = async (uInfo) =>
+        // {
+        //     if (uInfo) {
+        //         if (uInfo.id) {
+        //             console.log('LOG ENTER..........................................')
+        //             await dispatch(bl.logEnterApp(uInfo))
+        //         }
+        //     }
+        // }
+        // logger(userInfo)
     }, [userInfo, dispatch])
 
     return (
@@ -115,8 +127,9 @@ export default function App()
                 <Route exact path="/occupation" component={Ocupacion} />
                 <Route exact path="/options" component={Opciones} />
                 <Route exact path="/feedback" component={Feedback} />
-                <Route>
-                    <h1>404</h1>
+                <Route >
+                    {() => redirect()}
+                    {/* <h1>404</h1> */}
                 </Route>
             </Switch>
             <Loader />

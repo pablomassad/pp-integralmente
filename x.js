@@ -28,7 +28,7 @@ if (!isNaN(ver)) {
     let strConfig = bufferConfig.toString()
     strConfig = strConfig.replace('N.N', args.version)
 
-    fs.writeFileSync(__dirname + '/src/.env', strConfig, err =>
+    fs.writeFileSync(__dirname + '/.env', strConfig, err =>
     {
         if (err == null)
             console.log('Archivo .env actualizado OK')

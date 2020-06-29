@@ -28,6 +28,7 @@ export default function Profile()
     const [fileInfo, setFileInfo] = useState()
     const [tmpFoto, setTmpFoto] = useState()
 
+
     const evalEdad = (nac) =>
     {
         const today = moment()

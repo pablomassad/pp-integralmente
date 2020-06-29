@@ -1,10 +1,10 @@
 import {handleActions} from 'redux-actions'
 import {ui} from './uiActions'
 
-console.log('uiReducer....')
+console.log('uiReducer....',process.env.REACT_APP_VERSION)
 
 const initialState = {
-    version: process.env.REACT_APP_version,
+    version: process.env.REACT_APP_VERSION,
     sidebarFlag: false,
     dirty:false,
     loading: false,
