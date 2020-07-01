@@ -10,11 +10,10 @@
 ⏰ Averiguar x link automatico a AFIP para facturacion
 ⏰ Averiguar x medio de pago Mercado Pago
 
-⏰ Arreglar FileUploader (espera FILE / CLOB y recibe string)
-⏰ Redireccionamiento a / cuando recarga pagina sin userInfo
 
 
-
+👍 Arreglar FileUploader (espera FILE / CLOB y recibe string)
+👍 Redireccionamiento a / cuando recarga pagina sin userInfo
 👍 Envio x mail integralmente@gmail.com x cumple a mail paciente
 👍 Boton + en facturas
 👍 Automatizacion de deploy script X
