@@ -112,16 +112,11 @@ export default function Facturas()
         e.preventDefault()
 
         if (fileInfo) {
-            // console.log('view PDF')
-            // fetch(f.url)
-            // 	.then(response => {
-            // 		response.blob().then(blob => {
             let url = window.URL.createObjectURL(fileInfo)
             let a = document.createElement('a')
             a.href = url
             a.download = fileInfo.name
             a.click()
-            //window.location.href = response.url;
         }
         else {
             if (selFactura.url) {
@@ -200,7 +195,7 @@ export default function Facturas()
                     console.log('nombre existente: ', selFactura.nombre)
                 }
 
-                const url = await dispatch(bl.uploadFileStorage('facturas', fileInfo))
+                const url = await dispatch(bl.uploadFileStorage(`facturas/${userInfo.id}`, fileInfo))
                 selFactura.url = url
                 selFactura.nombre = fileInfo.name
             }
@@ -352,7 +347,6 @@ export default function Facturas()
                                     <DatePicker
                                         placeholderText="Fecha de Emisión"
                                         dateFormat="dd-MM-yyyy"
-                                        maxDate={new Date()}
                                         selected={selFactura.fecha}
                                         onChange={e => updateSelFactura('fecha', e != null ? e.getTime() : null)}
                                         className="customDatePicker"
@@ -360,7 +354,6 @@ export default function Facturas()
                                     <DatePicker
                                         placeholderText="Fecha de Pago"
                                         dateFormat="dd-MM-yyyy"
-                                        maxDate={new Date()}
                                         selected={selFactura.fechaPago}
                                         onChange={e => updateSelFactura('fechaPago', e != null ? e.getTime() : null)}
                                         className="customDatePicker"
@@ -373,7 +366,7 @@ export default function Facturas()
                                         onChange={e => updateSelFactura('nro', e.target.value)}
                                     />
                                     <FacturaPDF>
-                                        <FileUploader onFileSelected={(data)=>setFileInfo(data)}> 
+                                        <FileUploader onFileSelected={(file)=>setFileInfo(file)}> 
                                             <GlassButton>
                                                 <IconUpload />
                                             </GlassButton>

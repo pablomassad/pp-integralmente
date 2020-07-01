@@ -14,7 +14,7 @@ import thunk from 'redux-thunk'
 
 console.log('store and reducers....')
 const rootReducer = combineReducers({fb, ui})
-const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk,logger)))
+const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)))
 
 // const store = createStore(rootReducer,{}, compose(
 //     applyMiddleware(thunk.withExtraArgument({getFirebase, getFirestore})),

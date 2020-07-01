@@ -65,7 +65,12 @@ export default function App()
     useEffect(
         () =>
         {
-            if (msgInfo) addToast(msgInfo.msg, {appearance: msgInfo.type, autoDismiss: true})
+            if (msgInfo) addToast(msgInfo.msg, {
+                appearance: msgInfo.type, 
+                autoDismiss: true, 
+                autoDismissTimeout:3000, 
+                transitionDuration:500,
+                placement:'bottom-center' })
         },
         [msgInfo, addToast]
     )
@@ -75,6 +80,9 @@ export default function App()
         dispatch(bl.getUsers())
         dispatch(bl.getAllNews())
         dispatch(bl.getAllPatients())
+        if (userInfo === null){
+            redirect()
+        }
     }, [dispatch])
 
     return (

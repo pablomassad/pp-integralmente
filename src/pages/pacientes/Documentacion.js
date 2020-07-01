@@ -63,7 +63,7 @@ export default function Documentacion()
             <Attachments>
                 {data.map((a, i) =>
                     <div>
-                        <FileUploader onFileSelected={(data)=>setFileInfo(data)}>
+                        <FileUploader onFileSelected={(file)=>setFileInfo(file)}>
                             <GlassButton height={40}>
                                 <IconUpload />
                             </GlassButton>

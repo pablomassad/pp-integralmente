@@ -51,59 +51,10 @@ export default function Ficha()
         newPat.uids[userInfo.id][field] = value
         setSelPatient(newPat)
     }
-    const onFileHandle = (data) =>
+    const onFileHandle = (file, data) =>
     {
-        console.log('size Image before:', getImageSize(data))
-        generateFromImage(data, 200, 200, 1, res =>
-        {
-            console.log('size Image after:', getImageSize(res))
-            setTmpFoto(res)
-            setFileInfo(res)
-        })
-    }
-    const generateFromImage = (img, MAX_WIDTH = 700, MAX_HEIGHT = 700, quality = .8, callback) =>
-    {
-        var canvas = document.createElement("canvas");
-        var image = new Image()
-
-        image.onerror = (err) =>
-        {
-            console.log('Error', err)
-        }
-        image.onload = () =>
-        {
-            var width = image.width;
-            var height = image.height;
-
-            if (width > height) {
-                if (width > MAX_WIDTH) {
-                    height *= MAX_WIDTH / width;
-                    width = MAX_WIDTH;
-                }
-            } else {
-                if (height > MAX_HEIGHT) {
-                    width *= MAX_HEIGHT / height;
-                    height = MAX_HEIGHT;
-                }
-            }
-            canvas.width = width;
-            canvas.height = height;
-            var ctx = canvas.getContext("2d");
-
-            ctx.drawImage(image, 0, 0, width, height);
-
-            // IMPORTANT: 'jpeg' NOT 'jpg'
-            var dataUrl = canvas.toDataURL('image/jpeg', quality);
-
-            callback(dataUrl)
-        }
-        image.src = img;
-    }
-    const getImageSize = (data) =>
-    {
-        var head = 'data:image/jpeg;base64'
-        var size = data.length - head.length * 3 / 4 / (1024 * 1024).toFixed(4)
-        return size
+        setTmpFoto(data)
+        setFileInfo(file)
     }
     const phoneTo = (field) =>
     {
@@ -130,7 +81,7 @@ export default function Ficha()
                     console.log('nombre existente: ', selPatient.foto)
                     //await dispatch(bl.deleteFileStorage(selPatient.id, selPatient.foto))
                 }
-                const url = await dispatch(bl.uploadPhotoStorage(pat.id, fileInfo, selPatient.id)) // res.id
+                const url = await dispatch(bl.uploadFileStorage(pat.id, fileInfo)) 
                 selPatient.foto = url
                 await dispatch(bl.updatePatient(selPatient))
             }
@@ -153,7 +104,7 @@ export default function Ficha()
     return (
         <Form>
             <Main>
-                <FileUploader onFileSelected={onFileHandle}>
+                <FileUploader onFileSelected={onFileHandle} photo>
                     <Avatar src={tmpFoto || selPatient.foto || anonymous} >
                     </Avatar>
                 </FileUploader>

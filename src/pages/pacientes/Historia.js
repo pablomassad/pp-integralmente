@@ -70,27 +70,6 @@ export default function Historia()
             ]
         })
     }
-    // const viewFactura = e =>
-    // {
-    //     e.stopPropagation()
-    //     e.preventDefault()
-
-    //     if (selFactura.url) {
-    //         window.open(selFactura.url, '_system', 'location=yes')
-    //     }
-    //     if (fileInfo) {
-    //         // console.log('view PDF')
-    //         // fetch(f.url)
-    //         // 	.then(response => {
-    //         // 		response.blob().then(blob => {
-    //         let url = window.URL.createObjectURL(fileInfo)
-    //         let a = document.createElement('a')
-    //         a.href = url
-    //         a.download = fileInfo.name
-    //         a.click()
-    //         //window.location.href = response.url;
-    //     }
-    // }
     const onSelSession = (e, s) =>
     {
         e.preventDefault()

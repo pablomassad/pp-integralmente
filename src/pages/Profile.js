@@ -47,59 +47,10 @@ export default function Profile()
         const newData = {...selUser, isAdmin: isAdmin}
         setSelUser(newData)
     }
-    const onFileHandle = (data) =>
+    const onFileHandle = (file, data) =>
     {
-        console.log('size Image before:', getImageSize(data))
-        generateFromImage(data, 300, 300, 1, res =>
-        {
-            console.log('size Image after:', getImageSize(res))
-            setTmpFoto(res)
-            setFileInfo(res)
-        })
-    }
-    const generateFromImage = (img, MAX_WIDTH = 700, MAX_HEIGHT = 700, quality = .8, callback) =>
-    {
-        var canvas = document.createElement("canvas");
-        var image = new Image()
-
-        image.onerror = (err) =>
-        {
-            console.log('Error', err)
-        }
-        image.onload = () =>
-        {
-            var width = image.width;
-            var height = image.height;
-
-            if (width > height) {
-                if (width > MAX_WIDTH) {
-                    height *= MAX_WIDTH / width;
-                    width = MAX_WIDTH;
-                }
-            } else {
-                if (height > MAX_HEIGHT) {
-                    width *= MAX_HEIGHT / height;
-                    height = MAX_HEIGHT;
-                }
-            }
-            canvas.width = width;
-            canvas.height = height;
-            var ctx = canvas.getContext("2d");
-
-            ctx.drawImage(image, 0, 0, width, height);
-
-            // IMPORTANT: 'jpeg' NOT 'jpg'
-            var dataUrl = canvas.toDataURL('image/jpeg', quality);
-
-            callback(dataUrl)
-        }
-        image.src = img;
-    }
-    const getImageSize = (data) =>
-    {
-        var head = 'data:image/jpeg;base64'
-        var size = data.length - head.length * 3 / 4 / (1024 * 1024).toFixed(4)
-        return size
+        setTmpFoto(data)
+        setFileInfo(file)
     }
     const resetPassword = (e) =>
     {
@@ -122,7 +73,7 @@ export default function Profile()
                     //    await dispatch(bl.deleteFileStorage('pacientes', selPatient.foto))
                     console.log('nombre existente: ', selUser.photoURL)
                 }
-                const url = await dispatch(bl.uploadPhotoStorage('avatars', fileInfo, selUser.id)) // res.id
+                const url = await dispatch(bl.uploadFileStorage('avatars', fileInfo))
                 selUser.photoURL = url
                 await dispatch(bl.updateUser(selUser))
             }
@@ -142,7 +93,7 @@ export default function Profile()
 
     return (
         <UserFrame>
-            <FileUploader onFileSelected={onFileHandle}>
+            <FileUploader onFileSelected={(file, data) => onFileHandle(file, data)} photo>
                 <Avatar src={tmpFoto || selUser.photoURL || anonymous} >
                 </Avatar>
             </FileUploader>

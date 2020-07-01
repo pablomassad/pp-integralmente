@@ -18,7 +18,7 @@ const getUsers = () => async dispatch =>
 }
 const updateUser = userInfo => async (dispatch) =>
 {
-    try {        
+    try {
         dispatch(ui.showLoader(true))
         await fbFs.doc(`users/${userInfo.id}`).set(userInfo, {merge: true})
         return userInfo
@@ -192,7 +192,7 @@ const initMobileNotifications = () => (dispatch, getState) =>
                 FCMPlugin.subscribeTo({topic: 'global'})
                     .then(r =>
                     {
-                       console.log('subcribed to GLOBAL ok')
+                        console.log('subcribed to GLOBAL ok')
                     })
                     .catch(err =>
                     {
@@ -409,7 +409,7 @@ const getSessionsByPatient = (patientId) => async (dispatch, getState) =>
 {
     dispatch(ui.showLoader(true))
     const userInfo = getState().fb.userInfo
-    const dsn = await fbFs.collection('pacientes').doc(patientId).collection('sesiones').where('uid','==',userInfo.id ).get()
+    const dsn = await fbFs.collection('pacientes').doc(patientId).collection('sesiones').where('uid', '==', userInfo.id).get()
     const sessions = dsn.docs.map(x =>
     {
         return {
@@ -667,7 +667,9 @@ const uploadFileStorage = (path, file) => async dispatch =>
     return new Promise((resolve, reject) =>
     {
         try {
-            const uploadTask = fbSto.ref(path + '/' + file.name).put(file)
+            const dest = path + '/' + file.name
+            console.log('uploading file:', dest)
+            const uploadTask = fbSto.ref(dest).put(file)
             uploadTask.on(
                 'state_changed',
                 snapshot =>
@@ -689,41 +691,11 @@ const uploadFileStorage = (path, file) => async dispatch =>
                 }
             )
         } catch (error) {
-            dispatch(ui.showLoader(false))
+            console.log('error uploading file:', error)
             reject()
         }
-    })
-}
-const uploadPhotoStorage = (path, file, name) => async (dispatch) =>
-{
-    dispatch(ui.showLoader(true))
-    return new Promise((resolve, reject) =>
-    {
-        try {
-            const uploadTask = fbSto.ref(path + '/' + name).putString(file, 'data_url')
-            uploadTask.on(
-                'state_changed',
-                snapshot =>
-                {
-                    console.log('progress', snapshot)
-                },
-                error =>
-                {
-                    console.log(error)
-                    dispatch(ui.showLoader(false))
-                    reject()
-                },
-                async () =>
-                {
-                    const url = await fbSto.ref(path).child(name).getDownloadURL()
-                    console.log('url file: ', url)
-                    dispatch(ui.showLoader(false))
-                    resolve(url)
-                }
-            )
-        } catch (error) {
+        finally {
             dispatch(ui.showLoader(false))
-            reject()
         }
     })
 }
@@ -855,7 +827,6 @@ export const bl = {
     removeAttachment,
     deleteFileStorage,
     uploadFileStorage,
-    uploadPhotoStorage,
     requestPermission,
     updateNewsRead,
     updateUser,

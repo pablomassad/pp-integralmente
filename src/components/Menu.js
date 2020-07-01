@@ -92,6 +92,7 @@ const Avatar = styled.img`
     margin-left:-20px;
 	width: 50px;
 	height: 50px;
+    object-fit: cover;
 	box-shadow: 1px 1px 3px black;
 `
 const MenuFrame = styled.div`

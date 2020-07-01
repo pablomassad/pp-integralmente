@@ -15,7 +15,7 @@ import * as serviceWorker from './serviceWorker'
 const nodes = (
     <Provider store={store}>
         <GlobalStyles />
-        <ToastProvider>
+        <ToastProvider placement="bottom-center">
             <Router>
                 <App />
             </Router>
