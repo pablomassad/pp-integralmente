@@ -26,7 +26,6 @@ export default function Profile()
     const userInfo = useSelector(st => st.fb.userInfo)
     const [selUser, setSelUser] = useState(userInfo)
     const [fileInfo, setFileInfo] = useState()
-    const [tmpFoto, setTmpFoto] = useState()
 
 
     const evalEdad = (nac) =>
@@ -47,10 +46,9 @@ export default function Profile()
         const newData = {...selUser, isAdmin: isAdmin}
         setSelUser(newData)
     }
-    const onFileHandle = (file, data) =>
+    const onFileHandle = (obj) =>
     {
-        setTmpFoto(data)
-        setFileInfo(file)
+        setFileInfo(obj)
     }
     const resetPassword = (e) =>
     {
@@ -73,7 +71,7 @@ export default function Profile()
                     //    await dispatch(bl.deleteFileStorage('pacientes', selPatient.foto))
                     console.log('nombre existente: ', selUser.photoURL)
                 }
-                const url = await dispatch(bl.uploadFileStorage('avatars', fileInfo))
+                const url = await dispatch(bl.uploadFileStorage('avatars', fileInfo.file))
                 selUser.photoURL = url
                 await dispatch(bl.updateUser(selUser))
             }
@@ -93,8 +91,8 @@ export default function Profile()
 
     return (
         <UserFrame>
-            <FileUploader onFileSelected={(file, data) => onFileHandle(file, data)} photo>
-                <Avatar src={tmpFoto || selUser.photoURL || anonymous} >
+            <FileUploader onFileSelected={onFileHandle} compressImage>
+                <Avatar src={(fileInfo&&fileInfo.dataUrl) || selUser.photoURL || anonymous} >
                 </Avatar>
             </FileUploader>
 

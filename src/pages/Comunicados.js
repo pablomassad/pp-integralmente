@@ -35,6 +35,7 @@ export default function Comunicados()
     const [url, setUrl] = useState()
     const [updateMode, setUpdateMode] = useState(false)
 
+    const webUrl = "https://pp-integralmente.web.app"
 
     const data = news
         .filter((s) => criteria.length < 3 || Object.keys(s).some((k) => `${s[k]}`.toLowerCase().includes(criteria.toLowerCase())))
@@ -105,7 +106,7 @@ export default function Comunicados()
             dispatch(ui.showMessage({msg: 'No se ha podido guardar el comunicado', type: 'error'}))
         }
     }
-    const onDownloadHandle = (e, link) =>
+    const onOpenLinkHandle = (e, link) =>
     {
         window.open(link)
     }
@@ -120,7 +121,8 @@ export default function Comunicados()
             displayName: userInfo.displayName,
             photo: userInfo.photoURL,
             fecha: new Date().getTime(),
-            description: `Ha salido la nueva version v${newVersion} de IntegralMente! Para actualizar desde un navegador, presione Control-F5`
+            description: `Ha salido la nueva version v${newVersion} de IntegralMente! Para actualizar desde un navegador, presione el botón de abajo y cuando cargue la página web presione Control-F5 para refrescar`,
+            webLink:webUrl
         }
         await dispatch(bl.updateNews(com1))
 
@@ -184,8 +186,11 @@ export default function Comunicados()
                                 <Observaciones>
                                     {s.description}
                                 </Observaciones>
+                                {s.webLink &&
+                                    <GlassButton onClick={(e) => onOpenLinkHandle(e, s.webLink)}>Presione para cargar sitio web</GlassButton>
+                                }                                
                                 {s.link &&
-                                    <GlassButton onClick={(e) => onDownloadHandle(e, s.link)}>Presione para bajar actualización</GlassButton>
+                                    <GlassButton onClick={(e) => onOpenLinkHandle(e, s.link)}>Presione para bajar actualización</GlassButton>
                                 }
                                 <Avatar src={s.photo || anonymous} />
                             </NewsCard>

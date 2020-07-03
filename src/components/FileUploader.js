@@ -1,6 +1,6 @@
 import React, {useRef} from 'react'
 
-export default function FileUploader({children, onFileSelected, photo})
+export default function FileUploader({children, onFileSelected, compressImage})
 {
     const inputFile = useRef()
 
@@ -12,24 +12,30 @@ export default function FileUploader({children, onFileSelected, photo})
     }
     const onChangeFile = origFile =>
     {
-        if (photo) {
-            var reader = new FileReader();
-            reader.onload = async (e) =>
-            {
-                const preData = e.target.result
-                console.log('size Image before:', getImageSize(preData))
-                generateFromImage(preData, 300, 300, 1, postData =>
+        const obj = {
+            file: origFile,
+            dataUrl: window.URL.createObjectURL(origFile),
+            data: null
+        }
+
+        var reader = new FileReader();
+        reader.onload = async (e) =>
+        {
+            obj.data = e.target.result
+            if (compressImage) {
+                console.log('size Image before:', getImageSize(obj.data))
+                generateFromImage(obj.data, 300, 300, 1, postData =>
                 {
-                    console.log('size Image after:', getImageSize(postData))
-                    onFileSelected(origFile, postData)
+                    obj.data = postData
+                    console.log('size Image after:', getImageSize(obj.data))
                 })
             }
-            reader.readAsDataURL(origFile)
+            onFileSelected(obj)
         }
-        else
-            onFileSelected(origFile)
+        reader.readAsDataURL(origFile)
         inputFile.current.id = new Date().getTime() // force re-render
     }
+
     const generateFromImage = (img, MAX_WIDTH = 700, MAX_HEIGHT = 700, quality = .8, callback) =>
     {
         var canvas = document.createElement("canvas");
@@ -63,7 +69,6 @@ export default function FileUploader({children, onFileSelected, photo})
 
             // IMPORTANT: 'jpeg' NOT 'jpg'
             var dataUrl = canvas.toDataURL('image/jpeg', quality);
-
             callback(dataUrl)
         }
         image.src = img;

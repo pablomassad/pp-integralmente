@@ -93,9 +93,6 @@ export default function Pacientes()
     useEffect(() =>
     {
         dispatch(ui.setTitle('Pacientes'))
-        // if (userInfo) {
-        //     dispatch(fb.setPatient(null))
-        // }
     }, [dispatch])
 
 

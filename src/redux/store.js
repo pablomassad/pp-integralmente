@@ -4,7 +4,7 @@ import fb from './reducers/fbReducer'
 import ui from './reducers/uiReducer'
 
 import {composeWithDevTools} from 'redux-devtools-extension'
-import {logger} from 'redux-logger'
+// import {logger} from 'redux-logger'
 import thunk from 'redux-thunk'
 
 // import {reduxFirestore, getFirestore} from 'redux-firestore'

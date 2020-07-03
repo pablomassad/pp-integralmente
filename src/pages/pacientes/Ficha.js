@@ -5,7 +5,7 @@ import {Mail} from '@styled-icons/entypo/Mail'
 
 import {useHistory} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
-import {bl, ui} from '../../redux'
+import {bl, fb, ui} from '../../redux'
 import anonymous from '../../assets/images/anonymous.png'
 
 import moment from 'moment'
@@ -26,7 +26,6 @@ export default function Ficha()
     const [fileInfo, setFileInfo] = useState()
 
     const [selPatient, setSelPatient] = useState(origPatient)
-    const [tmpFoto, setTmpFoto] = useState()
 
     const evalEdad = (nac) =>
     {
@@ -51,10 +50,9 @@ export default function Ficha()
         newPat.uids[userInfo.id][field] = value
         setSelPatient(newPat)
     }
-    const onFileHandle = (file, data) =>
+    const onFileHandle = (obj) =>
     {
-        setTmpFoto(data)
-        setFileInfo(file)
+        setFileInfo(obj)
     }
     const phoneTo = (field) =>
     {
@@ -81,10 +79,10 @@ export default function Ficha()
                     console.log('nombre existente: ', selPatient.foto)
                     //await dispatch(bl.deleteFileStorage(selPatient.id, selPatient.foto))
                 }
-                const url = await dispatch(bl.uploadFileStorage(pat.id, fileInfo)) 
+                const url = await dispatch(bl.uploadFileStorage(pat.id, fileInfo.file))
                 selPatient.foto = url
-                await dispatch(bl.updatePatient(selPatient))
             }
+            await dispatch(fb.setPatient(pat))
             console.log('updated Patient: ', selPatient)
             dispatch(ui.showMessage({msg: 'Paciente guardado', type: 'success'}))
             setFileInfo(undefined)
@@ -104,8 +102,8 @@ export default function Ficha()
     return (
         <Form>
             <Main>
-                <FileUploader onFileSelected={onFileHandle} photo>
-                    <Avatar src={tmpFoto || selPatient.foto || anonymous} >
+                <FileUploader onFileSelected={onFileHandle} compressImage>
+                    <Avatar src={(fileInfo && fileInfo.dataUrl) || selPatient.foto || anonymous} >
                     </Avatar>
                 </FileUploader>
                 <FullName>

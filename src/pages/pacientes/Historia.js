@@ -107,9 +107,9 @@ export default function Historia()
                 console.log('nombre existente: ', selSession.nombre)
             }
 
-            const url = await dispatch(bl.uploadFileStorage('sesiones', fileInfo))
+            const url = await dispatch(bl.uploadFileStorage('sesiones', fileInfo.file))
             selSession.url = url
-            selSession.nombre = fileInfo.name
+            selSession.nombre = fileInfo.file.name
         }
         console.log('updated Session: ', selSession)
         const res = await dispatch(bl.updateSession(selPatient.id, selSession))

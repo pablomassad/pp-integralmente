@@ -112,10 +112,9 @@ export default function Facturas()
         e.preventDefault()
 
         if (fileInfo) {
-            let url = window.URL.createObjectURL(fileInfo)
             let a = document.createElement('a')
-            a.href = url
-            a.download = fileInfo.name
+            a.href = fileInfo.dataUrl
+            a.download = fileInfo.file.name
             a.click()
         }
         else {
@@ -131,6 +130,9 @@ export default function Facturas()
         const newBill = {...f}
         console.log('onSelFactura', newBill)
         setSelFactura(newBill)
+    }
+    const onFileHandle = (obj)=>{
+        setFileInfo(obj)
     }
     const updateSelFactura = (field, value) =>
     {
@@ -195,9 +197,9 @@ export default function Facturas()
                     console.log('nombre existente: ', selFactura.nombre)
                 }
 
-                const url = await dispatch(bl.uploadFileStorage(`facturas/${userInfo.id}`, fileInfo))
+                const url = await dispatch(bl.uploadFileStorage(`facturas/${userInfo.id}`, fileInfo.file))
                 selFactura.url = url
-                selFactura.nombre = fileInfo.name
+                selFactura.nombre = fileInfo.file.name
             }
             console.log('updated Factura: ', selFactura)
             const res = await dispatch(bl.updateFactura(selFactura))
@@ -366,7 +368,7 @@ export default function Facturas()
                                         onChange={e => updateSelFactura('nro', e.target.value)}
                                     />
                                     <FacturaPDF>
-                                        <FileUploader onFileSelected={(file)=>setFileInfo(file)}> 
+                                        <FileUploader onFileSelected={onFileHandle}> 
                                             <GlassButton>
                                                 <IconUpload />
                                             </GlassButton>

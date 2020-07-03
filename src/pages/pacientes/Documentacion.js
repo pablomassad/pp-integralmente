@@ -47,6 +47,9 @@ export default function Documentacion()
             ]
         })
     }
+    const onFileHandle = (obj)=>{
+        setFileInfo(obj)
+    }
 
     useEffect(() =>
     {
@@ -63,7 +66,7 @@ export default function Documentacion()
             <Attachments>
                 {data.map((a, i) =>
                     <div>
-                        <FileUploader onFileSelected={(file)=>setFileInfo(file)}>
+                        <FileUploader onFileSelected={onFileHandle}>
                             <GlassButton height={40}>
                                 <IconUpload />
                             </GlassButton>
