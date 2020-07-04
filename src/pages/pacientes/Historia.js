@@ -256,13 +256,13 @@ const SessionHeader = styled.div`
 `
 const SessionList = styled.div`
     --id:SessionList;
-    background:white;
+    background:lightgray;
 	overflow: auto;
 	height: calc(100vh - 230px);
 `
 const SessionCard = styled.div`
     --id: SessionCard;
-    background: #c1c0c0;
+    background: #bbb;
     padding: 8px 8px;
     border-radius: 5px;
     margin: 7px;
@@ -276,7 +276,7 @@ const SessionForm = styled.div`
     grid-template-columns: 1fr 1fr;
     align-items: center;
     padding: 10px;
-    background: lightgray;
+    background: #bbb;
     margin: 20px 7px;
     box-shadow: inset 2px 2px 5px #555;
     border-radius: 5px;

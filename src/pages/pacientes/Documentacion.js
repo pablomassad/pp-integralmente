@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import styled from 'styled-components'
 
-import {IconRemove} from '../../global-styles'
+import {Cancel} from '@styled-icons/material-outlined/Cancel'
 import {FileUpload} from '@styled-icons/fa-solid/FileUpload'
 import generic from '../../assets/images/attachment.jpg'
 
@@ -25,7 +25,7 @@ export default function Documentacion()
     const userInfo = useSelector(st => st.fb.userInfo)
     const selPatient = useSelector(st => st.fb.selPatient)
 
-    const removeAttachmentHandle = (e,att) =>
+    const removeAttachmentHandle = (e, att) =>
     {
         e.stopPropagation()
         e.preventDefault()
@@ -48,17 +48,15 @@ export default function Documentacion()
     const getExtension = (fn) =>
     {
         const idx = fn.lastIndexOf('.')
-        const ext = (idx !== -1)?fn.subStr(idx):''
+        const ext = (idx !== -1) ? fn.substring(idx+1) : ''
+        console.log('extension:', ext)
         return ext
     }
-    const onFileHandle = async (e,obj) =>
+    const onFileHandle = async (obj) =>
     {
-        e.stopPropagation()
-        e.preventDefault()
-        
         const attUrl = await dispatch(bl.uploadFileStorage(selPatient.id, obj.file))
         const attachment = {
-            id: new Date().getTime(),
+            id: new Date().getTime().toString(),
             extension: getExtension(obj.file.name),
             nombre: obj.file.name,
             uid: userInfo.id,
@@ -90,39 +88,46 @@ export default function Documentacion()
             </SessionHeader>
             <Attachments>
                 {data.map((a, i) =>
-                    <AttachmentFrame>
+                    <AttachmentFrame key={i}>
                         <GrdAtt>
-                            <Picture src={isImage(a.ext) ? a.url : generic} onClick={() => downloadHandle(a.url)}></Picture>
+                            <Picture src={isImage(a.extension) ? a.url : generic} onClick={() => downloadHandle(a.url)}></Picture>
                             <Footer>{a.nombre}</Footer>
-                            <Footer>{moment(a.id).format('YY-MM-DD HH:mm')}</Footer>
+                            <Footer>{moment(Number(a.id)).format('YY-MM-DD HH:mm')}</Footer>
                         </GrdAtt>
-                        <IconRemove onClick={(e) => removeAttachmentHandle(e, a)} />
+                        <IconDelete onClick={(e) => removeAttachmentHandle(e, a)} />
                     </AttachmentFrame>
                 )}
-                <GlassButton
-                    fixed
-                    right={5}
-                    bottom={5}
-                    width={50}
-                    height={50}
-                    radius={50}>
-                    <FileUploader onFileSelected={(e,obj)=>onFileHandle(e,obj)}>
+                <FileUploader onFileSelected={onFileHandle}>
+                    <GlassButton
+                        fixed
+                        right={5}
+                        bottom={5}
+                        width={50}
+                        height={50}
+                        radius={50}>
                         <IconUpload />
-                    </FileUploader>
-                </GlassButton>
+                    </GlassButton>
+                </FileUploader>
             </Attachments >
         </Frame >
     )
 }
 
 const Frame = styled.div`
+    --id:Frame;
+    overflow: auto;
+	height: calc(100vh - 135px);
 `
 const AttachmentFrame = styled.div`
+    --id:AttachmentFrame;
     box-shadow:1px 1px 3px black;
     border-radius:10px;
     background:lightgray;
     padding:5px;
     margin:5px;
+    width:150px;
+    height:190px;
+    position:relative;
 `
 const SessionHeader = styled.div`
 	--id:SessionHeader;
@@ -142,19 +147,34 @@ const Attachments = styled.div`
     align-items: center;
 `
 const GrdAtt = styled.div`
+    --id:GrdAtt;
     display:grid;
-    grid-template-rows:1fr 30px 30px;
+    grid-template-rows:1fr 20px 20px;
     justify-items:center;
 `
 const IconUpload = styled(FileUpload)`
+    --id:IconUpload;
     width: 14px;
     color: white;
     padding-top: 3px;
 `
 const Picture = styled.img`
+    --id:Picture;
+    width:100%;
+    height: 150px;
     border-radius:10px;
     border:1px solid black;
+    object-fit: cover;
 `
 const Footer = styled.div`
-
+    --id:Footer;
+    font-size:12px;
+`
+const IconDelete = styled(Cancel)`
+    --id:IconDelete;
+    bottom: -1px;
+    position: absolute;
+    color: black;
+    width: 25px;
+    right: -1px;
 `
