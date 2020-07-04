@@ -394,13 +394,21 @@ const getAttachmentsByPatient = (patientId) => async (dispatch) =>
     dispatch(ui.showLoader(false))
     return true
 }
-const addAttachmentByPatient = (patientId, attachment) => (dispatch) =>
+const addAttachmentByPatient = (patientId, attachment) => async (dispatch) =>
 {
-
+    dispatch(ui.showLoader(true))
+    await fbFs.collection('pacientes/'+ patientId + '/adjuntos').doc(attachment.id).set(attachment)
+    dispatch(ui.showLoader(false))
+    dispatch(getAttachmentsByPatient(patientId))
+    return true
 }
-const removeAttachment = (attachmentId) => (dispatch) =>
+const removeAttachment = (patientId, attachmentId) => async (dispatch) =>
 {
-
+    dispatch(ui.showLoader(true))
+    await fbFs.collection('pacientes/' + patientId + '/adjuntos').doc(attachmentId).delete()
+    dispatch(ui.showLoader(false))
+    dispatch(getAttachmentsByPatient(patientId))
+    return true
 }
 
 

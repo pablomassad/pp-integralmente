@@ -46,11 +46,11 @@ export default function App()
         history.push('/news')
     }
 
-    const redirect = () =>
+    const redirect = React.useCallback(() => 
     {
         console.log('redirect........')
         history.replace('/')
-    }
+    },[history])
 
     useEffect(() =>
     {
@@ -83,7 +83,7 @@ export default function App()
         if (userInfo === null){
             redirect()
         }
-    }, [dispatch])
+    }, [dispatch, redirect, userInfo])
 
     return (
         <>
