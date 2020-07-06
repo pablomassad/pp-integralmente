@@ -60,12 +60,22 @@ export default function Facturas()
         {
             const d1 = f1[selField.value]
             const d2 = f2[selField.value]
-            if (typeof d1 === 'number') {
-                return selDirection === 'asc' ? d1 - d2 : d2 - d1;
-            }
+
             const s1 = `${d1}`;
             const s2 = `${d2}`;
-            return selDirection === 'asc' ? s1.localeCompare(s2) : s2.localeCompare(s1);
+            const flag = (selDirection) === 'asc' ? s1.localeCompare(s2) : s2.localeCompare(s1);
+
+            if (selField.value === 'fecha') {
+                const flagNro = (selDirection === 'asc') ? f1['nro'] - f2['nro'] : f2['nro'] - f1['nro'];
+                const multiFlag = (flag || flagNro)
+                return multiFlag
+            }
+
+            if (typeof d1 === 'number') {
+                const flag = (selDirection === 'asc') ? d1 - d2 : d2 - d1;
+                return flag
+            }
+            return flag
         });
 
     const dataAndNew = (selFactura?.id === 0 ? [selFactura] : []).concat(data)
@@ -131,7 +141,8 @@ export default function Facturas()
         console.log('onSelFactura', newBill)
         setSelFactura(newBill)
     }
-    const onFileHandle = (obj)=>{
+    const onFileHandle = (obj) =>
+    {
         setFileInfo(obj)
     }
     const updateSelFactura = (field, value) =>
@@ -368,7 +379,7 @@ export default function Facturas()
                                         onChange={e => updateSelFactura('nro', e.target.value)}
                                     />
                                     <FacturaPDF>
-                                        <FileUploader onFileSelected={onFileHandle}> 
+                                        <FileUploader onFileSelected={onFileHandle}>
                                             <GlassButton>
                                                 <IconUpload />
                                             </GlassButton>
@@ -462,7 +473,7 @@ const FactHeader = styled.div`
 	font-size: 19px;
 	color: black;
 	display: grid;
-	grid-template-columns: 95px 1fr 150px 40px;
+	grid-template-columns: 90px 1fr 150px 40px;
 	align-items: center;
 	/* justify-content: center; */
 `
