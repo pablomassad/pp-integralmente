@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, lazy, Suspense} from 'react'
 import styled from 'styled-components'
 import logo from './assets/images/integralmenteET.png'
 import anonymous from './assets/images/anonymous.png'
@@ -9,23 +9,24 @@ import {useToasts} from 'react-toast-notifications'
 import {useDispatch, useSelector, shallowEqual} from 'react-redux'
 import {bl} from './redux'
 
-import SignUp from './pages/SignUp'
-import SignIn from "./pages/SignIn";
-import Profile from "./pages/Profile";
-import PasswordReset from "./pages/PasswordReset";
-import Menu from './components/Menu'
-import Loader from './common/Loader'
+const Menu = lazy(()=>import("./components/Menu"))
+const Loader = lazy(()=>import("./common/Loader"))
 
-import Ficha from './pages/pacientes/Ficha'
-import Paciente from './pages/pacientes/Paciente'
-import Pacientes from './pages/pacientes/Pacientes'
-import Facturas from './pages/Facturas'
-import Estadisticas from './pages/Estadisticas'
-import Opciones from './pages/Opciones'
-import Agenda from './pages/Agenda'
-import Comunicados from './pages/Comunicados'
-import Ocupacion from './pages/Ocupacion'
-import Feedback from './pages/Feedback'
+const SignUp = lazy(()=>import("./pages/SignUp"))
+const SignIn = lazy(()=>import("./pages/SignIn"))
+const Profile = lazy(()=>import("./pages/Profile"))
+const PasswordReset = lazy(()=>import("./pages/PasswordReset"))
+const Ficha = lazy(()=>import("./pages/pacientes/Ficha"))
+const Paciente = lazy(()=>import("./pages/pacientes/Paciente"))
+const Pacientes = lazy(()=>import("./pages/pacientes/Pacientes"))
+const Facturas = lazy(()=>import("./pages/Facturas"))
+const Estadisticas = lazy(()=>import("./pages/Estadisticas"))
+const Opciones = lazy(()=>import("./pages/Opciones"))
+const Agenda = lazy(()=>import("./pages/Agenda"))
+const Comunicados = lazy(()=>import("./pages/Comunicados"))
+const Ocupacion = lazy(()=>import("./pages/Ocupacion"))
+const Feedback = lazy(()=>import("./pages/Feedback"))
+
 
 export default function App()
 {
@@ -86,7 +87,7 @@ export default function App()
     }, [dispatch, redirect, userInfo])
 
     return (
-        <>
+        <Suspense fallback={<div>cargando....</div>}>
             {userInfo
                 ? <Navbar>
                     <Menu />
@@ -120,7 +121,7 @@ export default function App()
                 </Route>
             </Switch>
             <Loader />
-        </>
+        </Suspense>
     )
 }
 

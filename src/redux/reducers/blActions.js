@@ -236,7 +236,7 @@ const initMobileNotifications = () => (dispatch, getState) =>
         {
             // alert('Push registration success, token: ' + tk.value)
             dispatch(fb.setToken({webToken: tk.value}))
-            // Enviar token a Firebase 
+            // Enviar token a Firebase
         })
 
         // Some issue with your setup and push will not work
@@ -519,17 +519,27 @@ const getStatistics = () => async (dispatch, getState) =>
 {
     dispatch(ui.showLoader(true))
     const userInfo = getState().fb.userInfo
-    await updateStatistics(userInfo.id)
-    const dsn = await fbFs.collection('historial').doc(userInfo.id).collection('facturacion').get()
-    const stats = dsn.docs.map(x =>
-    {
-        return {
-            ...x.data(),
+    const fac = await updateStatistics(userInfo.id)
+    const stats = []
+    Object.keys(fac).forEach(id=>{
+      const o =   {
+            ...fac[id],
             ...{
-                id: convertToDate(x.id) //moment(x.id, "YYMM").toDate() //x.id
+                id: convertToDate(id) //moment(x.id, "YYMM").toDate() //x.id
             }
         }
+      stats.push(o)
     })
+    //const dsn = await fbFs.collection('historial').doc(userInfo.id).collection('facturacion').get()
+    // const stats = fac.map(x=> //dsn.docs.map(x =>
+    // {
+    //     return {
+    //         ...x.data(),
+    //         ...{
+    //             id: convertToDate(x.id) //moment(x.id, "YYMM").toDate() //x.id
+    //         }
+    //     }
+    // })
     dispatch(fb.setStats({stats}))
     dispatch(ui.showLoader(false))
     return true
@@ -768,21 +778,23 @@ const updateStatistics = async (uid) =>
 
     let fac = {}
     for (let f of facturas) {
-        const grp = moment(f.fecha).format('YYMM')
         const monto = Number.parseInt(f.monto)
-
+        const grp = moment(f.fecha).format('YYMM')
         if (!fac[grp])
             fac[grp] = {}
-
-        if ((f.estado === 'Cobrada') || (f.fechaPago)) {
-            if (!fac[grp].cobradas)
-                fac[grp].cobradas = 0
-            fac[grp].cobradas += monto
-        }
-
         if (!fac[grp].facturadas)
             fac[grp].facturadas = 0
         fac[grp].facturadas += monto
+
+        //if ((f.estado === 'Cobrada') || (f.fechaPago)) {
+        if (f.fechaPago) {
+            const grpCob = moment(f.fechaPago).format('YYMM')
+            if (!fac[grpCob])
+              fac[grpCob] = {}
+            if (!fac[grpCob].cobradas)
+                fac[grpCob].cobradas = 0
+            fac[grpCob].cobradas += monto
+        }
     }
 
     let totalPend = 0
@@ -797,14 +809,15 @@ const updateStatistics = async (uid) =>
         totalPend = fac[grp].pendientes
     }
 
-    var facIds = Object.keys(fac)
-    facIds.forEach(async (id) =>
-    {
-        console.log("yymm", id);
-        console.log('fac', fac[id])
+    // var facIds = Object.keys(fac)
+    // facIds.forEach(async (id) =>
+    // {
+    //     console.log("yymm", id);
+    //     console.log('fac', fac[id])
+    //     await fbFs.collection("historial").doc(uid).collection("facturacion").doc(id).set(fac[id], {merge: true})
+    // })
 
-        await fbFs.collection("historial").doc(uid).collection("facturacion").doc(id).set(fac[id], {merge: true})
-    })
+    return fac
 }
 
 

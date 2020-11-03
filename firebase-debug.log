@@ -1,0 +1,20 @@
+[debug] [2020-11-03T12:41:27.296Z] ----------------------------------------------------------------------
+[debug] [2020-11-03T12:41:27.297Z] Command:       /usr/local/bin/firebase /Users/pablomassad/.cache/firebase/tools/lib/node_modules/firebase-tools/lib/bin/firebase deploy
+[debug] [2020-11-03T12:41:27.297Z] CLI Version:   8.9.0
+[debug] [2020-11-03T12:41:27.297Z] Platform:      darwin
+[debug] [2020-11-03T12:41:27.298Z] Node Version:  v12.18.1
+[debug] [2020-11-03T12:41:27.298Z] Time:          Tue Nov 03 2020 09:41:27 GMT-0300 (Argentina Standard Time)
+[debug] [2020-11-03T12:41:27.298Z] ----------------------------------------------------------------------
+[debug] [2020-11-03T12:41:27.298Z] 
+[debug] [2020-11-03T12:41:27.308Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-11-03T12:41:27.309Z] > authorizing via signed-in user
+[debug] [2020-11-03T12:41:27.309Z] [iam] checking project pp-integralmente for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-11-03T12:41:27.311Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/pp-integralmente:testIamPermissions  
+ {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-11-03T12:41:28.566Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 03 Nov 2020 12:41:28 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=960","alt-svc":"h3-Q050=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-11-03T12:41:28.567Z] >>> HTTP REQUEST POST https://iam.googleapis.com/v1/projects/pp-integralmente/serviceAccounts/pp-integralmente@appspot.gserviceaccount.com:testIamPermissions  
+ {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2020-11-03T12:41:29.665Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 03 Nov 2020 12:41:29 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-Q050=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-11-03T12:41:29.666Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/pp-integralmente  
+ 
+[debug] [2020-11-03T12:41:30.200Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 03 Nov 2020 12:41:30 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-Q050=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}

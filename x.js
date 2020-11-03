@@ -1,7 +1,6 @@
 const fs = require('fs')
 const execSync = require('child_process').execSync;
 const minimist = require('minimist')
-var exec = require('child_process').exec;
 
 const args = minimist(process.argv.slice(2), {
     default: {
@@ -70,17 +69,17 @@ if (args.buildApk === 'true') {
     console.log('##################')
     console.log('Build APK')
     console.log('##################')
-    
-    process.chdir('./android'); 
+
+    process.chdir('./android');
 
     execSync('pwd', {
         stdio: 'inherit'
     })
 
-    execSync('gradlew assembleDebug', {
+    execSync('./android/gradlew assembleDebug', {
         stdio: 'inherit'
     })
-    process.chdir('..'); 
+    process.chdir('..');
 
     console.log('')
     console.log('######################')
