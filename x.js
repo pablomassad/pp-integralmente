@@ -76,7 +76,7 @@ if (args.buildApk === 'true') {
         stdio: 'inherit'
     })
 
-    execSync('./android/gradlew assembleDebug', {
+    execSync('./gradlew assembleDebug', {
         stdio: 'inherit'
     })
     process.chdir('..');
