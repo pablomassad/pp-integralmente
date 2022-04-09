@@ -72,6 +72,9 @@ export default function Ficha()
         // if (selPatient.id === 0){
         //     selPatient.uids[userInfo.id].photoURL = userInfo.photoURL
         // }
+        if (!selPatient.activo)
+            selPatient.activo = true
+
         const pat = await dispatch(bl.updatePatient(selPatient))
         if (pat) {
             if (fileInfo) {

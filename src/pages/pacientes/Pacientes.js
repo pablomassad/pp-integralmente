@@ -40,9 +40,10 @@ export default function Pacientes()
     const patients = useSelector(st => st.fb.allPatients.filter(x => x.uids[userInfo.id]))
 
     const [criteria, setCriteria] = useState('')
+    const [viewAll, setViewAll] = useState(false)
 
     const data = patients
-        .filter((f) => criteria.length < 2 || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase())))
+        .filter((f) => ((criteria.length < 2) || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase()))) && ((!viewAll && f.activo)||viewAll))
         .sort((f1, f2) =>
         {
             const d1 = f1['apellido']
@@ -69,7 +70,7 @@ export default function Pacientes()
         e.preventDefault()
 
         confirmAlert({
-            title: 'Borrar paciente',
+            title: 'Desactivar/activar paciente',
             message: 'Esta seguro?',
             buttons: [
                 {
@@ -89,6 +90,10 @@ export default function Pacientes()
         history.push(`/patient`)
         // history.push(`/patient/${patient.id}`)
     }
+    const switchPatients = () =>
+    {
+        setViewAll(!viewAll)
+    }
 
     useEffect(() =>
     {
@@ -99,7 +104,7 @@ export default function Pacientes()
     return (
         <PatientsFrame>
             <PatientFilter>
-                <IconPerson />
+                <IconPerson color={viewAll?'#007ac3':'gray'} onClick={switchPatients}/>
                 <Criteria
                     type="text"
                     placeholder="Ingrese datos paciente"
@@ -162,7 +167,7 @@ const PatientFilter = styled.div`
     box-shadow: 0 1px 3px black;
 `
 const IconPerson = styled(PersonPin)`
-    color: gray;
+    color: ${props => (props.color) ? props.color : 'gray'};
     width: 35px;
     margin: 10px;
 `

@@ -334,15 +334,17 @@ const updatePatient = patient => async (dispatch, getState) =>
 }
 const removePatient = (patient, uid) => async (dispatch) =>
 {
-    // elimina sesiones del paciente
-
-    // elimina adjuntos del paciente
-
-    delete patient.uids[uid]
+    patient.activo = !patient.activo
     await fbFs.collection('pacientes').doc(patient.id).set(patient)
 
-    if (Object.keys(patient.uids).length === 0)
-        await fbFs.collection('pacientes').doc(patient.id).delete()
+    // elimina sesiones del paciente
+    // elimina adjuntos del paciente
+
+    // delete patient.uids[uid]
+    // await fbFs.collection('pacientes').doc(patient.id).set(patient)
+
+    // if (Object.keys(patient.uids).length === 0)
+    //     await fbFs.collection('pacientes').doc(patient.id).delete()
 
     dispatch(getAllPatients())
     dispatch(fb.setPatient(null))
