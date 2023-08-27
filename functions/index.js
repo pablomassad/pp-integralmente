@@ -28,6 +28,21 @@ const afs = admin.firestore()
 //     // });
 // });
 
+exports.ring = functions.https.onRequest((request, response) =>
+{
+    // Allow requests from any origin
+    request.set('Access-Control-Allow-Origin', '*');
+    // Set other CORS headers as needed
+    request.set('Access-Control-Allow-Methods', 'GET, POST');
+    request.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    //console.log('request.body:', request.body["topic"])
+    const topic = request.query.topic
+    console.log('topic:', topic)
+    ring(topic)
+    response.send("Han tocado timbre en INTEGRALMENTE para: " + topic);
+})
+
 exports.happyBirthday = functions.https.onRequest((request, response) =>
 {
     fcmPush('YBHqrkv2VBS5VAJuWweey1TO8zf2', 'Pablito')
@@ -104,7 +119,20 @@ exports.evalCumples = functions.https.onRequest(async (request, response) =>
     response.send('total: ' + rta + ' ==> fecha:' + today + ' cumples hoy: ' + birthdaysToday + ' errors: ' + birthdaysErrors)
 })
 
-
+async function ring( topic)
+{
+    try {
+        const payload = {
+            data: {id:"1604"},
+            topic:topic
+        };
+        await admin.messaging().send(payload)
+        console.log('Msg sent ok to topic => pl:' + JSON.stringify(payload))
+    }
+    catch (err) {
+        console.log('Error sending msg:', err)
+    }
+}
 
 async function fcmPush(target, noti)
 {
@@ -140,7 +168,7 @@ async function sendMailTo(mail, person)
         {
             console.log('mailTo: ' + mail + ' => ' + person)
             const mailOptions = {
-                //from: 'IntegralMente <integralmenteespacioterapeutic@gmail.com>', 
+                //from: 'IntegralMente <integralmenteespacioterapeutic@gmail.com>',
                 from: 'integralmenteespacioterapeutic@gmail.com',
                 to: mail,
                 subject: 'Feliz cumpleaños!!!',
