@@ -4,6 +4,8 @@ import {IconRemove} from '../../global-styles'
 import {PersonPin} from '@styled-icons/material-rounded/PersonPin'
 import GlassButton from '../../common/GlassButton'
 
+import Switch from 'react-switch'
+
 import {useHistory} from 'react-router-dom'
 
 import anonymous from '../../assets/images/anonymous.png'
@@ -39,11 +41,13 @@ export default function Pacientes()
     const userInfo = useSelector(st => st.fb.userInfo)
     const patients = useSelector(st => st.fb.allPatients.filter(x => x.uids[userInfo.id]))
 
+    const [selEstado, setSelEstado] = useState('Pasivo')
     const [criteria, setCriteria] = useState('')
     const [viewAll, setViewAll] = useState(false)
 
-    const data = patients
-        .filter((f) => ((criteria.length < 2) || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase()))) && ((!viewAll && f.activo)||viewAll))
+    const data = patients //&& ((!viewAll && f.activo)||viewAll)
+        .filter((f) => ((criteria.length < 2) || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase()))) )
+        .filter((f) => (f.fin&&(selEstado==='Pasivo')) || (!f.fin&&(selEstado==='Activo')))
         .sort((f1, f2) =>
         {
             const d1 = f1['apellido']
@@ -63,6 +67,11 @@ export default function Pacientes()
         const cumple = moment(nac)
         const edad = today.diff(cumple, 'y')
         return edad + " años"
+    }
+    const onChangeState = e =>
+    {
+        const newState = e ? 'Activo' : 'Pasivo'
+        setSelEstado(newState)
     }
     const removePatient = (e, p) =>
     {
@@ -104,12 +113,54 @@ export default function Pacientes()
     return (
         <PatientsFrame>
             <PatientFilter>
-                <IconPerson color={viewAll?'#007ac3':'gray'} onClick={switchPatients}/>
+                {/* <IconPerson color={viewAll?'#007ac3':'gray'} onClick={switchPatients}/> */}
                 <Criteria
                     type="text"
                     placeholder="Ingrese datos paciente"
                     value={criteria}
                     onChange={e => setCriteria(e.target.value)}
+                />
+                <Switch
+                    onChange={onChangeState}
+                    className="react-switch"
+                    id="icon-switch2"
+                    checked={selEstado === 'Activo'}
+                    handleDiameter={25}
+                    offColor="#d00"
+                    onColor="#3a3"
+                    offHandleColor="#fff"
+                    onHandleColor="#fff"
+                    height={30}
+                    width={60}
+                    uncheckedIcon={
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                height: '100%',
+                                fontSize: 15,
+                                color: 'white',
+                                paddingRight: 2,
+                                textShadow: '1px 1px 1px black'
+                            }}>
+                            P
+						</div>
+                    }
+                    checkedIcon={
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                height: '100%',
+                                fontSize: 15,
+                                color: 'white',
+                                textShadow: '1px 1px 1px black'
+                            }}>
+                            A
+						</div>
+                    }
                 />
                 <Total>
                     Total: {data.length}
@@ -162,7 +213,7 @@ const PatientFilter = styled.div`
     --id:PatientFilter;
     background:#ccc;
     display:grid;
-    grid-template-columns:50px 1fr 75px;
+    grid-template-columns: 1fr 80px 75px;
     align-items:center;
     box-shadow: 0 1px 3px black;
 `

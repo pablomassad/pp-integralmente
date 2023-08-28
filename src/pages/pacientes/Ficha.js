@@ -138,6 +138,38 @@ export default function Ficha()
                 <UserInput type="text" placeholder="Obra social" value={selPatient.obrasocial || ''} name="obrasocial" onChange={e => updateSelPatient('obrasocial', e.target.value)} />
                 <UserInput type="number" placeholder="Nro.Afiliado" value={selPatient.afiliado || ''} name="afiliado" onChange={e => updateSelPatient('afiliado', e.target.value)} />
                 <UserInput type="text" placeholder="Diagnóstico" value={selPatient.uids[userInfo.id].diagnostico || ''} name="diagnostico" onChange={e => updateUserSelPatient(`diagnostico`, e.target.value)} />
+                <DatePicker
+                    placeholderText="Inicio Trat."
+                    dateFormat="dd-MM-yyyy"
+                    maxDate={new Date()}
+                    selected={selPatient.inicio}
+                    onChange={e => updateSelPatient('inicio', e != null ? e.getTime() : null)}
+                    className="customDatePicker"
+                    showYearDropdown
+                    dateFormatCalendar="MMMM"
+                    yearDropdownItemNumber={15}
+                    scrollableYearDropdown
+                // locale="es"
+                // dateFormat="MM/yyyy"
+                // showMonthYearPicker
+                // showFullMonthYearPicker
+                />
+                <DatePicker
+                    placeholderText="Fin Trat."
+                    dateFormat="dd-MM-yyyy"
+                    maxDate={new Date()}
+                    selected={selPatient.fin}
+                    onChange={e => updateSelPatient('fin', e != null ? e.getTime() : null)}
+                    className="customDatePicker"
+                    showYearDropdown
+                    dateFormatCalendar="MMMM"
+                    yearDropdownItemNumber={15}
+                    scrollableYearDropdown
+                // locale="es"
+                // dateFormat="MM/yyyy"
+                // showMonthYearPicker
+                // showFullMonthYearPicker
+                />
                 <UserInput type="text" placeholder="Días de atención" value={selPatient.uids[userInfo.id].atencion || ''} name="atencion" onChange={e => updateUserSelPatient(`atencion`, e.target.value)} />
             </Row>
             <Contacto>

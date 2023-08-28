@@ -31,10 +31,10 @@ const afs = admin.firestore()
 exports.ring = functions.https.onRequest((request, response) =>
 {
     // Allow requests from any origin
-    request.set('Access-Control-Allow-Origin', '*');
+    response.set('Access-Control-Allow-Origin', '*');
     // Set other CORS headers as needed
-    request.set('Access-Control-Allow-Methods', 'GET, POST');
-    request.set('Access-Control-Allow-Headers', 'Content-Type');
+    response.set('Access-Control-Allow-Methods', 'GET, POST');
+    response.set('Access-Control-Allow-Headers', 'Content-Type');
 
     //console.log('request.body:', request.body["topic"])
     const topic = request.query.topic
