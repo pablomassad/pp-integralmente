@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 import {IconRemove} from '../../global-styles'
-import {PersonPin} from '@styled-icons/material-rounded/PersonPin'
+// import {PersonPin} from '@styled-icons/material-rounded/PersonPin'
 import GlassButton from '../../common/GlassButton'
 
 import Switch from 'react-switch'
@@ -43,7 +43,7 @@ export default function Pacientes()
 
     const [selEstado, setSelEstado] = useState('Pasivo')
     const [criteria, setCriteria] = useState('')
-    const [viewAll, setViewAll] = useState(false)
+    // const [viewAll, setViewAll] = useState(false)
 
     const data = patients //&& ((!viewAll && f.activo)||viewAll)
         .filter((f) => ((criteria.length < 2) || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase()))) )
@@ -99,10 +99,10 @@ export default function Pacientes()
         history.push(`/patient`)
         // history.push(`/patient/${patient.id}`)
     }
-    const switchPatients = () =>
-    {
-        setViewAll(!viewAll)
-    }
+    // const switchPatients = () =>
+    // {
+    //     setViewAll(!viewAll)
+    // }
 
     useEffect(() =>
     {
@@ -217,11 +217,11 @@ const PatientFilter = styled.div`
     align-items:center;
     box-shadow: 0 1px 3px black;
 `
-const IconPerson = styled(PersonPin)`
-    color: ${props => (props.color) ? props.color : 'gray'};
-    width: 35px;
-    margin: 10px;
-`
+// const IconPerson = styled(PersonPin)`
+//     color: ${props => (props.color) ? props.color : 'gray'};
+//     width: 35px;
+//     margin: 10px;
+// `
 const Total = styled.div`
 	font-weight: bold;
 	color: black;

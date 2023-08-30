@@ -13,7 +13,7 @@ import "react-datepicker/dist/react-datepicker.css"
 // import {registerLocale, setDefaultLocale} from "react-datepicker";
 // import es from 'date-fns/locale/es';
 
-import {anonymous} from '../assets/images/anonymous.png'
+import anonymous from '../assets/images/anonymous.png'
 import GlassButton from '../common/GlassButton'
 import FileUploader from '../components/FileUploader'
 

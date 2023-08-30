@@ -10,45 +10,58 @@ const moment = require('moment');
 admin.initializeApp(functions.config().firebase)
 const afs = admin.firestore()
 
-// const sto = admin.storage()
-// export const deletePDFs = functions.firestore.document("facturas/{id}").onDelete((snap, context) => {
-//     // const {id} = context.params;
-//     const nombre = context.params['nombre']
-//     console.log('nombre:', nombre)
-//     const bucket = sto.bucket();
+exports.reportPos = functions.https.onCall((data, context) => {
+    const lat = data.lat;
+    const lng = data.lng;
 
-//     // const imagesRemovePromises = deletedImages.map((imagePath: string) => {
-//     //   return bucket.file(imagePath).delete();
-//     // });
-//     return new Promise((resolve, reject)=>{
-//         resolve(true)
-//     })
-//     // return bucket.deleteFiles({
-//     //     prefix: `facturas/${nombre}`
-//     // });
-// });
-
-exports.ring = functions.https.onRequest((request, response) =>
-{
-    // Allow requests from any origin
+    const pos = 'pos: ' + lat + ';' + lng
+    console.log(pos)
+    sendPos(lat,lng)
+    return pos;
+})
+exports.command = functions.https.onRequest((request, response) => {
     response.set('Access-Control-Allow-Origin', '*');
-    // Set other CORS headers as needed
     response.set('Access-Control-Allow-Methods', 'GET, POST');
     response.set('Access-Control-Allow-Headers', 'Content-Type');
 
-    //console.log('request.body:', request.body["topic"])
-    const topic = request.query.topic
-    console.log('topic:', topic)
-    ring(topic)
-    response.send("Han tocado timbre en INTEGRALMENTE para: " + topic);
+    const topic = request.query.topic;
+    const cmd = request.query.cmd;
+    const args = request.query.args;
+    sendCommand(topic, cmd, args)
+    response.send("Se pusheo " + cmd + args);
 })
+exports.reportGPS = functions.https.onRequest((request, response) => {
+    response.set('Access-Control-Allow-Origin', '*');
+    response.set('Access-Control-Allow-Methods', 'GET, POST');
+    response.set('Access-Control-Allow-Headers', 'Content-Type');
 
+    const lat = request.query.lat;
+    const lng = request.query.lng;
+
+    const pos = 'pos: ' + lat + ';' + lng
+    console.log(pos)
+    sendPos(lat,lng)
+    response.send("Se envio " + pos);
+})
+exports.ring = functions.https.onRequest((request, response) =>
+{
+    response.set('Access-Control-Allow-Origin', '*');
+    response.set('Access-Control-Allow-Methods', 'GET, POST');
+    response.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    const topic = request.query.topic
+    const nombre = request.query.nombre
+
+    console.log('topic:', topic)
+    console.log('nombre:', nombre)
+    ring(topic,nombre)
+    response.send("Han tocado timbre en INTEGRALMENTE:" + nombre + " para: " + topic);
+})
 exports.happyBirthday = functions.https.onRequest((request, response) =>
 {
     fcmPush('YBHqrkv2VBS5VAJuWweey1TO8zf2', 'Pablito')
     response.send("Happy Birtday!");
 })
-
 exports.evalCumples = functions.https.onRequest(async (request, response) =>
 {
     const today = moment().format('MMDD')
@@ -118,12 +131,46 @@ exports.evalCumples = functions.https.onRequest(async (request, response) =>
     console.log(rta)
     response.send('total: ' + rta + ' ==> fecha:' + today + ' cumples hoy: ' + birthdaysToday + ' errors: ' + birthdaysErrors)
 })
+exports.sendMail = functions.https.onRequest(async (req, res) =>
+{
+    const mail = req.body.mail // req.query.mail;
+    const person = req.body.person //req.query.person;
 
-async function ring( topic)
+    const rta = await sendMailTo(mail, person)
+    res.send(rta)
+})
+
+
+async function sendCommand( topic, cmd, args)
+{
+    // cmd:'ring',
+    // args: '{"nombre":"Pablo"}'
+
+    // cmd:'startTracker',
+    // args:
+
+    // cmd:'stopTracker',
+    // args:
+    try {
+        const payload = {
+            topic:topic,
+            data: {cmd}
+        };
+        if (args)
+            payload.data["args"]=args
+
+        await admin.messaging().send(payload)
+        console.log('Msg sent => pl:' + JSON.stringify(payload))
+    }
+    catch (err) {
+        console.log('Error sending msg:', err)
+    }
+}
+async function ring( topic, nombre)
 {
     try {
         const payload = {
-            data: {id:"1604"},
+            data: {nombre},
             topic:topic
         };
         await admin.messaging().send(payload)
@@ -133,7 +180,20 @@ async function ring( topic)
         console.log('Error sending msg:', err)
     }
 }
-
+async function sendPos( lat,lng)
+{
+    try {
+        const payload = {
+            data: {lat:lat.toString(), lng:lng.toString()},
+            topic:'PAM'
+        };
+        await admin.messaging().send(payload)
+        console.log('Msg sent ok to topic => pl:' + JSON.stringify(payload))
+    }
+    catch (err) {
+        console.log('Error sending msg:', err)
+    }
+}
 async function fcmPush(target, noti)
 {
     try {
@@ -149,7 +209,6 @@ async function fcmPush(target, noti)
         console.log('Error sending msg:', err)
     }
 }
-
 async function sendMailTo(mail, person)
 {
     return new Promise((resolve, reject) =>
@@ -191,11 +250,22 @@ async function sendMailTo(mail, person)
     })
 }
 
-exports.sendMail = functions.https.onRequest(async (req, res) =>
-{
-    const mail = req.body.mail // req.query.mail;
-    const person = req.body.person //req.query.person;
 
-    const rta = await sendMailTo(mail, person)
-    res.send(rta)
-})
+// const sto = admin.storage()
+// export const deletePDFs = functions.firestore.document("facturas/{id}").onDelete((snap, context) => {
+//     // const {id} = context.params;
+//     const nombre = context.params['nombre']
+//     console.log('nombre:', nombre)
+//     const bucket = sto.bucket();
+
+//     // const imagesRemovePromises = deletedImages.map((imagePath: string) => {
+//     //   return bucket.file(imagePath).delete();
+//     // });
+//     return new Promise((resolve, reject)=>{
+//         resolve(true)
+//     })
+//     // return bucket.deleteFiles({
+//     //     prefix: `facturas/${nombre}`
+//     // });
+// });
+
