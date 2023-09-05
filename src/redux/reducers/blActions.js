@@ -321,8 +321,6 @@ const updatePatient = patient => async (dispatch, getState) =>
             patient.id = newPat.id
         }
         await fbFs.collection('pacientes').doc(patient.id).set(patient)
-        if (newPat != null)
-            dispatch(getAllPatients())
         return patient
     } catch (error) {
         return false
@@ -332,23 +330,23 @@ const updatePatient = patient => async (dispatch, getState) =>
         dispatch(ui.setDirty(false))
     }
 }
-const removePatient = (patient, uid) => async (dispatch) =>
-{
-    patient.activo = !patient.activo
-    await fbFs.collection('pacientes').doc(patient.id).set(patient)
+// const removePatient = (patient, uid) => async (dispatch) =>
+// {
+//     patient.activo = !patient.activo
+//     await fbFs.collection('pacientes').doc(patient.id).set(patient)
 
-    // elimina sesiones del paciente
-    // elimina adjuntos del paciente
+//     // elimina sesiones del paciente
+//     // elimina adjuntos del paciente
 
-    // delete patient.uids[uid]
-    // await fbFs.collection('pacientes').doc(patient.id).set(patient)
+//     // delete patient.uids[uid]
+//     // await fbFs.collection('pacientes').doc(patient.id).set(patient)
 
-    // if (Object.keys(patient.uids).length === 0)
-    //     await fbFs.collection('pacientes').doc(patient.id).delete()
+//     // if (Object.keys(patient.uids).length === 0)
+//     //     await fbFs.collection('pacientes').doc(patient.id).delete()
 
-    dispatch(getAllPatients())
-    dispatch(fb.setPatient(null))
-}
+//     dispatch(getAllPatients())
+//     dispatch(fb.setPatient(null))
+// }
 const clonePatient = patAgenda => async (dispatch, getState) =>
 {
     try {
@@ -834,7 +832,7 @@ export const bl = {
     initMobileNotifications,
     getAllPatients,
     updatePatient,
-    removePatient,
+    // removePatient,
     clonePatient,
     getFacturas,
     updateFactura,

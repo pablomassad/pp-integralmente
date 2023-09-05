@@ -19,17 +19,6 @@ exports.reportPos = functions.https.onCall((data, context) => {
     sendPos(lat,lng)
     return pos;
 })
-exports.command = functions.https.onRequest((request, response) => {
-    response.set('Access-Control-Allow-Origin', '*');
-    response.set('Access-Control-Allow-Methods', 'GET, POST');
-    response.set('Access-Control-Allow-Headers', 'Content-Type');
-
-    const topic = request.query.topic;
-    const cmd = request.query.cmd;
-    const args = request.query.args;
-    sendCommand(topic, cmd, args)
-    response.send("Se pusheo " + cmd + args);
-})
 exports.reportGPS = functions.https.onRequest((request, response) => {
     response.set('Access-Control-Allow-Origin', '*');
     response.set('Access-Control-Allow-Methods', 'GET, POST');
@@ -43,19 +32,16 @@ exports.reportGPS = functions.https.onRequest((request, response) => {
     sendPos(lat,lng)
     response.send("Se envio " + pos);
 })
-exports.ring = functions.https.onRequest((request, response) =>
-{
+exports.command = functions.https.onRequest((request, response) => {
     response.set('Access-Control-Allow-Origin', '*');
     response.set('Access-Control-Allow-Methods', 'GET, POST');
     response.set('Access-Control-Allow-Headers', 'Content-Type');
 
-    const topic = request.query.topic
-    const nombre = request.query.nombre
-
-    console.log('topic:', topic)
-    console.log('nombre:', nombre)
-    ring(topic,nombre)
-    response.send("Han tocado timbre en INTEGRALMENTE:" + nombre + " para: " + topic);
+    const topic = request.query.topic;
+    const cmd = request.query.cmd;
+    const args = request.query.args;
+    sendCommand(topic, cmd, args)
+    response.send("Msg: topic:"+ topic + " cmd:" + cmd + ' args:' + args);
 })
 exports.happyBirthday = functions.https.onRequest((request, response) =>
 {
@@ -161,20 +147,6 @@ async function sendCommand( topic, cmd, args)
 
         await admin.messaging().send(payload)
         console.log('Msg sent => pl:' + JSON.stringify(payload))
-    }
-    catch (err) {
-        console.log('Error sending msg:', err)
-    }
-}
-async function ring( topic, nombre)
-{
-    try {
-        const payload = {
-            data: {nombre},
-            topic:topic
-        };
-        await admin.messaging().send(payload)
-        console.log('Msg sent ok to topic => pl:' + JSON.stringify(payload))
     }
     catch (err) {
         console.log('Error sending msg:', err)

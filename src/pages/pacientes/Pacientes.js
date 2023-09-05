@@ -1,19 +1,16 @@
 import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
-import {IconRemove} from '../../global-styles'
-// import {PersonPin} from '@styled-icons/material-rounded/PersonPin'
 import GlassButton from '../../common/GlassButton'
-
+import {BackInTime} from '@styled-icons/entypo/BackInTime'
 import Switch from 'react-switch'
 
 import {useHistory} from 'react-router-dom'
 
 import anonymous from '../../assets/images/anonymous.png'
 import {useDispatch, useSelector} from 'react-redux'
-import {bl, ui, fb} from '../../redux'
+import { ui, fb, bl} from '../../redux'
 import moment from 'moment'
 
-import {confirmAlert} from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
 // import SwipeableListItem from "../../common/SwipeableList/SwipeableListItem";
@@ -41,11 +38,10 @@ export default function Pacientes()
     const userInfo = useSelector(st => st.fb.userInfo)
     const patients = useSelector(st => st.fb.allPatients.filter(x => x.uids[userInfo.id]))
 
-    const [selEstado, setSelEstado] = useState('Pasivo')
+    const [selEstado, setSelEstado] = useState('Activo')
     const [criteria, setCriteria] = useState('')
-    // const [viewAll, setViewAll] = useState(false)
 
-    const data = patients //&& ((!viewAll && f.activo)||viewAll)
+    const data = patients
         .filter((f) => ((criteria.length < 2) || Object.keys(f).some((k) => `${f[k]}`.toLowerCase().includes(criteria.toLowerCase()))) )
         .filter((f) => (f.fin&&(selEstado==='Pasivo')) || (!f.fin&&(selEstado==='Activo')))
         .sort((f1, f2) =>
@@ -73,37 +69,41 @@ export default function Pacientes()
         const newState = e ? 'Activo' : 'Pasivo'
         setSelEstado(newState)
     }
-    const removePatient = (e, p) =>
-    {
-        e.stopPropagation()
-        e.preventDefault()
-
-        confirmAlert({
-            title: 'Desactivar/activar paciente',
-            message: 'Esta seguro?',
-            buttons: [
-                {
-                    label: 'Si',
-                    onClick: () => dispatch(bl.removePatient(p, userInfo.id))
-                },
-                {
-                    label: 'No',
-                    onClick: () => console.log('cancel')
-                }
-            ]
-        })
-    }
     const gotoPatient = (patient) =>
     {
         dispatch(fb.setPatient(patient))
         history.push(`/patient`)
         // history.push(`/patient/${patient.id}`)
     }
+    const refreshHandle = e =>
+    {
+        console.log('refresh patients')
+        dispatch(bl.getAllPatients())
+    }
     // const switchPatients = () =>
     // {
     //     setViewAll(!viewAll)
     // }
 
+    // const removePatient = (e, p) =>
+    // {
+    //     e.stopPropagation()
+    //     e.preventDefault()
+    //     confirmAlert({
+    //         title: 'Desactivar/activar paciente',
+    //         message: 'Esta seguro?',
+    //         buttons: [
+    //             {
+    //                 label: 'Si',
+    //                 onClick: () => dispatch(bl.removePatient(p, userInfo.id))
+    //             },
+    //             {
+    //                 label: 'No',
+    //                 onClick: () => console.log('cancel')
+    //             }
+    //         ]
+    //     })
+    // }
     useEffect(() =>
     {
         dispatch(ui.setTitle('Pacientes'))
@@ -114,12 +114,16 @@ export default function Pacientes()
         <PatientsFrame>
             <PatientFilter>
                 {/* <IconPerson color={viewAll?'#007ac3':'gray'} onClick={switchPatients}/> */}
+                <GlassButton width={40} onClick={refreshHandle}>
+                    <IconRefresh />
+                </GlassButton>
                 <Criteria
                     type="text"
                     placeholder="Ingrese datos paciente"
                     value={criteria}
                     onChange={e => setCriteria(e.target.value)}
                 />
+
                 <Switch
                     onChange={onChangeState}
                     className="react-switch"
@@ -177,7 +181,7 @@ export default function Pacientes()
                                 <p>{p.uids[userInfo.id].atencion}</p>
                             </PatientInfo>
                         </PatientData>
-                        <IconRemove onClick={(e) => removePatient(e, p)} />
+                        {/* <IconRemove onClick={(e) => removePatient(e, p)} /> */}
                     </PatientCard>
                 ))}
                 <GlassButton
@@ -213,7 +217,7 @@ const PatientFilter = styled.div`
     --id:PatientFilter;
     background:#ccc;
     display:grid;
-    grid-template-columns: 1fr 80px 75px;
+    grid-template-columns: 45px 1fr 80px 75px;
     align-items:center;
     box-shadow: 0 1px 3px black;
 `
@@ -299,4 +303,8 @@ const Description = styled.div`
 const IconAdd = styled.div`
 	font-size: 24px;
 	font-weight: bold;
+`
+const IconRefresh = styled(BackInTime)`
+    width:18px;
+    color: white;
 `

@@ -30,20 +30,20 @@ export default function Paciente()
             <Toolbar>
                 <Tool
                     onClick={() => validateTarget("ficha")}
-                    active={selTool === "ficha"}>
-                    <IconFicha active={selTool === "ficha"} />
+                    active={(selTool === "ficha")}>
+                    <IconFicha active={(selTool === "ficha").toString()} />
 					Ficha
 				</Tool>
                 <Tool
                     onClick={() => validateTarget("historia")}
-                    active={selTool === "historia"}>
-                    <IconHistoria active={selTool === "historia"} />
+                    active={(selTool === "historia")}>
+                    <IconHistoria active={(selTool === "historia").toString()} />
 					Historia
 				</Tool>
                 <Tool
                     onClick={() => validateTarget("documentacion")}
-                    active={selTool === "documentacion"}>
-                    <IconDocumentacion active={selTool === "documentacion"} />
+                    active={(selTool === "documentacion")}>
+                    <IconDocumentacion active={(selTool === "documentacion").toString()} />
 					Documentación
 				</Tool>
             </Toolbar>

@@ -85,7 +85,7 @@ if (args.buildApk === 'true') {
     console.log('######################')
     console.log('Upload to Google Drive')
     console.log('######################')
-    const dest = '/Users/pablomassad/Google Drive/PP/P♡P/P&P Soft/Integralmente/' + 'IntegralMente.v' + args.version + '.apk'
+    const dest = '/Users/pablin/My Drive/PP/P♡P/P&P Soft/Integralmente/' + 'IntegralMente.v' + args.version + '.apk'
     fs.copyFileSync('android/app/build/outputs/apk/debug/app-debug.apk', dest)
 }
 

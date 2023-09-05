@@ -72,23 +72,25 @@ export default function Ficha()
         // if (selPatient.id === 0){
         //     selPatient.uids[userInfo.id].photoURL = userInfo.photoURL
         // }
-        if (!selPatient.activo)
-            selPatient.activo = true
 
         const pat = await dispatch(bl.updatePatient(selPatient))
-        if (pat) {
+        if (selPatient) {
             if (fileInfo) {
+                dispatch(ui.showLoader(true))
                 if (selPatient.foto) {
                     console.log('nombre existente: ', selPatient.foto)
-                    //await dispatch(bl.deleteFileStorage(selPatient.id, selPatient.foto))
+                    await dispatch(bl.deleteFileStorage(selPatient.id, selPatient.foto))
                 }
                 const url = await dispatch(bl.uploadFileStorage(pat.id, fileInfo.file))
                 selPatient.foto = url
+                dispatch(ui.showLoader(false))
             }
             await dispatch(fb.setPatient(pat))
             console.log('updated Patient: ', selPatient)
+            await dispatch(bl.updatePatient(selPatient))
             dispatch(ui.showMessage({msg: 'Paciente guardado', type: 'success'}))
             setFileInfo(undefined)
+            await dispatch(bl.getAllPatients())
         } else {
             dispatch(ui.showMessage({msg: 'No se ha podido guardar los datos del paciente', type: 'error'}))
         }

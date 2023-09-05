@@ -49,6 +49,7 @@ export default handleActions(
         },
         [fb.setAllPatients]: (state, action) =>
         {
+            console.log('setAllPatients:',action.payload)
             return {...state, allPatients: action.payload}
         },
         [fb.setPatient]: (state, action) =>
