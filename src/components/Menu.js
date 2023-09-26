@@ -1,33 +1,31 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import {PersonPin} from '@styled-icons/material-rounded/PersonPin'
-import {AttachMoney} from '@styled-icons/material-rounded/AttachMoney'
-import {PersonAdd} from '@styled-icons/material/PersonAdd'
-import {Chat} from '@styled-icons/material/Chat'
-import {Calendar} from '@styled-icons/evil/Calendar'
-import {Feedback} from '@styled-icons/material/Feedback'
-import {Exit} from '@styled-icons/icomoon/Exit'
+import { PersonPin } from '@styled-icons/material-rounded/PersonPin'
+import { AttachMoney } from '@styled-icons/material-rounded/AttachMoney'
+import { PersonAdd } from '@styled-icons/material/PersonAdd'
+import { Chat } from '@styled-icons/material/Chat'
+import { Calendar } from '@styled-icons/evil/Calendar'
+import { Feedback } from '@styled-icons/material/Feedback'
+import { Cake } from '@styled-icons/entypo/Cake'
+import { Exit } from '@styled-icons/icomoon/Exit'
 
 import anonymous from '../assets/images/anonymous.png'
 
-import {useHistory} from 'react-router-dom'
-import {useDispatch, useSelector} from 'react-redux'
-import {ui} from '../redux'
+import { useHistory } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { ui, bl } from '../redux'
 
-export default function Menu()
-{
+export default function Menu() {
     const history = useHistory()
     const dispatch = useDispatch()
     const userInfo = useSelector(st => st.fb.userInfo)
     const sidebarFlag = useSelector(st => st.ui.sidebarFlag)
 
-    const onToggleHandle = () =>
-    {
+    const onToggleHandle = () => {
         dispatch(ui.toggleSidebar())
     }
-    const goto = (page) =>
-    {
+    const goto = (page) => {
         history.push(page)
         dispatch(ui.toggleSidebar())
     }
@@ -40,37 +38,41 @@ export default function Menu()
             <MenuItems className={(sidebarFlag) ? "sidebar sbOpen" : "sidebar sbClose"}>
                 <MenuItem onClick={() => goto('/profile')}>
                     <Avatar src={userInfo.photoURL || anonymous} />
-                        {userInfo.displayName}
+                    {userInfo.displayName}
                 </MenuItem>
                 <hr />
                 <MenuItem onClick={() => goto('/patients')}>
                     <IconPatients />
-                        Pacientes
+                    Pacientes
                 </MenuItem>
                 <MenuItem onClick={() => goto('/bills')} >
                     <IconBills />
-                        Facturación
+                    Facturación
                 </MenuItem>
                 <MenuItem onClick={() => goto('/agenda')} >
                     <IconAgenda />
-                        Agenda
+                    Agenda
                 </MenuItem>
                 <MenuItem onClick={() => goto('/news')} >
                     <IconChat />
-                        Comunicados
+                    Comunicados
                 </MenuItem>
                 <MenuItem onClick={() => goto('/occupation')} >
                     <IconOcupation />
-                        Ocupación
+                    Ocupación
+                </MenuItem>
+                <MenuItem onClick={() => dispatch(bl.evalBirthdays())} >
+                    <IconBirthday />
+                    Cumples
                 </MenuItem>
                 <MenuItem onClick={() => goto('/feedback')} >
                     <IconFeedback />
-                        Mejoras
+                    Mejoras
                 </MenuItem>
                 <hr />
                 <MenuItem onClick={() => goto('/signIn')} >
                     <IconExit />
-                        Salir
+                    Salir
                 </MenuItem>
             </MenuItems>
         </MenuFrame>
@@ -130,6 +132,11 @@ const IconFeedback = styled(Feedback)`
     color:gray;
     justify-self:center;
 `
+const IconBirthday = styled(Cake)`
+    width:35px;
+    color:gray;
+    justify-self:center;
+`
 
 const IconExit = styled(Exit)`
     width:35px;
@@ -147,7 +154,7 @@ const MenuItem = styled.div`
     color:gray;
     text-shadow: none;
     transition: all .15s ease-in;
-    
+
     &:hover{
         transform: scale(1.2) translateY(-2px) translateX(10px);
         text-shadow:1px 1px 1px lightgray;

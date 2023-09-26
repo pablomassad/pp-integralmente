@@ -51,9 +51,9 @@ if (args.cloudFunction === 'true') {
     console.log('##################')
     console.log('Deploy to Firebase')
     console.log('##################')
-    execSync('firebase deploy', {
-        stdio: 'inherit'
-    })
+    // execSync('firebase deploy', {
+    //     stdio: 'inherit'
+    // })
 }
 
 if (args.buildApk === 'true') {

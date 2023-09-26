@@ -102,9 +102,9 @@ exports.evalCumples = functions.https.onRequest(async (request, response) =>
                     }
                     console.log('today:' + today + ' --> ' + cumple + ' Ap: ' + usr.displayName)
                     await fcmPush('global', noti)
-                    if (usr.mail){
-                        await sendMailTo(usr.mail, usr.nombres)
-                    }
+                    // if (usr.mail){
+                    //     await sendMailTo(usr.mail, usr.nombres)
+                    // }
                     birthdaysToday++
                 }
             }

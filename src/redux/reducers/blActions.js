@@ -2,6 +2,7 @@ import {fb, ui} from '../'
 import {fbAuth, fbSto, fbFs} from '../../fb.service'
 import moment from 'moment'
 import {Plugins} from '@capacitor/core'
+
 // import {FCM} from "capacitor-fcm";
 
 
@@ -129,8 +130,38 @@ const initPushing = payload => async dispatch =>
 {
     setTimeout(() =>
     {
-        dispatch(initMobileNotifications())
+        //dispatch(initMobileNotifications())
+        dispatch(evalBirthdays())
     }, 10000)
+}
+const evalBirthdays = ()=>(dispatch, getState) => {
+    console.log('evalBirthdays')
+    const patients = getState().fb.allPatients
+
+    const today = moment().format('MMDD')
+    for (let pac of patients) {
+        try {
+            const kid = pac.apellido + ', ' + pac.nombres
+
+            if (!pac.nacimiento) {
+                console.log('Falta cargar nacimiento: ', kid)
+            }
+            else {
+                const cumple = moment(pac.nacimiento).format('MMDD')
+                if (today === cumple) {
+                    console.log('today:' + today + ' --> ' + cumple + ' Ap: ' + kid)
+
+                    const message = 'Hoy cumple ' + kid + `🎂🎈`
+                    dispatch(ui.showMessage({
+                        msg: message,
+                        type: 'info'
+                    }))
+                }
+            }
+        } catch (error) {
+            console.log('Error en evaluacion de cumples: ', error.message)
+        }
+    }
 }
 const initWebNotifications = () => dispatch =>
 {
@@ -168,6 +199,7 @@ const initMobileNotifications = () => (dispatch, getState) =>
         userInfo.version = version
         dispatch(updateUser(userInfo))
 
+        console.log('FCMPlugin defined?: ' + typeof(FCMPlugin));
         // Register with Apple / Google to receive push via APNS/FCM
         PushNotifications.register()
             .then(() =>
@@ -175,10 +207,22 @@ const initMobileNotifications = () => (dispatch, getState) =>
                 FCMPlugin.subscribeTo({topic: userInfo.id})
                     .then(r =>
                     {
-                        dispatch(ui.showMessage({
-                            msg: `Suscripto a Cumples IntegralMente! 🎈`,
-                            type: 'success'
-                        }))
+                        FCMPlugin.subscribeTo({topic: 'global'})
+                        .then(r =>
+                        {
+                            const topics = FCMPlugin.getSubscribedTopics();
+                            console.log(topics);
+
+                            dispatch(ui.showMessage({
+                                msg: `Suscripto a Cumples IntegralMente! 🎈`,
+                                type: 'success'
+                            }))
+                            console.log('subcribed to GLOBAL ok')
+                        })
+                        .catch(err =>
+                        {
+                            console.log('Error subscribing topic: ' + err)
+                        })
                     })
                     .catch(err =>
                     {
@@ -187,16 +231,6 @@ const initMobileNotifications = () => (dispatch, getState) =>
                             type: 'error'
                         }))
                         console.log(err);
-                    })
-
-                FCMPlugin.subscribeTo({topic: 'global'})
-                    .then(r =>
-                    {
-                        console.log('subcribed to GLOBAL ok')
-                    })
-                    .catch(err =>
-                    {
-                        console.log('Error subscribing topic: ' + err)
                     })
             })
             .catch(err =>
@@ -828,6 +862,7 @@ export const bl = {
     register,
     sendResetEmail,
     initPushing,
+    evalBirthdays,
     initWebNotifications,
     initMobileNotifications,
     getAllPatients,
