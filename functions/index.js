@@ -3,8 +3,8 @@ const admin = require('firebase-admin')
 const nodemailer = require('nodemailer')
 const cors = require('cors')({ origin: true })
 const moment = require('moment')
-const smtpTransport = require('nodemailer-smtp-transport')
-const execSync = require('child_process').execSync
+// const smtpTransport = require('nodemailer-smtp-transport')
+// const execSync = require('child_process').execSync
 
 // const { Vonage } = require('@vonage/server-sdk')
 // const vonage = new Vonage({
@@ -181,7 +181,15 @@ async function sendCommand(topic, cmd, args) {
     try {
         const payload = {
             topic: topic,
-            data: { cmd }
+            data: { cmd },
+            android:{
+                priority:'high'
+            },
+            apns:{
+                headers:{
+                    'apns-priority':'5'
+                }
+            }
         }
         if (args)
             payload.data["args"] = args
