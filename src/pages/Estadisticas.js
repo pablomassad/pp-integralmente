@@ -15,7 +15,7 @@ export default function Estadisticas()
     const svgRef = useRef()
     const [width, height] = useResizeObserver(wrapperRef)
     const dimensions = {width, height} //useResizeObserver(wrapperRef)
-
+    const K = .001
 
 
     useEffect(() =>
@@ -43,7 +43,7 @@ export default function Estadisticas()
                 if (max < item['pendientes'])
                     max = item['pendientes']
             })
-            return max * 1.1
+            return max * 1.1 * K
         }
 
         const genChart = () =>
@@ -123,7 +123,7 @@ export default function Estadisticas()
                     {
                         const item = {
                             fecha: o.id,
-                            total: o[ft.tipo]
+                            total: o[ft.tipo] * K
                         }
                         return item
                     }))
@@ -135,7 +135,7 @@ export default function Estadisticas()
                 {
                     const item = {
                         fecha: o.id,
-                        total: o[ft.tipo]
+                        total: o[ft.tipo] * K
                     }
                     return item
                 })
@@ -160,7 +160,7 @@ export default function Estadisticas()
                             .append('text')
                             .text(d[valAxisField])
                             .attr('text-anchor', 'middle')
-                            .attr('transform', 'translate(' + (x(d.fecha) + 38) + ',' + (y(d.total) + 10) + ')')
+                            .attr('transform', 'translate(' + (x(d.fecha) + 38) + ',' + (y(d.total * K) + 10) + ')')
                             .transition()
                             .duration(500)
                             .attr('y', -5)
@@ -194,7 +194,7 @@ export default function Estadisticas()
 
                 let s = d3.event.selection || x2.range()
                 x.domain(s.map(x2.invert, x2))
-                
+
                 clipLineas.selectAll('.lineVersion').attr('d', line)
                 axisXY.select('.axis--x').call(xAxis)
                 clipLineas.selectAll('circle').attr('cx', d => x(domValue(d)))

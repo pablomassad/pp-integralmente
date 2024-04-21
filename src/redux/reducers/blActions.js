@@ -814,6 +814,10 @@ const updateStatistics = async (uid) =>
     for (let f of facturas) {
         const monto = Number.parseInt(f.monto)
         const grp = moment(f.fecha).format('YYMM')
+        if (grp.startsWith('220'))
+            console.log('grp:', grp)
+        if (grp === '2202')
+            debugger
         if (!fac[grp])
             fac[grp] = {}
         if (!fac[grp].facturadas)
@@ -825,6 +829,8 @@ const updateStatistics = async (uid) =>
             const grpCob = moment(f.fechaPago).format('YYMM')
             if (!fac[grpCob])
               fac[grpCob] = {}
+            if (!fac[grpCob].facturadas)
+                fac[grpCob].facturadas = 0
             if (!fac[grpCob].cobradas)
                 fac[grpCob].cobradas = 0
             fac[grpCob].cobradas += monto
@@ -843,13 +849,13 @@ const updateStatistics = async (uid) =>
         totalPend = fac[grp].pendientes
     }
 
-    // var facIds = Object.keys(fac)
-    // facIds.forEach(async (id) =>
-    // {
-    //     console.log("yymm", id);
-    //     console.log('fac', fac[id])
-    //     await fbFs.collection("historial").doc(uid).collection("facturacion").doc(id).set(fac[id], {merge: true})
-    // })
+    var facIds = Object.keys(fac)
+    facIds.forEach(async (id) =>
+    {
+        console.log("yymm", id);
+        console.log('fac', fac[id])
+        await fbFs.collection("historial").doc(uid).collection("facturacion").doc(id).set(fac[id], {merge: true})
+    })
 
     return fac
 }
