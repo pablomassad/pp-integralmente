@@ -51,9 +51,9 @@ if (args.cloudFunction === 'true') {
     console.log('##################')
     console.log('Deploy to Firebase')
     console.log('##################')
-    // execSync('firebase deploy', {
-    //     stdio: 'inherit'
-    // })
+    execSync('firebase deploy --only hosting', {
+        stdio: 'inherit'
+    })
 }
 
 if (args.buildApk === 'true') {
@@ -85,7 +85,7 @@ if (args.buildApk === 'true') {
     console.log('######################')
     console.log('Upload to Google Drive')
     console.log('######################')
-    const dest = '/Users/pablin/My Drive/PP/P♡P/P&P Soft/Integralmente/' + 'IntegralMente.v' + args.version + '.apk'
+    const dest = '/Users/pablin/My Drive/PP/P&P Soft/Integralmente/' + 'IntegralMente.v' + args.version + '.apk'
     fs.copyFileSync('android/app/build/outputs/apk/debug/app-debug.apk', dest)
 }
 
