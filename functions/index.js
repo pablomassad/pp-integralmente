@@ -16,6 +16,34 @@ const moment = require('moment')
 admin.initializeApp(functions.config().firebase)
 const afs = admin.firestore()
 
+const userTracksCol = afs.collection('userTracks')
+
+userTracksCol.onSnapshot((snapshot) => {
+    for (const change of snapshot.docChanges()) {
+        const doc = change.doc
+        const userId = doc.id
+
+        const docRef = userTracksCol.doc(userId)
+        docRef.get().then((docSnapshot) => {
+            if (docSnapshot.exists) {
+                const userData = docSnapshot.data()
+                userData.id = userData.time
+                const today = moment().format('YYMMDD')
+                const trackDateCol = afs.collection(`userTracks/${userId}/trackDates/${today}/coords`)
+
+                if (change.type === 'added') {
+                    console.log(`New user added: ${userId} -> ${today}`)
+                    trackDateCol.doc(userId).set(userData)
+                } else if (change.type === 'modified') {
+                    console.log(`User updated: ${userId} -> ${today}`)
+                    trackDateCol.doc(userId).set(userData)
+                }
+            }
+        })
+    }
+})
+
+
 exports.reportPos = functions.https.onCall((data, context) => {
     const lat = data.lat
     const lng = data.lng
@@ -37,6 +65,44 @@ exports.reportGPS = functions.https.onRequest((request, response) => {
     console.log(pos)
     sendPos(lat, lng)
     response.send("Se envio " + pos)
+})
+exports.getTrackerStatus = functions.https.onCall((data, context) => {
+    const { user } = data
+    const refEstadoIntervalo = admin.database().ref(`intervalos/${user}`)
+    refEstadoIntervalo.once('value', snapshot => {
+        const estadoActual = snapshot.val() || false
+        return { status: estadoActual }
+    })
+})
+exports.trackerAction = functions.https.onCall((data, context) => {
+    const { user, status, delta } = data
+    let timer = 120
+    if (delta)
+        timer = delta
+
+    if (!user) {
+        return { error: 'Faltan parámetros: user o intervaloSegundos' }
+    }
+
+    const refEstadoIntervalo = admin.database().ref(`intervalos/${user}`)
+    refEstadoIntervalo.once('value', snapshot => {
+        const estadoActual = snapshot.val() || false // Si no existe, por defecto desactivado
+        let intervaloId // Declarar variable fuera del callback
+
+        if (estadoActual && !status) { // Desactivar intervalo
+            clearInterval(intervaloId)
+            refEstadoIntervalo.set(false)
+        } else if (!estadoActual && status) { // Activar intervalo
+            intervaloId = setInterval(() => {
+                sendCommand(user, 'gps', '')
+            }, timer * 1000)
+            refEstadoIntervalo.set(true)
+        }
+        return {
+            mensaje: `Tracker ${user}: ${status}`,
+            estadoActual: estadoActual
+        }
+    })
 })
 exports.command = functions.https.onRequest((request, response) => {
     response.set('Access-Control-Allow-Origin', '*')
@@ -169,7 +235,7 @@ exports.sendSMSFCM = functions.https.onRequest((req, res) => {
 
 
 
-async function sendCommand(topic, cmd, args) {
+async function sendCommand (topic, cmd, args) {
     // cmd:'ring',
     // args: '{"nombre":"Pablo"}'
 
@@ -182,12 +248,12 @@ async function sendCommand(topic, cmd, args) {
         const payload = {
             topic: topic,
             data: { cmd },
-            android:{
-                priority:'high'
+            android: {
+                priority: 'high'
             },
-            apns:{
-                headers:{
-                    'apns-priority':'5'
+            apns: {
+                headers: {
+                    'apns-priority': '5'
                 }
             }
         }
@@ -201,7 +267,7 @@ async function sendCommand(topic, cmd, args) {
         console.log('Error sending msg:', err)
     }
 }
-async function sendPos(lat, lng) {
+async function sendPos (lat, lng) {
     try {
         const payload = {
             data: { lat: lat.toString(), lng: lng.toString() },
@@ -214,7 +280,7 @@ async function sendPos(lat, lng) {
         console.log('Error sending msg:', err)
     }
 }
-async function fcmPush(target, noti) {
+async function fcmPush (target, noti) {
     try {
         const payload = {
             notification: noti,
@@ -228,7 +294,7 @@ async function fcmPush(target, noti) {
         console.log('Error sending msg:', err)
     }
 }
-async function sendMailTo(mail, person) {
+async function sendMailTo (mail, person) {
     return new Promise((resolve, reject) => {
         let transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
