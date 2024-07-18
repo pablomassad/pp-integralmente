@@ -32,19 +32,16 @@ exports.onUserTracksChange = functions.firestore
         if (docBefore.time !== docAfter.time) {
             userTracksCol.doc(userId).set(docAfter)
                 .then(async () => {
-                    const coordsRef = afs
+                    const trackDatesRef = afs
                         .collection('userTracks')
                         .doc(userId)
                         .collection('trackDates')
-                        .doc(today)
-                        .collection('coords')
-                        .doc(docAfter.time.toString())
+
+                    await trackDatesRef.doc(today).set({id:today})
+                    const coordsRef = trackDatesRef.doc(today).collection('coords').doc(docAfter.time.toString())
                     await coordsRef.set(docAfter)
 
-                    // const path = `userTracks/${userId}/trackDates/${today}/coords`
-                    // const coords = afs.collection(path)
-                    // console.log(`coords updated: ${userId} -> ${today} : ${JSON.stringify(docAfter)}`)
-                    // coords.doc(docAfter.time.toString()).set(docAfter)
+                    console.log(`coords updated: ${userId} -> ${today} : ${JSON.stringify(docAfter)}`)
                 })
                 .catch((error) => {
                     console.error(`Error saving document ${userId} to userTracks coords:`, error)
@@ -248,7 +245,7 @@ exports.sendSMSFCM = functions.https.onRequest((req, res) => {
 
 async function updateTrackerState (user, status) {
     const path = `trackerStates/${user}`
-    if (status !== null) {
+    if (status !== null && status !== undefined) {
         const d = await afs.doc(path).get()
         const trackStDoc = d.data()
         console.log((trackStDoc.tout) ? 'trackerStates update doc:' : 'trackerStates insert doc:', user, status, TIMEOUT)
