@@ -12,38 +12,89 @@ const moment = require('moment')
 //     apiSecret: "bhZpr92ly4tAfCWf"
 // })
 
+const TIMEOUT = 120
 
 admin.initializeApp(functions.config().firebase)
 const afs = admin.firestore()
-
 const userTracksCol = afs.collection('userTracks')
 
-userTracksCol.onSnapshot((snapshot) => {
-    for (const change of snapshot.docChanges()) {
-        const doc = change.doc
-        const userId = doc.id
+exports.onUserTracksChange = functions.firestore
+    .document('userTracks/{userId}')
+    .onWrite((change, context) => {
+        const now = moment().add(-3, 'hours')
+        console.log('userTracks snapshot time:', now.format('HH:mm:ss'))
 
-        const docRef = userTracksCol.doc(userId)
-        docRef.get().then((docSnapshot) => {
-            if (docSnapshot.exists) {
-                const userData = docSnapshot.data()
-                userData.id = userData.time
-                const today = moment().format('YYMMDD')
-                const trackDateCol = afs.collection(`userTracks/${userId}/trackDates/${today}/coords`)
+        const today = now.format('YYMMDD')
+        const userId = context.params.userId
+        const docBefore = change.before.data()
+        const docAfter = change.after.data()
 
-                if (change.type === 'added') {
-                    console.log(`New user added: ${userId} -> ${today}`)
-                    trackDateCol.doc(userId).set(userData)
-                } else if (change.type === 'modified') {
-                    console.log(`User updated: ${userId} -> ${today}`)
-                    trackDateCol.doc(userId).set(userData)
-                }
-            }
-        })
-    }
+        if (docBefore.time !== docAfter.time) {
+            userTracksCol.doc(userId).set(docAfter)
+                .then(async () => {
+                    const coordsRef = afs
+                        .collection('userTracks')
+                        .doc(userId)
+                        .collection('trackDates')
+                        .doc(today)
+                        .collection('coords')
+                        .doc(docAfter.time.toString())
+                    await coordsRef.set(docAfter)
+
+                    // const path = `userTracks/${userId}/trackDates/${today}/coords`
+                    // const coords = afs.collection(path)
+                    // console.log(`coords updated: ${userId} -> ${today} : ${JSON.stringify(docAfter)}`)
+                    // coords.doc(docAfter.time.toString()).set(docAfter)
+                })
+                .catch((error) => {
+                    console.error(`Error saving document ${userId} to userTracks coords:`, error)
+                })
+        }
+    })
+exports.onTrackerStatesChange = functions.firestore
+    .document('trackerStates/{userId}')
+    .onWrite(async (change, context) => {
+        const now = moment().add(-3, 'hours')
+        console.log('trackerStates snapshot time:', now.format('HH:mm:ss'))
+
+        const userId = change.after?.id
+        const data = change.after?.data()
+        console.log('data:', change.after.data())
+
+        if (data?.isMonitoring === false) {
+            console.log('recycle timeout:', userId, data.tout)
+            startTimer(userId, data.tout)
+            updateTrackerState(userId, true)
+        }
+        if (data?.isMonitoring === null) {
+            updateTrackerState(userId)
+        }
+    })
+exports.trackerAction = functions.https.onCall((data, context) => {
+    const { user, status } = data
+    sendCommand(user, 'gps', '')
+    updateTrackerState(user, status)
 })
+exports.getTrackerStatus = functions.https.onCall(async (data, context) => {
+    console.log('getTrackerStatus data:', data.user)
+    const colRef = afs.collection('trackerStates')
+    const docRef = colRef.doc(data.user)
+    const docTracker = await docRef.get()
+    const tst = docTracker.data()
 
+    console.log('getTrackerStatus doc:', JSON.stringify(tst))
+    const result = { status: tst?.isMonitoring }
+    return result
 
+    // const refEstadoIntervalo = admin.database().ref(`intervalos/${data.user}`)
+    // return new Promise(async (resolve) => {
+    //     await refEstadoIntervalo.once('value', snapshot => {
+    //         const estadoActual = snapshot.val() || false
+    //         console.log('getTrackerStatus status:', estadoActual)
+    //         resolve({ status: estadoActual })
+    //     })
+    // })
+})
 exports.reportPos = functions.https.onCall((data, context) => {
     const lat = data.lat
     const lng = data.lng
@@ -66,44 +117,6 @@ exports.reportGPS = functions.https.onRequest((request, response) => {
     sendPos(lat, lng)
     response.send("Se envio " + pos)
 })
-exports.getTrackerStatus = functions.https.onCall((data, context) => {
-    const { user } = data
-    const refEstadoIntervalo = admin.database().ref(`intervalos/${user}`)
-    refEstadoIntervalo.once('value', snapshot => {
-        const estadoActual = snapshot.val() || false
-        return { status: estadoActual }
-    })
-})
-exports.trackerAction = functions.https.onCall((data, context) => {
-    const { user, status, delta } = data
-    let timer = 120
-    if (delta)
-        timer = delta
-
-    if (!user) {
-        return { error: 'Faltan parámetros: user o intervaloSegundos' }
-    }
-
-    const refEstadoIntervalo = admin.database().ref(`intervalos/${user}`)
-    refEstadoIntervalo.once('value', snapshot => {
-        const estadoActual = snapshot.val() || false // Si no existe, por defecto desactivado
-        let intervaloId // Declarar variable fuera del callback
-
-        if (estadoActual && !status) { // Desactivar intervalo
-            clearInterval(intervaloId)
-            refEstadoIntervalo.set(false)
-        } else if (!estadoActual && status) { // Activar intervalo
-            intervaloId = setInterval(() => {
-                sendCommand(user, 'gps', '')
-            }, timer * 1000)
-            refEstadoIntervalo.set(true)
-        }
-        return {
-            mensaje: `Tracker ${user}: ${status}`,
-            estadoActual: estadoActual
-        }
-    })
-})
 exports.command = functions.https.onRequest((request, response) => {
     response.set('Access-Control-Allow-Origin', '*')
     response.set('Access-Control-Allow-Methods', 'GET, POST')
@@ -120,7 +133,7 @@ exports.happyBirthday = functions.https.onRequest((request, response) => {
     response.send("Happy Birtday!")
 })
 exports.evalCumples = functions.https.onRequest(async (request, response) => {
-    const today = moment().format('MMDD')
+    const today = moment().add(-3, 'hours').format('MMDD')
     let birthdaysErrors = 0
     let birthdaysToday = 0
 
@@ -135,7 +148,7 @@ exports.evalCumples = functions.https.onRequest(async (request, response) => {
                 console.log('Falta cargar nacimiento: ', kid)
             }
             else {
-                const cumple = moment(pac.nacimiento).format('MMDD')
+                const cumple = moment(pac.nacimiento).add(-3, 'hours').format('MMDD')
                 if (today === cumple) {
                     const noti = {
                         title: 'Cumples INTEGRALMENTE',
@@ -164,7 +177,7 @@ exports.evalCumples = functions.https.onRequest(async (request, response) => {
                 console.log('Falta cargar nacimiento: ', usr.displayName)
             }
             else {
-                const cumple = moment(usr.birthday).format('MMDD')
+                const cumple = moment(usr.birthday).add(-3, 'hours').format('MMDD')
                 if (today === cumple) {
                     const noti = {
                         title: 'INTEGRALMENTE: Cumple profesional!!',
@@ -233,8 +246,30 @@ exports.sendSMSFCM = functions.https.onRequest((req, res) => {
 
 
 
-
-
+async function updateTrackerState (user, status) {
+    const path = `trackerStates/${user}`
+    if (status !== null) {
+        const d = await afs.doc(path).get()
+        const trackStDoc = d.data()
+        console.log((trackStDoc.tout) ? 'trackerStates update doc:' : 'trackerStates insert doc:', user, status, TIMEOUT)
+        const o = {
+            isMonitoring: status,
+            tout: TIMEOUT
+        }
+        await afs.doc(path).set(o)
+    }
+    else {
+        console.log('updateTrackerState delete:', user)
+        await afs.doc(path).delete()
+    }
+}
+async function startTimer (user, tout) {
+    setTimeout(() => {
+        console.log('startTimer:', user)
+        sendCommand(user, 'gps', '')
+        updateTrackerState(user, false)
+    }, tout * 1000)
+}
 async function sendCommand (topic, cmd, args) {
     // cmd:'ring',
     // args: '{"nombre":"Pablo"}'
